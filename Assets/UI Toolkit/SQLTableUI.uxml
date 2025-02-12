@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="SQLTableContainer" class="panel" style="flex-grow: 1; align-items: flex-start; flex-direction: column;">
+        <ui:ScrollView name="SQLTableScrollView" style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px; align-items: flex-start; background-color: rgba(182, 182, 182, 0); height: 80%; width: 100%;">
+            <ui:VisualElement name="SQLTableHeaderRow" style="flex-grow: 1; width: 100%; background-color: rgba(52, 115, 130, 0); flex-direction: row; justify-content: space-between; align-items: center;" />
+            <ui:VisualElement name="SQLTableBody" style="flex-grow: 1; width: 100%;" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
