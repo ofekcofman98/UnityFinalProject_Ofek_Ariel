@@ -64,9 +64,17 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.40f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\QuerySender.cs" />
+    <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
+    <Compile Include="Assets\Scripts\QueryReceiver.cs" />
     <Compile Include="Assets\Scripts\SQLQueryBuilder.cs" />
+    <Compile Include="Assets\Scripts\Query.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\SQLQueryExecuter.cs" />
     <Compile Include="Assets\Scripts\SupabaseManager.cs" />
+    <Compile Include="Assets\Scripts\DeviceManager.cs" />
+    <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -944,6 +952,10 @@
     </Reference>
     <Reference Include="Unity.VisualScripting.SettingsProvider.Editor">
       <HintPath>Library\ScriptAssemblies\Unity.VisualScripting.SettingsProvider.Editor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="endel.nativewebsocket">
+      <HintPath>Library\ScriptAssemblies\endel.nativewebsocket.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Unity.Performance.Profile-Analyzer.Editor">

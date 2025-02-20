@@ -1,0 +1,38 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerController : MonoBehaviour
+{
+    private bool sqlMode;
+    private bool isMoving;
+    void Start()
+    {
+        sqlMode = false;
+        isMoving = true;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        getInput();
+    }
+
+    private void getInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (!sqlMode)
+            {
+                sqlMode = true;
+                GameManager.Instance.SetSqlMode(true);
+            }
+            else
+            {
+                sqlMode = false;
+                GameManager.Instance.SetSqlMode(false);
+            }
+        }
+    }
+}
