@@ -22,7 +22,6 @@ public class SQLQueryBuilder : MonoBehaviour
 
     private List<string> selectedColumns = new List<string>();
     private string selectedTable;
-    private List<GameObject> pooledButtons = new List<GameObject>(); 
 
     private const string k_Select = "SELECT ";
     private const string k_From = "\nFROM ";
@@ -270,7 +269,17 @@ public class SQLQueryBuilder : MonoBehaviour
     {
         sqlQueryStr = selectPart + fromPart + wherePart;
         queryPreviewText.text = sqlQueryStr;
-        executeButton.interactable = isTableSelected && isColumnSelected;
+
+        if (isQueryValid())
+        {
+            executeButton.interactable = true;
+            GameManager.Instance.SaveQuery(sqlQueryStr);
+        }
+    }
+
+    private bool isQueryValid()
+    {
+        return isTableSelected && isColumnSelected;
     }
 
     private void ExecuteQuery()
@@ -280,55 +289,56 @@ public class SQLQueryBuilder : MonoBehaviour
 
     private IEnumerator RunQuery(string i_SQlQuery)
     {
-    Debug.Log("🔴 Starting SQL Query Coroutine...");
+        Debug.Log("Starting SQL Query Coroutine...");
 
-    // ✅ Extract the table name from the query
-    string tableName = ExtractTableName(i_SQlQuery);
+        // ✅ Extract the table name from the query
+        string tableName = ExtractTableName(i_SQlQuery);
 
-    if (string.IsNullOrEmpty(tableName))
-    {
-        Debug.LogError("❌ No table name found in the query.");
-        yield break;
-    }
+        if (string.IsNullOrEmpty(tableName))
+        {
+            Debug.LogError("No table name found in the query.");
+            yield break;
+        }
 
-    string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{tableName}?select=*";
+        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{tableName}?select=*";
 
-    Debug.Log("🔵 Executing REST API Query: " + url);
+        Debug.Log("🔵 Executing REST API Query: " + url);
 
-    UnityWebRequest request = UnityWebRequest.Get(url);
-    request.SetRequestHeader("apikey", SupabaseManager.Instance.ApiKey);
-    request.SetRequestHeader("Authorization", $"Bearer {SupabaseManager.Instance.ApiKey}");
-    request.SetRequestHeader("Content-Type", "application/json");
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("apikey", SupabaseManager.Instance.ApiKey);
+        request.SetRequestHeader("Authorization", $"Bearer {SupabaseManager.Instance.ApiKey}");
+        request.SetRequestHeader("Content-Type", "application/json");
 
-    yield return request.SendWebRequest();
+        yield return request.SendWebRequest();
 
-    if (request.result == UnityWebRequest.Result.Success)
-    {
-        string responseText = request.downloadHandler.text;
-        Debug.Log($"✅ Query Success: {responseText}");
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"Query Success: {responseText}");
 
-        JArray jsonResponse = JArray.Parse(responseText);
-        DisplayResults(jsonResponse);
-    }
-    else
-    {
-        Debug.LogError($"❌ Failed to execute query: {request.error} | Response: {request.downloadHandler.text}");
-    }
+            JArray jsonResponse = JArray.Parse(responseText);
+            DisplayResults(jsonResponse);
+        }
+        else
+        {
+            Debug.LogError($"Failed to execute query: {request.error} | Response: {request.downloadHandler.text}");
+        }
 
-    Debug.Log("🟢 SQL Query Coroutine Finished.");
+        Debug.Log("SQL Query Coroutine Finished.");
+        GameManager.Instance.RunQuery();
     }
 
     private string ExtractTableName(string query)
-{
-    Match match = Regex.Match(query, @"FROM\s+([a-zA-Z0-9_""\.]+)", RegexOptions.IgnoreCase);
-    if (match.Success)
     {
-        string tableName = match.Groups[1].Value;
-        tableName = tableName.Replace("\"", ""); // Remove quotes if present
-        return tableName;
+        Match match = Regex.Match(query, @"FROM\s+([a-zA-Z0-9_""\.]+)", RegexOptions.IgnoreCase);
+        if (match.Success)
+        {
+            string tableName = match.Groups[1].Value;
+            tableName = tableName.Replace("\"", ""); // Remove quotes if present
+            return tableName;
+        }
+        return null;
     }
-    return null;
-}
 
 
     private void DisplayResults(JArray i_Data)
@@ -343,7 +353,7 @@ public class SQLQueryBuilder : MonoBehaviour
 
         if (i_Data.Count == 0)
         {
-            Debug.LogWarning("⚠️ No data returned from query.");
+            Debug.LogWarning("No data returned from query.");
             return;
         }
 
@@ -373,4 +383,10 @@ public class SQLQueryBuilder : MonoBehaviour
             }
         }
     }
+
+    public string GetBuiltQuery()
+    {
+        return queryPreviewText.text;
+    }
+
 }
