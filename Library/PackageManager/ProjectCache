@@ -5,16 +5,16 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638753995638150649
-    m_Hash: 3467441640
+      ticks: 638756720124626312
+    m_Hash: 3399721547
   m_LockFileStatus:
     m_FilePath: C:/Users/Ofek Cofman/source/yearC/finalProject/SQLDetectiveWeb/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 638753995638212249
-    m_Hash: 2445893047
+      ticks: 638756720124667997
+    m_Hash: 3049218681
 m_EmbeddedPackageManifests:
   m_ManifestsStatus: {}
 m_LocalPackages:
