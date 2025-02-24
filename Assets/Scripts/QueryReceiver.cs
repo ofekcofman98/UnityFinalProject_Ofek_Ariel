@@ -8,6 +8,8 @@ using System.Text;
 using UnityEngine.Networking;
 using System.Threading;
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 public class QueryReceiver : MonoBehaviour
@@ -34,36 +36,50 @@ public class QueryReceiver : MonoBehaviour
     }
 
 
-    void Start()
+private IEnumerator CheckForNewQuery()
+{
+    while (true)
     {
-        StartCoroutine(CheckForNewQuery());
-    }
+        UnityWebRequest request = UnityWebRequest.Get(serverUrl);
+        yield return request.SendWebRequest();
 
-    private IEnumerator CheckForNewQuery()
-    {
-        while (true)
+        if (request.result == UnityWebRequest.Result.Success)
         {
-            UnityWebRequest request = UnityWebRequest.Get(serverUrl);
-            yield return request.SendWebRequest();
+            string receivedJson = request.downloadHandler.text;
+            Debug.Log($"📥 Raw Query JSON: {receivedJson}");
 
-            if (request.result == UnityWebRequest.Result.Success)
+            try
             {
-                string receivedQuery = request.downloadHandler.text;
-                if (!string.IsNullOrEmpty(receivedQuery))
-                {
-                    Debug.Log("📥 Query Received from Server: " + receivedQuery);
-                    GameManager.Instance.SaveQuery(receivedQuery);
+                JObject parsedJson = JObject.Parse(receivedJson);
+                string queryString = parsedJson["query"]?.ToString();
 
-                    // 🛑 Stop listening once a query is received
-                    StopListening();
+                if (!string.IsNullOrEmpty(receivedJson))
+                {
+                    Debug.Log($"📥 Raw Query JSON: {receivedJson}");
+
+                    Query receivedQuery = new Query();
+                    receivedQuery.QueryString = receivedJson.Trim();
+
+                    GameManager.Instance.SaveQuery(receivedQuery);
+                }
+                else
+                {
+                    Debug.LogWarning("⚠️ Received an empty query. Waiting for new queries...");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Debug.LogError("❌ Failed to fetch query: " + request.error);
+                Debug.LogError($"❌ JSON Parsing Error: {ex.Message}");
             }
-
-            yield return new WaitForSeconds(2f);
         }
+        else
+        {
+            Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+        }
+
+        yield return new WaitForSeconds(2f);
     }
 }
+}
+    
+

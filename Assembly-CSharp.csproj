@@ -65,13 +65,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\QuerySender.cs" />
+    <Compile Include="Assets\Scripts\QueryExecutor.cs" />
     <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
+    <Compile Include="Assets\Scripts\Column.cs" />
+    <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\QueryReceiver.cs" />
     <Compile Include="Assets\Scripts\SQLQueryBuilder.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
-    <Compile Include="Assets\Scripts\SQLQueryExecuter.cs" />
     <Compile Include="Assets\Scripts\SupabaseManager.cs" />
     <Compile Include="Assets\Scripts\DeviceManager.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
