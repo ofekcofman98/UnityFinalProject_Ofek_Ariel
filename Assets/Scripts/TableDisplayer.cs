@@ -12,6 +12,53 @@ public class TableDisplayer : MonoBehaviour
     [SerializeField] private Transform resultsContainer;
     [SerializeField] private GameObject rowPrefab;
 
+    public void DisplayResults1(JArray jsonResponse, List<Column> i_Columns)
+    {
+        ClearResults();
+
+        if (jsonResponse.Count == 0)
+        {
+            Debug.LogWarning("No data returned from query.");
+            return;
+        }
+
+        foreach (JObject row in jsonResponse)
+        {
+            GameObject newRow = Instantiate(rowPrefab, resultsContainer);
+
+            foreach (Transform child in newRow.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (Column column in i_Columns)
+            {
+
+                if (!row.ContainsKey(column.Name))
+                {
+                    Debug.LogWarning($"⚠️ Column '{column.Name}' not found in row! Skipping.");
+                    continue;
+                }
+
+                string cellValue = row[column.Name]?.ToString() ?? "N/A";
+                Debug.Log($"Column: {column.Name}, Value: {cellValue}");
+                Debug.Log($"Selected Columns: {string.Join(", ", i_Columns)}");
+
+                GameObject textCell = new GameObject(column.Name);
+                textCell.transform.SetParent(newRow.transform);
+
+                TextMeshProUGUI textComponent = textCell.AddComponent<TextMeshProUGUI>();
+                textComponent.text = row[column.Name]?.ToString() ?? "N/A";
+                textComponent.fontSize = 18;
+                textComponent.alignment = TextAlignmentOptions.Center;
+            }
+        }
+
+        Debug.Log($"Displayed {jsonResponse.Count} rows.");
+    }
+
+
+
     public void DisplayResults(JArray jsonResponse, List<string> columnNames)
     {
         ClearResults();
@@ -31,11 +78,6 @@ public class TableDisplayer : MonoBehaviour
                 Destroy(child.gameObject);
             }
 
-            // if (columnNames.Count == 0)
-            // {
-            //     Debug.LogError("🚨 columnNames is EMPTY! The loop won't run.");
-            // }
-
             foreach (string columnName in columnNames)
             {
 
@@ -46,8 +88,8 @@ public class TableDisplayer : MonoBehaviour
                 }
 
                 string cellValue = row[columnName]?.ToString() ?? "N/A";
-                Debug.Log($"✅!!!!!! Column: {columnName}, Value: {cellValue}");
-                Debug.Log($"📌 Selected Columns: {string.Join(", ", columnNames)}");
+                Debug.Log($"Column: {columnName}, Value: {cellValue}");
+                Debug.Log($"Selected Columns: {string.Join(", ", columnNames)}");
 
                 GameObject textCell = new GameObject(columnName);
                 textCell.transform.SetParent(newRow.transform);
@@ -59,12 +101,7 @@ public class TableDisplayer : MonoBehaviour
             }
         }
 
-        Debug.Log($"📊 Displayed {jsonResponse.Count} rows.");
-        // foreach (JObject row in jsonResponse)
-        // {
-        //     Debug.Log($"📌 Selected Columns: {string.Join(", ", selectedColumns)}");
-        // }
-
+        Debug.Log($"Displayed {jsonResponse.Count} rows.");
     }
 
     private void ClearResults()

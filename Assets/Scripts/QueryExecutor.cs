@@ -25,14 +25,13 @@ public class QueryExecutor : MonoBehaviour
     {
         Debug.Log("Starting SQL Query Execution...");
 
-        if (string.IsNullOrEmpty(query.TableName))
+        if (query.table == null || string.IsNullOrEmpty(query.table.Name))
         {
-            Debug.LogError("No table name found in the query.");
+            Debug.LogError("No table name found in the query. Query.table is NULL or has no name.");
             yield break;
         }
-
-        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.TableName}?select=*";
-        Debug.Log($"🔎 Fetching Data from: {url}");
+        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.table.Name}?select=*";
+        Debug.Log($"Fetching Data from: {url}");
 
 
         UnityWebRequest request = UnityWebRequest.Get(url);

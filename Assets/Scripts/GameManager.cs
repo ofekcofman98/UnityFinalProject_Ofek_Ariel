@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
     public Query CurrentQuery {get; private set;}
-    [SerializeField] private SQLQueryBuilder queryBuilder;
+    [SerializeField] private QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
 
@@ -58,10 +60,15 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        if (i_Query.SelectedColumns.Count == 0 && CurrentQuery?.SelectedColumns.Count > 0)
+        if (i_Query.Columns.Count == 0 && CurrentQuery?.Columns.Count > 0)
         {
-            i_Query.SelectedColumns = new List<string>(CurrentQuery.SelectedColumns);
+            i_Query.Columns = new List<Column>(CurrentQuery.Columns);
         }
+
+        // if (i_Query.SelectedColumns.Count == 0 && CurrentQuery?.SelectedColumns.Count > 0)
+        // {
+        //     i_Query.SelectedColumns = new List<string>(CurrentQuery.SelectedColumns);
+        // }
 
         CurrentQuery = i_Query;
         Debug.Log("Query saved in GameManager: " + i_Query.QueryString);
@@ -115,22 +122,39 @@ public class GameManager : Singleton<GameManager>
         return;
     }
 
-    if (CurrentQuery.SelectedColumns.Count == 0)
+    if (CurrentQuery.Columns.Count == 0)
     {
-        Debug.LogError("🚨 CurrentQuery.SelectedColumns is EMPTY!");
+        Debug.LogError("🚨 CurrentQuery.Columns is EMPTY!");
         return;
     }
-
-    Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.SelectedColumns)}");
+    Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.Columns.Select(col => col.Name))}");
 
     if (tableDisplayer != null)
     {
-        tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.SelectedColumns);
+        tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.Columns);
     }
     else
     {
         Debug.LogError("❌ TableDisplayer is missing!");
     }
+
+
+    // if (CurrentQuery.SelectedColumns.Count == 0)
+    // {
+    //     Debug.LogError("🚨 CurrentQuery.SelectedColumns is EMPTY!");
+    //     return;
+    // }
+
+    // Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.SelectedColumns)}");
+
+    // if (tableDisplayer != null)
+    // {
+    //     tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.SelectedColumns);
+    // }
+    // else
+    // {
+    //     Debug.LogError("❌ TableDisplayer is missing!");
+    // }
 
         // Debug.Log($"GameManager received {jsonResponse.Count} rows from QueryExecutor.");
         
