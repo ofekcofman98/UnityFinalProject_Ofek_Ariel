@@ -7,20 +7,25 @@ using Newtonsoft.Json.Linq;
 using UnityEngine.Networking;
 using System;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 
 
-public class SQLQueryBuilder : MonoBehaviour
+public class QueryBuilder : MonoBehaviour
 {
     [SerializeField] public GameObject QueryPanel;
     public Transform columnParent;
     public TMP_Text queryPreviewText;
     public Button executeButton;
     public GameObject selectionButtonPrefab; 
+    
+    Query query;
 
     private const string k_Select = "SELECT ";
     private const string k_From = "\nFROM ";
-    private const string k_Where = "";
+    private const string k_Where = "\nWHERE ";
+    private const string k_Comma = ", ";
+
     
     private string selectPart;
     private string fromPart;
@@ -31,7 +36,6 @@ public class SQLQueryBuilder : MonoBehaviour
     private bool isFromSelected = false;
     private bool isColumnSelected = false;
     
-    Query query;
 
     void Start()
     {
@@ -52,7 +56,7 @@ public class SQLQueryBuilder : MonoBehaviour
         fromPart    = "";
         wherePart   = "";
 
-        if(SupabaseManager.Instance.TableNames.Count > 0)
+        if(SupabaseManager.Instance.Tables.Count > 0)
         {
             PopulateTableSelection();
         }
@@ -66,126 +70,143 @@ public class SQLQueryBuilder : MonoBehaviour
     {
         ClearSelectionPanel(); 
 
-        if (SupabaseManager.Instance.TableNames.Count == 0)
+        if (SupabaseManager.Instance.Tables.Count == 0)
         {
             Debug.Log("No tables found.");
             return;
         }
 
-        foreach (string i_SelectedTable in SupabaseManager.Instance.TableNames)
+        foreach (Table table in SupabaseManager.Instance.Tables)
         {
             GameObject tableButton = Instantiate(selectionButtonPrefab, columnParent);
             tableButton.transform.localScale = Vector3.one;
-
+    
             TextMeshProUGUI btnText = tableButton.GetComponentInChildren<TextMeshProUGUI>();
-            btnText.text = i_SelectedTable;
+            btnText.text = table.Name;
 
             Button btn = tableButton.GetComponent<Button>();
-            btn.onClick.AddListener(() => OnTableSelected(i_SelectedTable));
+            btn.onClick.AddListener(() => OnTableSelected(table));
 
             tableButton.SetActive(false);
         }
-
     }
 
-    private void PopulateColumnSelection(string i_TableName)
+    private void PopulateColumnSelection(Table i_Table)
     {
-        Debug.Log($"Fetching columns for table: {i_TableName}");
+        Debug.Log($"Fetching columns for table: {i_Table.Name}");
 
         ClearSelectionPanel();
 
-        SupabaseManager.Instance.GetTableData(i_TableName, (data) =>
+        // if (i_Table.Columns.Count == 0)
+        // {
+        //     Debug.LogWarning($"No columns found for table: {i_Table.Name}");
+        //     return;
+        // }
+
+
+        // foreach (string column in i_Table.Columns)
+        // {
+        //     GameObject columnButton = Instantiate(selectionButtonPrefab, columnParent);
+        //     columnButton.transform.localScale = Vector3.one;
+        //     columnButton.GetComponentInChildren<TextMeshProUGUI>().text = column;
+
+        //     Button btn = columnButton.GetComponent<Button>();
+        //     btn.onClick.RemoveAllListeners();
+        //     btn.onClick.AddListener(() => OnColumnSelected(column));
+        // }
+
+        if (i_Table.Columns1.Count == 0)
         {
-
-            if (data == null)
-            {
-                Debug.LogError("Supabase returned NULL data!");
-                return;
-            }
-
-            if (data.Count == 0)    
-            {   
-                Debug.LogWarning($"No data found for table: {i_TableName}"); 
-                return;  
-            }
-
-            Debug.Log($"Data retrieved: {data.ToString()}");
-
-            JObject firstRow = (JObject)data[0];
-            foreach (JProperty column in firstRow.Properties())
-            {
-                Debug.Log($"Column found: {column.Name}");
-
-                GameObject columnButton = Instantiate(selectionButtonPrefab, columnParent);
-                columnButton.transform.localScale = Vector3.one;
-                columnButton.GetComponentInChildren<TextMeshProUGUI>().text = column.Name;
-
-                Button btn = columnButton.GetComponent<Button>();
-                btn.onClick.RemoveAllListeners(); 
-                btn.onClick.AddListener(() => OnColumnSelected(column.Name));
-            }
-
-            UpdateSelectionVisibility(); 
-        });
-    }
-
-    private void ClearSelectionPanel()
-    {
-        foreach (Transform child in columnParent)
-        {
-            if (child != null) 
-            {
-                child.gameObject.SetActive(false);
-                Destroy(child.gameObject);
-            }
-
+            Debug.LogWarning($"No columns found for table: {i_Table.Name}");
+            return;
         }
+
+        foreach (Column column in i_Table.Columns1)
+        {
+            GameObject columnButton = Instantiate(selectionButtonPrefab, columnParent);
+            columnButton.transform.localScale = Vector3.one;
+            columnButton.GetComponentInChildren<TextMeshProUGUI>().text = column.Name;
+
+            Button btn = columnButton.GetComponent<Button>();
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => OnColumnSelected(column));
+        }
+
+        UpdateSelectionVisibility(); 
+        
     }
 
-    private void OnTableSelected(string i_SelectedTable)
+
+    private void OnTableSelected(Table i_SelectedTable)
     {
-        if (query.TableName == i_SelectedTable)
+        if (query.table != null && query.table.Name == i_SelectedTable.Name)
         {
-            query.TableName = "";
+            query.table = null;
             isTableSelected = false;
-            fromPart = "\nFROM ";
-            query.SelectedColumns.Clear();
-            selectPart = "SELECT ";
+            fromPart = k_From;
+            // query.SelectedColumns.Clear();
+            query.Columns.Clear();
+            selectPart = k_Select;
         }
         else
         {
-            query.TableName = i_SelectedTable;
+            query.table = i_SelectedTable;
             isTableSelected = true;
-            fromPart = "\nFROM " + query.TableName + " ";
+            fromPart = k_From + query.table.Name + " ";
 
-            PopulateColumnSelection(query.TableName);
+            PopulateColumnSelection(i_SelectedTable);
         }
-
         UpdateSelectionVisibility();
         UpdateQueryPreview();
     }
 
-    private void OnColumnSelected(string i_ColumnName)
+
+    // private void OnColumnSelected(string i_ColumnName)
+    // {
+    //     if (selectPart.Contains(i_ColumnName))
+    //     {
+    //         query.SelectedColumns.Remove(i_ColumnName);
+    //         selectPart = k_Select + string.Join(k_Comma, query.SelectedColumns);
+    //     }
+    //     else
+    //     {
+    //         isColumnSelected = true;
+    //         query.SelectedColumns.Add(i_ColumnName);
+    //         selectPart = k_Select + string.Join(k_Comma, query.SelectedColumns);
+    //     }
+
+    //     if (query.SelectedColumns.Count == 0)
+    //     {
+    //         isColumnSelected = false;
+    //         selectPart = k_Select;
+    //     }
+
+    //     Debug.Log($"Column Selected: {string.Join(k_Comma, query.SelectedColumns)}");
+
+    //     UpdateQueryPreview();
+
+    // }
+    private void OnColumnSelected(Column i_Column)
     {
-        if (selectPart.Contains(i_ColumnName))
+        if (selectPart.Contains(i_Column.Name))
         {
-            query.SelectedColumns.Remove(i_ColumnName);
-            selectPart = "SELECT " + string.Join(", ", query.SelectedColumns);
+            query.Columns.Remove(i_Column);
+            selectPart = k_Select + string.Join(k_Comma, query.Columns.Select(col => col.Name));
         }
         else
         {
             isColumnSelected = true;
-            query.SelectedColumns.Add(i_ColumnName);
-            selectPart = "SELECT " + string.Join(", ", query.SelectedColumns);
+            query.Columns.Add(i_Column);
+            selectPart = k_Select + string.Join(k_Comma, query.Columns.Select(col => col.Name));
         }
 
-        if (query.SelectedColumns.Count == 0)
+        if (query.Columns.Count == 0)
         {
             isColumnSelected = false;
-            selectPart = "SELECT ";
+            selectPart = k_Select;
         }
 
-        Debug.Log($"✅ Column Selected: {string.Join(", ", query.SelectedColumns)}");
+        Debug.Log($"Column Selected: {string.Join(k_Comma, query.Columns.Select(col => col.Name))}");
 
         UpdateQueryPreview();
 
@@ -202,7 +223,7 @@ public class SQLQueryBuilder : MonoBehaviour
         else
         {
             isSelectSelected = true;
-            selectPart = "SELECT";
+            selectPart = k_Select;
         }
 
         UpdateSelectionVisibility();
@@ -216,16 +237,17 @@ public class SQLQueryBuilder : MonoBehaviour
             isFromSelected = false;
             isTableSelected = false;
             fromPart = "";
-            query.TableName = "";
-            query.SelectedColumns.Clear();
-            selectPart = isSelectSelected ? "SELECT " : "";
+            query.table = null;
+            // query.SelectedColumns.Clear();
+            query.Columns.Clear();
+            selectPart = isSelectSelected ? k_Select : "";
 
             ClearSelectionPanel();
         }
         else
         {
             isFromSelected = true;
-            fromPart = "\nFROM ";
+            fromPart = k_From;
         }
 
         UpdateSelectionVisibility();
@@ -255,7 +277,7 @@ public class SQLQueryBuilder : MonoBehaviour
         {
             if (columnParent.childCount == 0)
             {
-                PopulateColumnSelection(query.TableName);
+                PopulateColumnSelection(query.table);
             }
             foreach (Transform child in columnParent) 
             {
@@ -269,7 +291,7 @@ public class SQLQueryBuilder : MonoBehaviour
 
     public void OnWhereConditionEntered(string condition)
     {
-        wherePart = "\nWHERE " + condition;
+        wherePart = k_Where + condition;
         UpdateQueryPreview();
     }
 
@@ -298,6 +320,20 @@ public class SQLQueryBuilder : MonoBehaviour
     private void ExecuteQuery()
     {
         GameManager.Instance.ExecuteQuery();
+    }
+
+
+    private void ClearSelectionPanel()
+    {
+        foreach (Transform child in columnParent)
+        {
+            if (child != null) 
+            {
+                child.gameObject.SetActive(false);
+                Destroy(child.gameObject);
+            }
+
+        }
     }
 
 }
