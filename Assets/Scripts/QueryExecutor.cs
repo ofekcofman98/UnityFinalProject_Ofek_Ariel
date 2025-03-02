@@ -30,10 +30,17 @@ public class QueryExecutor : MonoBehaviour
             Debug.LogError("No table name found in the query. Query.table is NULL or has no name.");
             yield break;
         }
-        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.table.Name}?select=*";
-        Debug.Log($"Fetching Data from: {url}");
 
+        //https://vwudsbcqlhwajpkmcpsz.supabase.co/rest/v1/Persons?select=age&age=eq.40
+        
+        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.table.Name}?select={query.GetSelectFields()}&{query.WherePartSupaBase}";
 
+    // if (!string.IsNullOrEmpty(query.WherePartSupaBase))
+    // {
+    //     url += $"&{query.WherePartSupaBase}";  // Append filters as URL params
+    // }
+    
+        Debug.Log($"THE URL IS: {url}");
         UnityWebRequest request = UnityWebRequest.Get(url);
         request.SetRequestHeader("apikey", SupabaseManager.Instance.ApiKey);
         request.SetRequestHeader("Authorization", $"Bearer {SupabaseManager.Instance.ApiKey}");

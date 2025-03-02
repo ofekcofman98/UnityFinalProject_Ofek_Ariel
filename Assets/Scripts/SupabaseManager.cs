@@ -78,21 +78,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
-        {
-            // JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
-            // List<Column> columns = new List<Column>();
-
-            // foreach (JObject column in jsonResponse)
-            // {
-            //     string columnName = column["column_name"].ToString();
-
-            //     Column col = new Column(columnName);
-            //     columns.Add(col);
-            // }
-
-            // i_Table.SetColumns1(columns);
-            // Debug.Log($"Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
-            
+        {            
             JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
 
             if (jsonResponse.Count > 0)
@@ -116,8 +102,8 @@ public class SupabaseManager : Singleton<SupabaseManager>
         else
         {
             Debug.LogError($"Failed to fetch columns for {i_Table.Name}: {request.error}");
+            yield break;
         }
-
     }
 }
 

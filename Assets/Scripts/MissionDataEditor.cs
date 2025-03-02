@@ -20,12 +20,12 @@ public class MissionDataEditor : Editor
         }
 
         // Dropdown for requiredTable
-        int selectedIndex = Mathf.Max(0, tableNames.IndexOf(mission.requiredTableStr));
+        int selectedIndex = Mathf.Max(0, tableNames.IndexOf(mission.requiredTable.Name));
         selectedIndex = EditorGUILayout.Popup("Required Table", selectedIndex, tableNames.ToArray());
 
         if (selectedIndex >= 0 && selectedIndex < tableNames.Count)
         {
-            mission.requiredTableStr = tableNames[selectedIndex];
+            // mission.requiredTable.Name = tableNames[selectedIndex];
         }
 
         DrawDefaultInspector();
