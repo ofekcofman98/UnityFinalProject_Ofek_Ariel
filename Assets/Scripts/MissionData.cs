@@ -8,8 +8,7 @@ public class MissionData : ScriptableObject
 {
     public string missingTitle;
     [TextArea(3, 5)] public string missionDescription; 
-    public string requiredTableStr;
     public Table requiredTable;
-    public List<string> requiredColumns;
+    public List<Column> requiredColumns;
     public string requiredCondition;
 }
