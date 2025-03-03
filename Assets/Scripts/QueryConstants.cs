@@ -37,13 +37,17 @@ public static class QueryConstants
 
     public static string FormatSupabaseValue(object value)
     {
-        if (value is string)
-            return $"\"{value}\""; // Strings need quotes
+        if (value is string str)
+            return str.ToLower(); // No quotes needed for Supabase API
 
         if (value is int || value is float || value is double)
-            return value.ToString(); // Numbers stay as they are
+            return value.ToString(); // Numbers stay unchanged
 
-        return value.ToString(); // Default fallback
+        if (value is DateTime dateTime)
+            return dateTime.ToString("yyyy-MM-dd HH:mm:ss"); // Example formatting for dates
+
+        return value?.ToString() ?? "null"; // Handle null values
+
     }
 }
 
