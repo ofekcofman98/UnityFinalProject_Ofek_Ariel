@@ -1189,10 +1189,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   QueryPanel: {fileID: 1646463733}
-  columnParent: {fileID: 1441604730}
+  selectionParent: {fileID: 1441604730}
   queryPreviewText: {fileID: 725026279}
   executeButton: {fileID: 1454468961}
   selectionButtonPrefab: {fileID: 3405379198985087777, guid: 42e3aa821f99e8f46816619ed5febedc, type: 3}
+  inputFieldPrefab: {fileID: 1191306454125046729, guid: 046839cbe1c7d974c8175e3981858a42, type: 3}
+  confirmButtonPrefab: {fileID: 813939451708066866, guid: e25b02819326667428bb52351910eee5, type: 3}
+  whereButton: {fileID: 1395650268}
 --- !u!4 &657196109
 Transform:
   m_ObjectHideFlags: 0
@@ -1629,7 +1632,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: Query text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1656,8 +1659,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 18.08
+  m_fontSizeBase: 18.08
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1692,7 +1695,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -100.483734, w: -246.12839}
+  m_margin: {x: 0, y: 0, z: -148.1246, w: -118.82628}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -2246,8 +2249,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -30.912, y: 6.0181}
-  m_SizeDelta: {x: 163.24, y: -120.82}
+  m_AnchoredPosition: {x: -30.912, y: 8.6176}
+  m_SizeDelta: {x: 176.5169, y: -115.62}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1102657606
 MonoBehaviour:

@@ -18,12 +18,9 @@ public class Query
     public List<Column> Columns { get; set; } 
     public List<Condition> Conditions { get; private set; }
     public Condition newCondition {get; set;}
-
     public List<Dictionary<string, string>> Results { get; set; } 
     public bool IsValid => table != null && Columns.Count > 0;
-
     public event Action OnQueryUpdated;  
-
 
     public Query()
     {
@@ -84,18 +81,7 @@ public class Query
         }
     }
 
-    // public void AddCondition(Column i_Column, eOperator i_Operator, object i_Value)
-    // {
-    //     Condition newCondition = new Condition();
-    //     newCondition.Column = i_Column;
-    //     newCondition.Operator = i_Operator;
-    //     newCondition.Value = i_Value;
-    //     Conditions.Add(newCondition);
-        
-    //     UpdateWherePart();
-    // }
-
-    public void CreateTempCondition(Column i_Column)
+    public void CreateNewCondition(Column i_Column)
     {
         newCondition = new Condition();
         newCondition.OnConditionUpdated += UpdateWherePart; 
@@ -103,46 +89,23 @@ public class Query
         newCondition.Column = i_Column;
     }
 
-    public void CreateNewCondition(Condition i_NewCondition)
+    public void AddCondition()
     {
-        Conditions.Add(i_NewCondition);
+        if (newCondition == null || newCondition.Value == null)
+        {
+            Debug.LogWarning("Cannot add condition: Condition or Value is null.");
+            return;
+        }
+
+        Conditions.Add(newCondition);
+        newCondition = null;
     }
+
+
 
 
     private void UpdateWherePart()
     {
-
-    // Debug.Log($"check condition: {newCondition.ColumnPart} {newCondition.OperatorPart}");
-
-    // // UI preview list
-    // List<string> readableConditions = Conditions.Select(cond => cond.ConditionString).ToList();
-
-    // // Supabase execution list
-    // List<string> supabaseFilters = Conditions.Select(cond => cond.ConditionStringSupaBase).ToList();
-
-    // // 🔹 Always show `newCondition` in the UI preview, even if incomplete
-    // if (newCondition != null && !string.IsNullOrEmpty(newCondition.ColumnPart))
-    // {
-    //     readableConditions.Add(newCondition.ConditionString);
-    // }
-
-    // // 🔹 Ensure `newCondition` is added to Supabase filters **only when fully set** (column, operator, and value must be valid)
-    // if (newCondition != null && !string.IsNullOrEmpty(newCondition.ConditionStringSupaBase) && newCondition.Value != null)
-    // {
-    //     supabaseFilters.Add(newCondition.ConditionStringSupaBase);
-    // }
-
-    // // Ensure UI preview always starts with `WHERE`
-    // WherePart = readableConditions.Count > 0 ? QueryConstants.Where + string.Join(QueryConstants.And, readableConditions) : QueryConstants.Where;
-
-    // // Supabase execution query (only applies when conditions exist)
-    // WherePartSupaBase = supabaseFilters.Count > 0 ? string.Join(QueryConstants.And, supabaseFilters) : QueryConstants.Empty;
-
-    // Debug.Log($"wherePart (UI Preview): {WherePart}");
-    // Debug.Log($"wherePartSupaBase (Supabase Format): {WherePartSupaBase}");
-
-    // updateQueryString();
-
         Debug.Log($"check condition: {newCondition.ColumnPart} {newCondition.OperatorPart}");
         
         Debug.Log($"check condition: {newCondition.ColumnPart} {newCondition.OperatorPart}");
@@ -178,7 +141,6 @@ public class Query
 
     public void ClearColumns()
     {
-        Debug.Log("hi hi");
         SelectPart = QueryConstants.Empty;
         Columns.Clear();
         updateQueryString();
@@ -192,6 +154,7 @@ public class Query
 
     private void updateQueryString()
     {
+        Debug.Log($"QUERY STRING IS: {QueryString}");
         QueryString = SelectPart + FromPart + WherePart;
     }
 

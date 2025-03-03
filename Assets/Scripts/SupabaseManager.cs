@@ -65,15 +65,17 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
     private IEnumerator FetchTableColumns(Table i_Table)
     {
-        Debug.Log($"Starting fetching colums for {i_Table.Name}");
+        Debug.Log($"Starting fetching columns for {i_Table.Name}");
 
-        string url = $"{supabaseUrl}/rest/v1/{i_Table.Name}?select=*";
+        string url = $"{supabaseUrl}/rest/v1/rpc/get_columns";
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes($"{{\"table_name\":\"{i_Table.Name}\"}}"));
+
         request.SetRequestHeader("apikey", apiKey);
         request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
         request.SetRequestHeader("Content-Type", "application/json");
-
 
         yield return request.SendWebRequest();
 
@@ -83,16 +85,20 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
             if (jsonResponse.Count > 0)
             {
-                JObject firstRow = (JObject)jsonResponse[0];                 
                 List<Column> columns = new List<Column>();
 
-                foreach (JProperty column in firstRow.Properties()) 
+                foreach (JObject columnData in jsonResponse)
                 {
-                    columns.Add(new Column(column.Name));
+                    string columnName = columnData["column_name"].ToString();
+                    string columnType = columnData["data_type"].ToString();
+
+                    eDataType mappedType = MapSupabaseType(columnType);
+
+                    columns.Add(new Column(columnName, mappedType));
                 }
 
-                i_Table.SetColumns1(columns);
-                Debug.Log($"Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
+                i_Table.SetColumns(columns);
+                Debug.Log($"✅ Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
             }
             else
             {
@@ -105,5 +111,78 @@ public class SupabaseManager : Singleton<SupabaseManager>
             yield break;
         }
     }
+
+
+    // private IEnumerator FetchTableColumns(Table i_Table)
+    // {
+    //     Debug.Log($"Starting fetching colums for {i_Table.Name}");
+
+    //     string url = $"{supabaseUrl}/rest/v1/{i_Table.Name}?select=*";
+    //     // string url1 = $"{supabaseUrl}/rest/v1/information_schema.columns?table_name=eq.{i_Table.Name}&select=column_name,data_type";
+
+
+    //     UnityWebRequest request = UnityWebRequest.Get(url);
+    //     request.SetRequestHeader("apikey", apiKey);
+    //     request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+    //     request.SetRequestHeader("Content-Type", "application/json");
+
+
+    //     yield return request.SendWebRequest();
+
+    //     if (request.result == UnityWebRequest.Result.Success)
+    //     {            
+    //         JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
+
+    //         if (jsonResponse.Count > 0)
+    //         {
+    //             JObject firstRow = (JObject)jsonResponse[0];                 
+    //             List<Column> columns = new List<Column>();
+
+    //             foreach (JProperty column in firstRow.Properties()) 
+    //             {
+
+    //                 columns.Add(new Column(column.Name));
+    //             }
+
+    //             i_Table.SetColumns(columns);
+    //             Debug.Log($"Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
+    //         }
+    //         else
+    //         {
+    //             Debug.LogWarning($"No data found for table: {i_Table.Name}");
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogError($"Failed to fetch columns for {i_Table.Name}: {request.error}");
+    //         yield break;
+    //     }
+    // }
+
+    private eDataType MapSupabaseType(string supabaseType)
+    {
+        switch (supabaseType.ToLower())
+        {
+            case "int4":
+            case "integer":
+            case "bigint":
+                return eDataType.Integer;
+
+            case "text":
+            case "varchar":
+            case "char":
+            case "uuid":
+                return eDataType.String;
+
+            case "date":
+            case "timestamp":
+                return eDataType.DateTime;
+
+            default:
+                Debug.LogWarning($"Unmapped Supabase type: {supabaseType}");
+                return eDataType.String;
+        }
+    }
+
 }
 

@@ -7,18 +7,18 @@ public enum eDataType
 {
     Integer,
     String,
-    Char,
+    DateTime,
 }
 
 [System.Serializable]
 public class Column
 {
     public string Name { get; private set; }
-    // public IDataTypeStrategy<T> DataType { get; set; }
     public eDataType DataType { get; set; }
 
-    public Column(string i_Name)
+    public Column(string i_Name, eDataType i_DataType)
     {
         Name = i_Name;
+        DataType = i_DataType;
     }
 }

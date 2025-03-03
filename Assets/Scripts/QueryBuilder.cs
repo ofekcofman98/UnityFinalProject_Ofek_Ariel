@@ -20,10 +20,14 @@ public enum eQueryState
 public class QueryBuilder : MonoBehaviour
 {
     [SerializeField] public GameObject QueryPanel;
-    public Transform columnParent;
-    public TMP_Text queryPreviewText;
+    public Transform selectionParent;
+    public TextMeshProUGUI queryPreviewText;
     public Button executeButton;
     public GameObject selectionButtonPrefab; 
+    
+    [SerializeField] private GameObject inputFieldPrefab;
+    [SerializeField] private GameObject confirmButtonPrefab;
+    [SerializeField] private GameObject whereButton;
     
     Query query;
     private eQueryState currentState = eQueryState.None; 
@@ -105,8 +109,6 @@ public class QueryBuilder : MonoBehaviour
         if (!isWhereClicked)
         {
             query.ClearConditions();
-            // currentState = eQueryState.SelectingColumns;
-
         }
         else
         {
@@ -119,7 +121,6 @@ public class QueryBuilder : MonoBehaviour
 
         UpdateSelectionVisibility();
     }
-
 
 
     private void OnTableSelected(Table i_SelectedTable)
@@ -144,31 +145,21 @@ public class QueryBuilder : MonoBehaviour
 
     private void OnConditionColumnSelected(Column i_Column)
     {
-        Debug.Log($"📌 Condition column selected: {i_Column.Name}");
-
-        query.CreateTempCondition(i_Column);
-
+        query.CreateNewCondition(i_Column);
         PopulateOperatorSelection();
     }
 
-    private void OnConditionOperatorSelected(IOperatorStrategy i_Operator)//eOperator i_Operator)
+    private void OnConditionOperatorSelected(IOperatorStrategy i_Operator)
     {
-        if (query.newCondition == null) return;
-        // Debug.Log($"📌 Operator selected: {QueryConstants.GetOperatorString(i_Operator)}");
-        Debug.Log($"📌 Operator selected: {i_Operator.GetSQLRepresentation()}");
-        
+        if (query.newCondition == null) return;        
         query.newCondition.Operator = i_Operator;
-
         PopulateValueSelection();
     }
 
     private void OnConditionValueSelected(object i_Value)
     {
-        Debug.Log($"📌 value selected: {i_Value}");
-
         query.newCondition.Value = i_Value;
-
-        // query.CreateNewCondition(newCondition);   
+        query.AddCondition();
     }
 
 
@@ -210,11 +201,13 @@ public class QueryBuilder : MonoBehaviour
         if (query.IsValid)
         {
             executeButton.interactable = true;
+            whereButton.SetActive(true);
             GameManager.Instance.SaveQuery(query);
         }
         else
         {
             executeButton.interactable = false;
+            whereButton.SetActive(false);
         }
     }
 
@@ -264,25 +257,25 @@ public class QueryBuilder : MonoBehaviour
                 break;
 
             case eDataType.String:
-                ShowTextInputField();
+                ShowInputField();
                 break;
 
-            // case eDataType.Boolean:
-            //     ShowBooleanSelection();
-            //     break;
-
-            // case eDataType.Date:
-            //     ShowDateSelection();
-            //     break;
-
+            case eDataType.DateTime:
+                pickDateTime();
+                break;
+                
             default:
-                Debug.LogWarning($"⚠️ Unsupported data type: {query.newCondition.Column.DataType}");
+                Debug.LogWarning($"Unsupported data type: {query.newCondition.Column.DataType}");
                 break;
         }
     }
-    private void populateSelection<T>(IEnumerable<T> i_Items, Action<T> i_OnItemSelected, Func<T,string> i_GetLabel)
+
+    private void populateSelection<T>(IEnumerable<T> i_Items, Action<T> i_OnItemSelected, Func<T,string> i_GetLabel, bool i_ClearSelectionPanel = true)
     {
-        ClearSelectionPanel();
+        if (i_ClearSelectionPanel)
+        {
+            ClearSelectionPanel();
+        }
 
         if (!i_Items.Any())
         {
@@ -292,7 +285,7 @@ public class QueryBuilder : MonoBehaviour
 
         foreach (T item in i_Items)
         {
-            GameObject button = Instantiate(selectionButtonPrefab, columnParent);
+            GameObject button = Instantiate(selectionButtonPrefab, selectionParent);
             button.transform.localScale = Vector3.one;
             button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
 
@@ -304,15 +297,92 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
-    private void ShowTextInputField()
+    private void ShowInputField()
+    {
+        GameObject inputFieldObject = Instantiate(inputFieldPrefab, selectionParent);
+        inputFieldObject.transform.localScale = Vector3.one;
+        TMP_InputField inputField = inputFieldObject.GetComponent<TMP_InputField>();
+
+        if (inputField == null)
+        {
+            Debug.LogError("InputFieldPrefab is missing a TMP_InputField component!");
+            return;
+        }
+
+        inputField.text = "";
+        inputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter value...";
+        inputField.Select();
+        inputField.ActivateInputField();
+
+        GameObject confirmButtonObject = Instantiate(confirmButtonPrefab, selectionParent);
+        confirmButtonObject.transform.localScale = Vector3.one;
+
+        Button confirmButton = confirmButtonObject.GetComponent<Button>();
+        if (confirmButton == null)
+        {
+            Debug.LogError("ConfirmButtonPrefab is missing a Button component!");
+            return;
+        }
+
+        confirmButtonObject.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm";
+
+        confirmButton.onClick.RemoveAllListeners();
+        confirmButton.onClick.AddListener(() => OnConditionValueEntered(inputField.text));
+
+    }
+
+    private void OnConditionValueEntered(string i_InputValue)
+    {
+        if (string.IsNullOrWhiteSpace(i_InputValue))
+        {
+            Debug.LogWarning("No value entered!");
+            return;
+        }
+
+        if (!checkValidInput(i_InputValue))
+        {
+            return;
+        }
+        
+        query.newCondition.Value = FormatString(i_InputValue);
+
+        ClearSelectionPanel();
+        UpdateQueryPreview();
+    }
+
+    private bool checkValidInput(string i_InputValue)
+    {
+        bool res = true;
+        if (query.newCondition.Column.DataType == eDataType.Integer)
+        {
+            Debug.Log("!!!! here !!!!");
+            if (!int.TryParse(i_InputValue, out int o_Number))
+            {
+                Debug.LogWarning($"Invalid number: {i_InputValue}");
+                res = false;
+            }
+        }
+
+        return res;
+    }
+
+    private string FormatString(string i_InputValue)
+    {
+        return i_InputValue.Trim('"');
+    }
+
+    private void pickDateTime()
     {
         throw new NotImplementedException();
     }
 
+
     private void ShowNumberInputOptions()
     {
+        ShowInputField();
+
         List<int> integerValues = new List<int> { 10, 20, 30, 40, 50, 60, 100};
-        populateSelection(integerValues, val => OnConditionValueSelected(val), val => val.ToString());
+        populateSelection(integerValues, val => OnConditionValueSelected(val), val => val.ToString(), i_ClearSelectionPanel: false);
     }
 
     private void ExecuteQuery()
@@ -324,7 +394,7 @@ public class QueryBuilder : MonoBehaviour
 
     private void ClearSelectionPanel()
     {
-        foreach (Transform child in columnParent)
+        foreach (Transform child in selectionParent)
         {
             if (child != null) 
             {
