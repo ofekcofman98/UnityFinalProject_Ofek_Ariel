@@ -5,31 +5,40 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Text;
+using Unity.VisualScripting;
+
+public enum eQueryState
+{
+    None, 
+    SelectingTable,
+    SelectingColumns,
+    SelectingConditions,
+}
 
 public class Query
 {
     private string m_QueryString;
-    public string SelectPart {get; set;}
-    public string FromPart {get; set;}
-    public string WherePart {get; set;}
-    public string WherePartSupaBase {get; set;}
 
-    public Table table { get; set; }
-    public List<Column> Columns { get; set; } 
-    public List<Condition> Conditions { get; private set; }
-    public Condition newCondition {get; set;}
+    public SelectClause selectClause; 
+    public FromClause fromClause;
+    public WhereClause whereClause;
+    public List<IQueryClause> clauses;
+    public List<IQueryClause> availableClauses;
+    public event Action OnAvailableClausesChanged;
+    public eQueryState currentState { get; set; } = eQueryState.None;
+
     public List<Dictionary<string, string>> Results { get; set; } 
-    public bool IsValid => table != null && Columns.Count > 0;
+    public bool IsValid => fromClause.table != null && selectClause.Columns.Count > 0;
     public event Action OnQueryUpdated;  
 
     public Query()
     {
-        SelectPart = QueryConstants.Empty;
-        FromPart   = QueryConstants.Empty; 
-        WherePart  = QueryConstants.Empty; 
+        selectClause = new SelectClause();
+        fromClause   = new FromClause();
+        whereClause  = new WhereClause();
+        clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
+        availableClauses = new List<IQueryClause> { selectClause, fromClause };
 
-        Columns = new List<Column>();
-        Conditions = new List<Condition>();
         Results = new List<Dictionary<string, string>>();
     }    
 
@@ -44,141 +53,147 @@ public class Query
         }
     }
 
-    public void SetTable(Table i_Table)
+    public void UpdateQueryState()
     {
-        if (table == i_Table)
+        if (!fromClause.isClicked)
         {
-            table = null;
-            FromPart = QueryConstants.From;
-            Columns.Clear();
-            SelectPart = QueryConstants.Select;
+            currentState = eQueryState.None;
         }
-        else
-        {
-            table = i_Table;
-            FromPart = QueryConstants.From + table.Name + " ";
+        else  // FROM
+        {            
+            if (!selectClause.isClicked)
+            {
+                currentState = eQueryState.SelectingTable;
+            }
+            else  // SELECT 
+            {
+                if (fromClause.table != null)  // table is selected
+                {
+                    currentState = eQueryState.SelectingColumns;
+                }
+                else
+                {
+                    currentState = eQueryState.SelectingTable;
+                }
+            }
         }
 
+        if (whereClause.isClicked)
+        {
+            currentState = eQueryState.SelectingConditions;
+        }
+
+        Debug.Log($"current state is {currentState}");
+    }
+
+    public void CheckAvailableClause()
+    {
+        availableClauses.Clear();
+
+        foreach (IQueryClause clause in clauses)
+        {
+            if (clause.isAvailable)
+            {
+                availableClauses.Add(clause);
+            }
+        }
+
+        OnAvailableClausesChanged?.Invoke();
+    }
+
+    public void ToggleClause(IQueryClause clause)
+    {
+        if (clause != null)
+        {
+            clause.Toggle();
+            updateQueryString();
+        }
+    }
+
+    public void SetTable(Table i_Table)
+    {  
+        fromClause.SetTable(i_Table);
+        NotifyClauses();
         updateQueryString();
     }
 
     public void AddColumn(Column i_ColumnToAdd)
     {
-        if (!Columns.Contains(i_ColumnToAdd))
-        {
-            Columns.Add(i_ColumnToAdd);
-            SelectPart = QueryConstants.Select + string.Join(QueryConstants.Comma, Columns.Select(col => col.Name));
-            updateQueryString();
-        }
+        selectClause.AddColumn(i_ColumnToAdd);
+        NotifyClauses();
+        updateQueryString();
     }
 
     public void RemoveColumn(Column i_ColumnToRemove)
     {
-        if (Columns.Remove(i_ColumnToRemove))
-        {
-            SelectPart = QueryConstants.Select + string.Join(QueryConstants.Comma, Columns.Select(col => col.Name));
-            updateQueryString();
-        }
+        selectClause.RemoveColumn(i_ColumnToRemove);
+        NotifyClauses();
+        updateQueryString();
     }
 
     public void CreateNewCondition(Column i_Column)
     {
-        newCondition = new Condition();
-        newCondition.OnConditionUpdated += UpdateWherePart; 
+        whereClause.CreateNewCondition(i_Column);
+        NotifyClauses();
+        updateQueryString();
+    }
 
-        newCondition.Column = i_Column;
+    public void SetConditionOperator(IOperatorStrategy i_Operator)
+    {
+        whereClause.newCondition.Operator = i_Operator;
+        NotifyClauses();
+        updateQueryString();
+    }
+
+    public void SetConditionValue(object i_Value)
+    {
+        whereClause.newCondition.Value = i_Value;
+        AddCondition();
+        updateQueryString();
     }
 
     public void AddCondition()
     {
-        if (newCondition == null || newCondition.Value == null)
-        {
-            Debug.LogWarning("Cannot add condition: Condition or Value is null.");
-            return;
-        }
-
-        Conditions.Add(newCondition);
-        newCondition = null;
-    }
-
-
-
-
-    private void UpdateWherePart()
-    {
-        Debug.Log($"check condition: {newCondition.ColumnPart} {newCondition.OperatorPart}");
-        
-        Debug.Log($"check condition: {newCondition.ColumnPart} {newCondition.OperatorPart}");
-
-        string temp, tempSupaBase;
-        if (Conditions.Count == 0)
-        {
-            temp = newCondition.ConditionString;
-            tempSupaBase = newCondition.ConditionStringSupaBase;
-        }
-        else
-        {
-            temp = string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionString));
-            tempSupaBase = string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionStringSupaBase));
-        }
-
-        WherePart = QueryConstants.Where + temp;
-        WherePartSupaBase = tempSupaBase;
-        
-        Debug.Log($"whereParT: {WherePart}");
-        Debug.Log($"whereParTSupaBase: {WherePartSupaBase}");
-        updateQueryString();
-     }
-
-    public void ClearTable(bool i_IsSelectClicked = false)
-    {
-        table = null;
-        Columns.Clear();
-        FromPart = QueryConstants.Empty;
-        SelectPart = i_IsSelectClicked ? QueryConstants.Select : QueryConstants.Empty;
+        whereClause.AddCondition();
+        NotifyClauses();
         updateQueryString();
     }
+
 
     public void ClearColumns()
     {
-        SelectPart = QueryConstants.Empty;
-        Columns.Clear();
+        if (selectClause.Columns.Count > 0)
+        {
+            selectClause.ClearColumns();
+        }
+        // NotifyClauses();
         updateQueryString();
     }
 
-    public void ActivateSelect()
-    {
-        SelectPart = QueryConstants.Select;
-        updateQueryString();
-    }
 
     private void updateQueryString()
     {
         Debug.Log($"QUERY STRING IS: {QueryString}");
-        QueryString = SelectPart + FromPart + WherePart;
-    }
-
-    internal void ActivateFrom()
-    {
-        FromPart = QueryConstants.From;
-        updateQueryString();
-    }
-
-    internal void ClearConditions()
-    {
-        WherePart = QueryConstants.Empty;
-        Conditions.Clear();
-        updateQueryString();
-    }
-
-    internal void ActivateWhere()
-    {
-        WherePart = QueryConstants.Where;
-        updateQueryString();
+        QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
     }
 
     internal string GetSelectFields()
     {
-        return Columns.Count > 0 ? string.Join(",", Columns.Select(col => col.Name)) : "*";
+        return selectClause.ToSupabase();
     }
+
+    public Table GetTable()
+    {
+        return fromClause.GetTable();
+    }
+
+    private void NotifyClauses()
+    {
+        foreach (var clause in clauses)
+        {
+            Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
+            clause.OnQueryUpdated(this);
+        }
+    }
+
 }

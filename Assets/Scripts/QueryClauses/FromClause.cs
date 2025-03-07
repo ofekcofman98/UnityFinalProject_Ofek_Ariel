@@ -1,0 +1,88 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class FromClause : IQueryClause
+{
+    public Table table { get; set; }
+    public string FromPart { get; private set; } = QueryConstants.Empty;
+    public string DisplayName => QueryConstants.From;
+    public bool isClicked { get; private set; } = false;
+    public bool isAvailable { get; set; } = true;
+
+    public void Toggle()
+    {
+        isClicked = !isClicked;
+
+        if (!isClicked)
+        {
+            table = null;
+        }
+        UpdateString();
+
+        // OnFromChanged?.Invoke();
+    }
+
+    public void SetTable(Table i_Table)
+    {
+        if (table == i_Table)
+        {
+            table = null;
+        }
+        else
+        {
+            table = i_Table;
+        }
+        UpdateString();
+    }
+
+    public void ClearTable(bool i_IsSelectClicked = false)
+    {
+        table = null;
+        FromPart = QueryConstants.Empty;
+        UpdateString();
+    } 
+
+    public void UpdateString()
+    {
+        if (isClicked)
+        {
+            FromPart = QueryConstants.From;
+            if (table != null)
+            {
+                FromPart += " " + table.Name;
+            }
+            Debug.Log($"from part is: {FromPart}");
+        }
+        else
+        {
+            FromPart = QueryConstants.Empty;
+        }
+    }
+
+    public string ToSQL()
+    {
+        return FromPart;
+    }
+
+    public string ToSupabase()
+    {
+        return table.Name != null ? $"from={table.Name}" : QueryConstants.Empty;
+    }
+
+    public void OnQueryUpdated(Query query)
+    {        
+        if (table == null)
+        {
+            // FromPart = QueryConstants.Empty;
+            query.ClearColumns();
+        }
+    }
+
+    public Table GetTable()
+    {
+        return table;
+    }
+}

@@ -69,9 +69,11 @@
     <Compile Include="Assets\Scripts\Condition.cs" />
     <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
     <Compile Include="Assets\Scripts\Column.cs" />
+    <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\QueryReceiver.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
+    <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\QueryBuilder.cs" />
     <Compile Include="Assets\Scripts\DataTypeStrategy.cs" />
@@ -79,10 +81,13 @@
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
     <Compile Include="Assets\Scripts\SupabaseManager.cs" />
     <Compile Include="Assets\Scripts\MissionDataEditor.cs" />
+    <Compile Include="Assets\Scripts\QueryClauses\FromClause.cs" />
     <Compile Include="Assets\Scripts\DeviceManager.cs" />
     <Compile Include="Assets\Scripts\MissionData.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\QueryClauses\IQueryClause.cs" />
     <Compile Include="Assets\Scripts\QueryConstants.cs" />
+    <Compile Include="Assets\Scripts\QueryClauses\WhereClause.cs" />
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
   </ItemGroup>
   <ItemGroup>

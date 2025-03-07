@@ -23,6 +23,7 @@ public class Condition
 
     public string ValuePart => Value != null ? QueryConstants.FormatValue(Value) : QueryConstants.Empty;
     public string SupabaseValuePart => Value != null ? QueryConstants.FormatSupabaseValue(Value) : QueryConstants.Empty;
+    
     public string FormattedValueForOperator => 
         (m_Operator != null && SupabaseValuePart != null) ? 
         m_Operator.FormatValueForSupabase(m_Column, SupabaseValuePart) : 

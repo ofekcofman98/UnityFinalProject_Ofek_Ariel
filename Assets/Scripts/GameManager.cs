@@ -60,9 +60,9 @@ public class GameManager : Singleton<GameManager>
             return;
         }
 
-        if (i_Query.Columns.Count == 0 && CurrentQuery?.Columns.Count > 0)
+        if (i_Query.selectClause.Columns.Count == 0 && CurrentQuery?.selectClause.Columns.Count > 0)
         {
-            i_Query.Columns = new List<Column>(CurrentQuery.Columns);
+            i_Query.selectClause.Columns = new List<Column>(CurrentQuery.selectClause.Columns);
         }
 
         // if (i_Query.SelectedColumns.Count == 0 && CurrentQuery?.SelectedColumns.Count > 0)
@@ -122,16 +122,16 @@ public class GameManager : Singleton<GameManager>
         return;
     }
 
-    if (CurrentQuery.Columns.Count == 0)
+    if (CurrentQuery.selectClause.Columns.Count == 0)
     {
         Debug.LogError("🚨 CurrentQuery.Columns is EMPTY!");
         return;
     }
-    Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.Columns.Select(col => col.Name))}");
+    Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
     if (tableDisplayer != null)
     {
-        tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.Columns);
+        tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);
     }
     else
     {
