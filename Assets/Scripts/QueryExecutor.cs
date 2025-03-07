@@ -25,7 +25,7 @@ public class QueryExecutor : MonoBehaviour
     {
         Debug.Log("Starting SQL Query Execution...");
 
-        if (query.table == null || string.IsNullOrEmpty(query.table.Name))
+        if (query.fromClause.table == null || string.IsNullOrEmpty(query.fromClause.table.Name))
         {
             Debug.LogError("No table name found in the query. Query.table is NULL or has no name.");
             yield break;
@@ -33,7 +33,7 @@ public class QueryExecutor : MonoBehaviour
 
         //https://vwudsbcqlhwajpkmcpsz.supabase.co/rest/v1/Persons?select=age&age=eq.40
         
-        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.table.Name}?select={query.GetSelectFields()}&{query.WherePartSupaBase}";
+        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.fromClause.table.Name}?select={query.GetSelectFields()}&{query.whereClause.ToSupabase()}";
 
     // if (!string.IsNullOrEmpty(query.WherePartSupaBase))
     // {
