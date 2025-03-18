@@ -17,6 +17,7 @@ public class QueryBuilder : MonoBehaviour
     public TextMeshProUGUI queryPreviewText;
     public Button executeButton;
 
+
     
     [Header("Selection")]
     public GameObject selectionButtonPrefab; 
@@ -68,21 +69,13 @@ public class QueryBuilder : MonoBehaviour
 
     private void updateAvailableClauses()
     {
-        // foreach (var key in activeClauseButtons.Keys.ToList()) // foreach IQueryClause (SELECT, FROM, WHERE, ...)
-        // {
-        //     if (!query.availableClauses.Contains(key))  // is available
-        //     {
-        //         clauseButtonPool.Release(activeClauseButtons[key]); 
-        //         activeClauseButtons.Remove(key);
-        //     }
-        // }
-
-        populateButtons(
+        populateClauseButtons(
             i_Items: query.availableClauses,
             i_OnItemSelected: clause => 
             {
                 query.ToggleClause(clause);
                 query.UpdateQueryState();
+                query.NotifyClauses();
                 UpdateSelectionVisibility();
             },
             i_GetLabel: clause => clause.DisplayName,
@@ -91,22 +84,6 @@ public class QueryBuilder : MonoBehaviour
             i_ActiveButtons: activeClauseButtons
         );
     }
-    // private void populateClauses()
-    // {
-    //     populateSelection(
-    //         i_Items: query.availableClauses,
-    //         i_OnItemSelected: clause => 
-    //         {
-    //             query.ToggleClause(clause);
-    //             query.UpdateQueryState();
-    //             UpdateSelectionVisibility();
-    //         },
-    //         i_GetLabel: clause => clause.DisplayName,
-    //         i_ParentTransform: clausesParent,
-    //         i_ButtonPrefab: ClausesButtonPrefab
-    //     );
-    // }
-
 
     private void OnTableSelected(Table i_SelectedTable)
     {
@@ -120,6 +97,7 @@ public class QueryBuilder : MonoBehaviour
     {
         if (query.selectClause.Columns.Contains(i_Column))
         {
+            Debug.Log($"removing {i_Column.Name} from columns");
             query.RemoveColumn(i_Column);
         }
         else
@@ -176,7 +154,7 @@ public class QueryBuilder : MonoBehaviour
                 break;
 
             case eQueryState.None:
-
+                ClearSelectionPanel();
                 break;
         }
     }
@@ -202,7 +180,7 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateTableSelection()
     {
-        populateSelection(
+        populateSelectionButtons(
             i_Items: SupabaseManager.Instance.Tables,
             i_OnItemSelected: OnTableSelected,
             i_GetLabel: table => table.Name,
@@ -214,7 +192,7 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateColumnSelection(Table i_Table)
     {
-        populateSelection(
+        populateSelectionButtons(
             i_Items: i_Table.Columns,
             i_OnItemSelected: OnColumnSelected,
             i_GetLabel: column => column.Name,
@@ -226,20 +204,23 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateConditionSelection()
     {
-        populateSelection(
-            i_Items: query.fromClause.table.Columns,
-            i_OnItemSelected: OnConditionColumnSelected,
-            i_GetLabel: column => column.Name,
-            i_ParentTransform: selectionParent,
-            i_ButtonPool: selectionButtonPool
-            // i_ButtonPrefab: selectionButtonPrefab
-            );
+        if (query.fromClause.table != null)
+        {
+            populateSelectionButtons(
+                i_Items: query.fromClause.table.Columns,
+                i_OnItemSelected: OnConditionColumnSelected,
+                i_GetLabel: column => column.Name,
+                i_ParentTransform: selectionParent,
+                i_ButtonPool: selectionButtonPool
+                // i_ButtonPrefab: selectionButtonPrefab
+                );
+        }
     }
 
     private void PopulateOperatorSelection()
     {
-        populateSelection(
-            i_Items: OperatorFactory.GetAllOperators(),
+        populateSelectionButtons(
+            i_Items: OperatorFactory.GetOperators(query.whereClause.newCondition.Column),
             i_OnItemSelected: OnConditionOperatorSelected,
             i_GetLabel: op => op.GetSQLRepresentation(),
             i_ParentTransform: selectionParent,
@@ -277,7 +258,7 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
-    private void populateButtons<T>(
+    private void populateClauseButtons<T>(
         IEnumerable<T> i_Items,
         Action<T> i_OnItemSelected,
         Func<T, string> i_GetLabel,
@@ -286,7 +267,7 @@ public class QueryBuilder : MonoBehaviour
         Dictionary<T, Button> i_ActiveButtons)
     {
 
-        foreach (var key in i_ActiveButtons.Keys) // Loop through all stored buttons
+        foreach (var key in i_ActiveButtons.Keys.ToList()) // Loop through all stored buttons
         {
             if (!i_Items.Contains(key)) // If the clause is no longer available
             {
@@ -305,8 +286,18 @@ public class QueryBuilder : MonoBehaviour
                 button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
 
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => i_OnItemSelected(item));
+                // button.onClick.RemoveAllListeners();
+                // button.onClick.AddListener(() => i_OnItemSelected(item));
+
+                DraggableItem draggableItem = button.GetComponent<DraggableItem>();
+                if (draggableItem == null)
+                {
+                    draggableItem = button.gameObject.AddComponent<DraggableItem>();
+                }
+
+                draggableItem.draggableType = eDraggableType.ClauseButton;
+                draggableItem.OnDropped += OnItemDropped;
+
 
                 i_ActiveButtons[item] = button;
             }
@@ -316,7 +307,7 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
-    private void populateSelection<T>(
+    private void populateSelectionButtons<T>(
         IEnumerable<T> i_Items, 
         Action<T> i_OnItemSelected,
         Func<T,string> i_GetLabel,
@@ -358,9 +349,19 @@ public class QueryBuilder : MonoBehaviour
             button.gameObject.SetActive(true);
             button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
 
+            // button.onClick.RemoveAllListeners();
+            // button.onClick.AddListener(() => i_OnItemSelected(item));
 
-            button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => i_OnItemSelected(item));
+            DraggableItem draggableItem = button.GetComponent<DraggableItem>();
+            if (draggableItem == null)
+            {
+                draggableItem = button.gameObject.AddComponent<DraggableItem>();
+            }
+
+            draggableItem.draggableType = eDraggableType.SelectionButton;
+            draggableItem.OnDropped += OnItemDropped; // 🔥 Attach event listener
+
+
             index++;
         }
     }
@@ -447,7 +448,7 @@ public class QueryBuilder : MonoBehaviour
         ShowInputField();
      
         List<int> integerValues = new List<int> { 10, 20, 30, 40, 50, 60, 100};
-        populateSelection(
+        populateSelectionButtons(
             i_Items: integerValues,
             i_OnItemSelected: val => OnConditionValueSelected(val),
             i_GetLabel: val => val.ToString(),
@@ -486,4 +487,25 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
+    internal void OnItemDropped(DraggableItem i_Draggable)
+    {
+        if (i_Draggable.draggableType == eDraggableType.ClauseButton)
+        {
+            AddClauseToQuery(i_Draggable);
+        }
+        else if (i_Draggable.draggableType == eDraggableType.SelectionButton)
+        {
+            AddSelectionToQuery(i_Draggable);
+        }
+    }
+
+    private void AddSelectionToQuery(DraggableItem i_Draggable)
+    {
+        
+    }
+
+    private void AddClauseToQuery(DraggableItem i_Draggable)
+    {
+        
+    }
 }

@@ -28,8 +28,12 @@ public class Query
     public eQueryState currentState { get; set; } = eQueryState.None;
 
     public List<Dictionary<string, string>> Results { get; set; } 
-    public bool IsValid => fromClause.table != null && selectClause.Columns.Count > 0;
+    public bool IsValid => fromClause.table != null && selectClause.NotEmpty();
     public event Action OnQueryUpdated;  
+
+
+private Dictionary<IQueryClause, Button> clauseButtons = new Dictionary<IQueryClause, Button>();
+private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, Button>();
 
     public Query()
     {
@@ -55,36 +59,93 @@ public class Query
 
     public void UpdateQueryState()
     {
+        currentState = eQueryState.None;
+
         if (!fromClause.isClicked)
         {
-            currentState = eQueryState.None;
+            return;
         }
-        else  // FROM
-        {            
-            if (!selectClause.isClicked)
-            {
-                currentState = eQueryState.SelectingTable;
-            }
-            else  // SELECT 
-            {
-                if (fromClause.table != null)  // table is selected
-                {
-                    currentState = eQueryState.SelectingColumns;
-                }
-                else
-                {
-                    currentState = eQueryState.SelectingTable;
-                }
-            }
+
+        if (fromClause.table == null)
+        {
+            currentState = eQueryState.SelectingTable;
+            return;
         }
+
+        if (!selectClause.isClicked)
+        {
+            currentState = eQueryState.SelectingTable;
+            return;
+        }
+
+        currentState = eQueryState.SelectingColumns;
 
         if (whereClause.isClicked)
         {
             currentState = eQueryState.SelectingConditions;
         }
-
-        Debug.Log($"current state is {currentState}");
     }
+
+
+    public void UpdateQueryState1()
+    {
+        if (!fromClause.isClicked)
+        {
+            currentState = eQueryState.None;
+            selectClause.Reset();
+            fromClause.Reset();
+            whereClause.Reset();
+            
+            CheckAvailableClause(); // Ensure UI updates
+            updateQueryString();
+
+            return;
+        }
+
+        if (fromClause.table == null)
+        {
+            currentState = eQueryState.SelectingTable;
+            selectClause.Reset();
+            whereClause.Reset();
+
+            CheckAvailableClause(); // Ensure UI updates
+            updateQueryString();
+
+            return;
+        }
+
+        if (!selectClause.isClicked)
+        {
+            currentState = eQueryState.SelectingTable;
+            whereClause.Reset();
+
+            CheckAvailableClause(); // Ensure UI updates
+            updateQueryString();
+
+            return;
+        }
+
+        currentState = eQueryState.SelectingColumns;
+
+        if (selectClause.NotEmpty())
+        {
+            whereClause.isAvailable = true;
+        }
+        else
+        {
+            whereClause.Reset();
+        }
+
+        if(whereClause.isClicked)
+        {
+            currentState = eQueryState.SelectingConditions;
+        }
+
+        Debug.Log($"[UpdateQueryState] current state: {currentState}");
+        CheckAvailableClause(); // Ensure UI updates
+        updateQueryString();
+    }
+
 
     public void CheckAvailableClause()
     {
@@ -128,6 +189,7 @@ public class Query
     {
         selectClause.RemoveColumn(i_ColumnToRemove);
         NotifyClauses();
+        UpdateQueryState();
         updateQueryString();
     }
 
@@ -135,6 +197,7 @@ public class Query
     {
         whereClause.CreateNewCondition(i_Column);
         NotifyClauses();
+        UpdateQueryState();
         updateQueryString();
     }
 
@@ -187,13 +250,14 @@ public class Query
         return fromClause.GetTable();
     }
 
-    private void NotifyClauses()
+    public void NotifyClauses()
     {
         foreach (var clause in clauses)
         {
             Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
             clause.OnQueryUpdated(this);
         }
+        
     }
 
 }

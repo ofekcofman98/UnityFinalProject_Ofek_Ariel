@@ -72,12 +72,14 @@
     <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\QueryReceiver.cs" />
+    <Compile Include="Assets\Scripts\DragDropSystem\DraggableItem.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\QueryBuilder.cs" />
     <Compile Include="Assets\Scripts\DataTypeStrategy.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\DragDropSystem\DropZone.cs" />
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
     <Compile Include="Assets\Scripts\SupabaseManager.cs" />
     <Compile Include="Assets\Scripts\MissionDataEditor.cs" />

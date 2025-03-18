@@ -11,5 +11,6 @@ public interface IQueryClause
     string ToSQL();        
     string ToSupabase(); 
     void UpdateString();
+    void Reset();
     void OnQueryUpdated(Query query);  
 }

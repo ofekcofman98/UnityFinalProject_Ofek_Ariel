@@ -10,25 +10,6 @@ public interface IOperatorStrategy
     string FormatValueForSupabase(Column i_Column, string i_Value);
 }
 
-public static class OperatorFactory
-{
-    public static List<IOperatorStrategy> GetAllOperators()
-    {
-        return new List<IOperatorStrategy>
-        {
-            new EqualOperator(),
-            new GreaterThanOperator(),
-            new LessThanOperator(),
-            new GreaterEqualThanOperator(),
-            new LessEqualThanOperator(),
-            new NotEqualOperator(),
-            new LikeOperator(),
-            new BetweenOperator()
-        };
-    }
-}
-
-
 public class EqualOperator : IOperatorStrategy
 {
     public string GetSQLRepresentation() => "=";
@@ -99,5 +80,59 @@ public class BetweenOperator : IOperatorStrategy
     public string FormatOperatorForSupaBase(Column i_Column) => "between";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
 }
+
+public static class OperatorFactory
+{
+    private static readonly List<IOperatorStrategy> AllOperators = new List<IOperatorStrategy>
+    {
+        new EqualOperator(),
+        new GreaterThanOperator(),
+        new LessThanOperator(),
+        new GreaterEqualThanOperator(),
+        new LessEqualThanOperator(),
+        new NotEqualOperator(),
+        new LikeOperator(),
+        new BetweenOperator()
+    };
+
+    private static readonly List<IOperatorStrategy> NumericOperators = new List<IOperatorStrategy>
+    {
+        new EqualOperator(),
+        new GreaterThanOperator(),
+        new LessThanOperator(),
+        new GreaterEqualThanOperator(),
+        new LessEqualThanOperator(),
+        new NotEqualOperator(),
+        new BetweenOperator()
+    };
+
+    private static readonly List<IOperatorStrategy> StringOperators = new List<IOperatorStrategy>
+    {
+        new EqualOperator(),
+        new NotEqualOperator(),
+        new LikeOperator()
+    };
+
+    public static List<IOperatorStrategy> GetOperators(Column i_Column)
+    {
+        List<IOperatorStrategy> operators = new List<IOperatorStrategy>();
+
+        if (i_Column.DataType == eDataType.String)
+        {
+            operators.AddRange(StringOperators);
+        }
+        else if (i_Column.DataType == eDataType.Integer)
+        {
+            operators.AddRange(NumericOperators);
+        }
+        else
+        {
+            operators.AddRange(AllOperators);
+        }
+
+        return operators;
+    }
+}
+
 
 

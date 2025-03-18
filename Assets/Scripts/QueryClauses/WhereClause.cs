@@ -25,7 +25,7 @@ public class WhereClause : IQueryClause
 
         if (!isClicked)
         {
-            ClearConditions();
+            clearConditions();
         }
 
         UpdateString();
@@ -62,13 +62,11 @@ public class WhereClause : IQueryClause
 
             if (newCondition != null && !string.IsNullOrWhiteSpace(newCondition.ConditionString))
             {
-                Debug.Log($"&&&& condition string: {newCondition.ConditionString}");
                 allConditions.Add(newCondition.ConditionString);
             }
 
             if (allConditions.Count > 0)
             {
-                Debug.Log("im here ofek");
                 WherePart = QueryConstants.Where + " " + string.Join(QueryConstants.Comma, allConditions);
             }
             else
@@ -96,26 +94,36 @@ public class WhereClause : IQueryClause
 
     public void OnQueryUpdated(Query query)
     {
-        if (query.GetTable() == null) 
-        {
-            ClearConditions();
-        }
-
         bool wasAvailable = isAvailable;
         isAvailable = query.IsValid;
         if (wasAvailable != isAvailable)
         {
             query.CheckAvailableClause();
         }
-        // Debug.Log($"[WHERE]: {isAvailable}");
-        // Debug.Log($"[table]: {query.fromClause.table.Name}");
-        // Debug.Log($"[columns count]: {query.selectClause.Columns.Count}");
+
+        if (isAvailable)
+        {
+            UpdateString();
+        }
+        else
+        {
+            Reset();
+        }
+
     }
 
-    private void ClearConditions()
+    private void clearConditions()
     {
         Conditions.Clear();
         newCondition = null;
+    }
+    
+    public void Reset()
+    {
+        isClicked = false;
+        isAvailable = false;
+        WherePart = QueryConstants.Empty;
+        clearConditions();
     }
 
 }

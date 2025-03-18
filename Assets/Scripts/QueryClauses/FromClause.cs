@@ -74,15 +74,21 @@ public class FromClause : IQueryClause
 
     public void OnQueryUpdated(Query query)
     {        
-        if (table == null)
-        {
-            // FromPart = QueryConstants.Empty;
-            query.ClearColumns();
-        }
+        // if (table == null)
+        // {
+        //     // FromPart = QueryConstants.Empty;
+        //     query.ClearColumns();
+        // }
     }
 
     public Table GetTable()
     {
         return table;
+    }
+
+    public void Reset()
+    {
+        table = null;
+        isClicked = false;
     }
 }

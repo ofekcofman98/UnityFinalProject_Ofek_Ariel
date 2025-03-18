@@ -79,11 +79,24 @@
             return Columns.Count > 0 ? string.Join(QueryConstants.Comma , Columns.Select(col => col.Name)) : "*";
         }
 
+        public bool NotEmpty()
+        {
+            return Columns.Count > 0;
+        }
+
         public void OnQueryUpdated(Query query)
         {
-            if (query.GetTable() == null) 
+            if (query.fromClause.GetTable() == null)
             {
-                ClearColumns();
+                Reset();
             }
+
         }
+
+    public void Reset()
+    {
+        // isClicked = false;
+        SelectPart = QueryConstants.Select;
+        ClearColumns();
     }
+}
