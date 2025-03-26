@@ -2,17 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectionPanelStrategy : MonoBehaviour
+public class SelectionPanelStrategy : MonoBehaviour, IDropZoneStrategy
+
 {
-    // Start is called before the first frame update
-    void Start()
+    public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
-        
+        draggable.SetParentAndPosition(transform);
     }
 
-    // Update is called once per frame
-    void Update()
+    public bool IsValidDrop(DraggableItem draggable)
     {
-        
+        return draggable.draggableType == eDraggableType.SelectionButton;
     }
+    public bool DoesTriggerDropAction(DraggableItem i_Draggable)
+    {
+        return false;
+    }
+
 }

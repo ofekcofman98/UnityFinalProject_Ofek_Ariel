@@ -225,6 +225,7 @@ GameObject:
   - component: {fileID: 68206421}
   - component: {fileID: 68206423}
   - component: {fileID: 68206422}
+  - component: {fileID: 68206424}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -300,13 +301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 0
-  isQueryPanel: 1
-  isSelectZone: 0
-  isFromZone: 0
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 68206424}
 --- !u!114 &68206423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +332,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &68206424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68206416}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c8ea26b652ce444283013ac0448cdc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &157614041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1168,6 +1175,7 @@ GameObject:
   - component: {fileID: 489924556}
   - component: {fileID: 489924555}
   - component: {fileID: 489924554}
+  - component: {fileID: 489924560}
   m_Layer: 5
   m_Name: FromSection
   m_TagString: Untagged
@@ -1240,13 +1248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 0
-  isQueryPanel: 0
-  isSelectZone: 0
-  isFromZone: 1
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 489924560}
 --- !u!114 &489924557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1311,6 +1313,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489924552}
   m_CullTransparentMesh: 1
+--- !u!114 &489924560
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489924552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435785aa4e7ed2d46bb17cf938935031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  section: {fileID: 489924553}
 --- !u!1 &495878124
 GameObject:
   m_ObjectHideFlags: 0
@@ -1563,6 +1578,7 @@ GameObject:
   - component: {fileID: 603520643}
   - component: {fileID: 603520642}
   - component: {fileID: 603520641}
+  - component: {fileID: 603520647}
   m_Layer: 5
   m_Name: WhereSection
   m_TagString: Untagged
@@ -1635,13 +1651,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 0
-  isQueryPanel: 0
-  isSelectZone: 0
-  isFromZone: 0
-  isWhereZone: 1
+  dropZoneStrategy: {fileID: 603520647}
 --- !u!114 &603520644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1706,6 +1716,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 603520639}
   m_CullTransparentMesh: 1
+--- !u!114 &603520647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603520639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435785aa4e7ed2d46bb17cf938935031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  section: {fileID: 603520640}
 --- !u!1 &610969001
 GameObject:
   m_ObjectHideFlags: 0
@@ -2718,6 +2741,7 @@ GameObject:
   - component: {fileID: 1071112814}
   - component: {fileID: 1071112813}
   - component: {fileID: 1071112815}
+  - component: {fileID: 1071112816}
   m_Layer: 5
   m_Name: 'ClausesContent '
   m_TagString: Untagged
@@ -2796,13 +2820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 1
-  isQueryPanel: 0
-  isSelectZone: 0
-  isFromZone: 0
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 1071112816}
 --- !u!114 &1071112813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2861,6 +2879,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &1071112816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1071112808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10b4854332e2b7740ae5a3eef37fd62b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1102657604
 GameObject:
   m_ObjectHideFlags: 0
@@ -3229,13 +3259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 0
-  isQueryPanel: 0
-  isSelectZone: 0
-  isFromZone: 0
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 0}
 --- !u!114 &1388581466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3365,6 +3389,7 @@ GameObject:
   - component: {fileID: 1441604736}
   - component: {fileID: 1441604735}
   - component: {fileID: 1441604734}
+  - component: {fileID: 1441604737}
   m_Layer: 5
   m_Name: 'SelectionContent '
   m_TagString: Untagged
@@ -3443,13 +3468,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 1
-  isClausePanel: 0
-  isQueryPanel: 0
-  isSelectZone: 0
-  isFromZone: 0
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 1441604737}
 --- !u!114 &1441604734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3508,6 +3527,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1441604729}
   m_CullTransparentMesh: 1
+--- !u!114 &1441604737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1441604729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 09b826d0123767a48988cf7248f78aa7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1454468957
 GameObject:
   m_ObjectHideFlags: 0
@@ -4120,6 +4151,7 @@ GameObject:
   - component: {fileID: 1730054478}
   - component: {fileID: 1730054477}
   - component: {fileID: 1730054476}
+  - component: {fileID: 1730054482}
   m_Layer: 5
   m_Name: SelectSection
   m_TagString: Untagged
@@ -4192,13 +4224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7eda3b6e115041e41a08e2d81903d94d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropZoneBehavior: {fileID: 0}
-  isSelectionPanel: 0
-  isClausePanel: 0
-  isQueryPanel: 0
-  isSelectZone: 1
-  isFromZone: 0
-  isWhereZone: 0
+  dropZoneStrategy: {fileID: 1730054482}
 --- !u!114 &1730054479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4263,6 +4289,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1730054474}
   m_CullTransparentMesh: 1
+--- !u!114 &1730054482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730054474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 435785aa4e7ed2d46bb17cf938935031, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  section: {fileID: 1730054475}
 --- !u!1 &1758171901
 GameObject:
   m_ObjectHideFlags: 0

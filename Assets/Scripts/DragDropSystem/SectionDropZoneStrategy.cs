@@ -2,22 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 [RequireComponent(typeof(DropZone))]
-public class ClauseDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
+public class SectionDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
 {
+    [SerializeField] private Transform section;
+
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
-        draggable.SetParentAndPosition(zone.transform);
+        draggable.SetParentAndPosition(draggable.AssignedSection);
     }
 
-    public bool IsValidDrop(DraggableItem i_Draggable)
+    public bool IsValidDrop(DraggableItem draggable)
     {
-        return i_Draggable.draggableType == eDraggableType.ClauseButton;
+        return true;//draggable.AssignedSection == section;
     }
+
     public bool DoesTriggerDropAction(DraggableItem i_Draggable)
     {
         return false;
     }
+
 
 }

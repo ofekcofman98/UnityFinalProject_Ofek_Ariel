@@ -16,14 +16,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 {
     public Image image;
     public eDraggableType draggableType;
-    private Transform originalParent;
+    public Transform OriginalParent;
     public event Action<DraggableItem> OnDropped;
     [HideInInspector] public Transform AssignedSection; 
-
+    public IDropZoneStrategy CurrentDropZone { get; private set; }
     private Vector3 originalPosition;
     private Transform canvasTransform;
     private Transform originalContainer; 
-    public bool isInQueryPanel { get; private set; } = false;
 
     private void Awake()
     {
@@ -36,7 +35,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         Debug.Log($"{gameObject.name} Begin drag");
 
-        originalParent = transform.parent;
+        OriginalParent = transform.parent;
         originalPosition = transform.position;
 
         MoveToTopLayer();
@@ -52,51 +51,34 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log($"{gameObject.name} End drag");
-
         DropZone dropZone = FindDropZone();
 
-        if (image != null) image.raycastTarget = true;
-
-        if (dropZone != null &&  dropZone.IsValidDrop(this))
+        if (image != null) 
         {
-            dropZone.OnDrop(eventData); 
+            image.raycastTarget = true;
+        }
 
-            if (isDroppedInQuery(dropZone))
+        if (dropZone != null)
+        {
+            IDropZoneStrategy strategy = dropZone.GetStrategy();
+
+            if (strategy != null && strategy.IsValidDrop(this))
             {
-                Debug.Log($"### {gameObject.name} should be placed in {AssignedSection.name}");
-                SetParentAndPosition(AssignedSection);
-                
+                dropZone.OnDrop(eventData); 
+                OnDropped?.Invoke(this); 
             }
             else
             {
-                SetParentAndPosition(dropZone.transform);
+                SetParentAndPosition(OriginalParent); 
             }
-
-            OnDropped?.Invoke(this); 
-
         }
         else
         {
-            SetParentAndPosition(originalParent);
+            SetParentAndPosition(OriginalParent); 
         }
 
         image.raycastTarget = true;
-    }
 
-    private bool isDroppedInQuery(DropZone i_DropZone)
-    {
-
-        return i_DropZone.isQueryPanel || transform.parent.GetComponent<DropZone>()?.isQueryPanel == true;
-        
-        // return (i_DropZone.isQueryPanel || i_DropZone.isSelectZone || i_DropZone.isWhereZone) 
-        //         && AssignedSection != null;
- 
- 
-        // bool wasInQueryPanel = isInQueryPanel;
-        // isInQueryPanel = i_DropZone.isQueryPanel;
-
-        // return wasInQueryPanel != isInQueryPanel;
     }
 
     private void MoveToTopLayer()
@@ -106,15 +88,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         image.raycastTarget = false;
     }
 
-    // 🔥 Extracted method for setting parent & resetting position
     public void SetParentAndPosition(Transform newParent)
     {
         transform.SetParent(newParent, false);
-        transform.localScale = Vector3.one;  // ✅ Ensure consistent size
-        // transform.localPosition = Vector3.zero;  // ✅ Reset position for layout
+        transform.localScale = Vector3.one;  
+        // transform.localPosition = Vector3.zero;  
     }
 
-    // 🔥 Extracted method for detecting DropZones via Raycast
     private DropZone FindDropZone()
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
