@@ -26,6 +26,7 @@ public class Query
     public List<IQueryClause> availableClauses;
     public event Action OnAvailableClausesChanged;
     public eQueryState currentState { get; set; } = eQueryState.None;
+    public List<List<object>> orderedElements {get; private set;}
 
     public List<Dictionary<string, string>> Results { get; set; } 
     public bool IsValid => fromClause.table != null && selectClause.NotEmpty();
@@ -250,9 +251,27 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         return fromClause.GetTable();
     }
 
+
+    public List<List<object>> GetOrderedElements()
+    {
+        List<List<object>> orderedElements = new List<List<object>>();
+
+        foreach (IQueryClause clause in clauses)
+        {
+            List<object> clauseElements = clause.GetOrderedElements();
+
+            if (clauseElements.Count > 0)
+            {
+                orderedElements.Add(clauseElements); 
+            }
+        }
+        
+        return orderedElements;
+    }
+
     public void NotifyClauses()
     {
-        foreach (var clause in clauses)
+        foreach (IQueryClause clause in clauses)
         {
             Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
             clause.OnQueryUpdated(this);

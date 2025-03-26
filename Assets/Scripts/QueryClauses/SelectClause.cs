@@ -93,6 +93,20 @@
 
         }
 
+        public List<object> GetOrderedElements()
+        {
+            List<object> elements = new List<object>();
+
+            if (isClicked)
+            {
+                elements.Add(this); // SELECT clause first
+                elements.AddRange(Columns); // Then all selected columns
+            }
+
+            return elements;
+        }
+
+
     public void Reset()
     {
         // isClicked = false;

@@ -6,12 +6,33 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+
+public enum eDropZoneType
+{
+    QueryPanel,
+    ClausePanel,
+    SelectionPanel
+}
+
 public class DropZone : MonoBehaviour, IDropHandler
 {
+    [SerializeField] private MonoBehaviour dropZoneBehavior;
+    private IDropZoneStrategy behavior => dropZoneBehavior as IDropZoneStrategy;
+
+
     private QueryBuilder queryBuilder;
-    public bool isQueryPanel;
+    // public bool isQueryPanel;
     public bool isSelectionPanel;
     public bool isClausePanel;
+    public bool isQueryPanel;
+
+public bool isSelectZone;
+public bool isFromZone;
+public bool isWhereZone;
+
+// public bool isQueryPanel => isSelectZone || isFromZone || isWhereZone;
+
+    
 
     private void Awake()
     {
@@ -25,52 +46,93 @@ public class DropZone : MonoBehaviour, IDropHandler
 
     public void OnDrop(PointerEventData eventData)
     {
-
-        Debug.Log($"🔥 OnDrop triggered on: {gameObject.name}");
         DraggableItem draggable = eventData.pointerDrag?.GetComponent<DraggableItem>();
-        if (draggable == null)
+
+        if(draggable == null || !IsValidDrop(draggable))
         {
-            Debug.Log($"❌ No DraggableItem found in");
             return;
         }
 
-        Debug.Log($"✅ Dropped {draggable.gameObject.name} into {gameObject.name}");
-
-        if (draggable != null)
+        if(isQueryPanel && draggable.AssignedSection != null)
         {
-            Debug.Log($"Dropped {draggable.gameObject.name} into {gameObject.name}");
-            
-            if (IsValidDrop(draggable))
-            {
-                draggable.SetParentAndPosition(transform);
-                queryBuilder.OnItemDropped(draggable);
-            }
-            else
-            {
-                Debug.LogWarning($"Invalid drop: {draggable.gameObject.name} cannot go here.");
-                // draggable.SetParentAndPosition(draggable.transform.parent);
-            }
+            draggable.SetParentAndPosition(draggable.AssignedSection);
         }
+        else
+        {
+            Debug.Log($"[IM HERE], isQueryPanel: {isQueryPanel}, draggable.AssignedSection: {draggable.AssignedSection.name} ");
+            draggable.SetParentAndPosition(transform);
+        }
+        
+        Debug.Log($"Dropped {draggable.gameObject.name} into {gameObject.name}");
+
     }
 
     public bool IsValidDrop(DraggableItem i_Draggable)
     {
-        bool res = false;
-
-        if (i_Draggable.draggableType == eDraggableType.ClauseButton)
+        if (isQueryPanel || isSelectZone || isFromZone || isWhereZone)
         {
-            res = isQueryPanel || isClausePanel;
-            Debug.Log($"[BUTTON IS {res} HERE] isQueryPanel || isClausePanel");
+            return true;
         }
 
-        if (i_Draggable.draggableType == eDraggableType.SelectionButton)
-        {
-            res = isQueryPanel || isSelectionPanel;
-            Debug.Log($"[BUTTON IS {res} HERE] isQueryPanel || isSelectionPanel");
-        }
-        Debug.Log($"WTF");
+            // 🔹 Always allow dropping back to the origin section (AssignedSection)
+    if (i_Draggable.AssignedSection == this.transform)
+    {
+        Debug.Log($"✅ Valid drop: returning to original section {this.name}");
+        return true;
+    }
 
-        return res; 
+    // 🔹 Clause buttons (SELECT, FROM, WHERE)
+    if (i_Draggable.draggableType == eDraggableType.ClauseButton)
+    {
+        bool valid = isQueryPanel || isClausePanel;
+        Debug.Log($"Clause drop to {this.name}: isQueryPanel={isQueryPanel}, isClausePanel={isClausePanel}, ✅ Valid: {valid}");
+        return valid;
+    }
+
+    // 🔹 Selection buttons (table, column, value...)
+    if (i_Draggable.draggableType == eDraggableType.SelectionButton)
+    {
+        bool valid = isQueryPanel || isSelectionPanel;
+        Debug.Log($"Selection drop to {this.name}: isQueryPanel={isQueryPanel}, isSelectionPanel={isSelectionPanel}, ✅ Valid: {valid}");
+        return valid;
+    }
+
+    Debug.LogWarning($"❌ Unknown type or invalid drop: {i_Draggable.gameObject.name}");
+    return false;
+
+
+
+
+
+
+
+        // bool res = false;
+
+        // if (i_Draggable.AssignedSection == this.transform)
+        // {
+        //     return true;
+        // }
+
+        // if (i_Draggable.draggableType == eDraggableType.ClauseButton)
+        // {
+        //     // if 
+        //     // res = isQueryPanel || isClausePanel;
+        //     Debug.Log($"[BUTTON IS {res} HERE] isQueryPanel || isClausePanel");
+        // }
+
+        // if (i_Draggable.draggableType == eDraggableType.SelectionButton)
+        // {
+        //     res = isQueryPanel || isSelectionPanel;
+        //     Debug.Log($"[BUTTON IS {res} HERE] isQueryPanel || isSelectionPanel");
+        // }
+        // Debug.Log($"WTF");
+
+        // return res; 
+    }
+
+    private bool isOriginZone()
+    {
+        return !isQueryPanel;
     }
 
 }

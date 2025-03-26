@@ -24,6 +24,12 @@ public class QueryBuilder : MonoBehaviour
     public Transform selectionParent;
     [SerializeField] private GameObject inputFieldPrefab;
     [SerializeField] private GameObject confirmButtonPrefab;
+
+
+    [SerializeField] private Transform selectSection;
+    [SerializeField] private Transform fromSection;
+    [SerializeField] private Transform whereSection;
+
     private ObjectPoolService<Button> selectionButtonPool;
 
     
@@ -71,7 +77,7 @@ public class QueryBuilder : MonoBehaviour
     {
         populateClauseButtons(
             i_Items: query.availableClauses,
-            i_OnItemSelected: clause => 
+            i_OnItemDropped: clause => 
             {
                 query.ToggleClause(clause);
                 query.UpdateQueryState();
@@ -80,6 +86,7 @@ public class QueryBuilder : MonoBehaviour
             },
             i_GetLabel: clause => clause.DisplayName,
             i_ParentTransform: clausesParent,
+            i_AssignedSection: clause => matchClauseToSection(clause),
             i_ButtonPool: clauseButtonPool,
             i_ActiveButtons: activeClauseButtons
         );
@@ -182,9 +189,10 @@ public class QueryBuilder : MonoBehaviour
     {
         populateSelectionButtons(
             i_Items: SupabaseManager.Instance.Tables,
-            i_OnItemSelected: OnTableSelected,
+            i_OnItemDropped: OnTableSelected,
             i_GetLabel: table => table.Name,
             i_ParentTransform: selectionParent,
+            i_AssignedSection: table => fromSection,
             i_ButtonPool: selectionButtonPool
             // i_ButtonPrefab: selectionButtonPrefab
             );
@@ -194,9 +202,10 @@ public class QueryBuilder : MonoBehaviour
     {
         populateSelectionButtons(
             i_Items: i_Table.Columns,
-            i_OnItemSelected: OnColumnSelected,
+            i_OnItemDropped: OnColumnSelected,
             i_GetLabel: column => column.Name,
             i_ParentTransform: selectionParent,
+            i_AssignedSection: col => selectSection,
             i_ButtonPool: selectionButtonPool
             // i_ButtonPrefab: selectionButtonPrefab
             );
@@ -208,9 +217,10 @@ public class QueryBuilder : MonoBehaviour
         {
             populateSelectionButtons(
                 i_Items: query.fromClause.table.Columns,
-                i_OnItemSelected: OnConditionColumnSelected,
+                i_OnItemDropped: OnConditionColumnSelected,
                 i_GetLabel: column => column.Name,
                 i_ParentTransform: selectionParent,
+                i_AssignedSection: col => whereSection,
                 i_ButtonPool: selectionButtonPool
                 // i_ButtonPrefab: selectionButtonPrefab
                 );
@@ -221,9 +231,10 @@ public class QueryBuilder : MonoBehaviour
     {
         populateSelectionButtons(
             i_Items: OperatorFactory.GetOperators(query.whereClause.newCondition.Column),
-            i_OnItemSelected: OnConditionOperatorSelected,
+            i_OnItemDropped: OnConditionOperatorSelected,
             i_GetLabel: op => op.GetSQLRepresentation(),
             i_ParentTransform: selectionParent,
+            i_AssignedSection: op => whereSection,
             i_ButtonPool: selectionButtonPool
             // i_ButtonPrefab: selectionButtonPrefab
         );
@@ -260,9 +271,11 @@ public class QueryBuilder : MonoBehaviour
 
     private void populateClauseButtons<T>(
         IEnumerable<T> i_Items,
-        Action<T> i_OnItemSelected,
+        Action<T> i_OnItemDropped,
+        // Action<T> i_OnItemSelected,
         Func<T, string> i_GetLabel,
         Transform i_ParentTransform,
+        Func<T, Transform> i_AssignedSection,
         ObjectPoolService<Button> i_ButtonPool,
         Dictionary<T, Button> i_ActiveButtons)
     {
@@ -295,8 +308,11 @@ public class QueryBuilder : MonoBehaviour
                     draggableItem = button.gameObject.AddComponent<DraggableItem>();
                 }
 
+                draggableItem.AssignedSection = i_AssignedSection(item);
+Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+                
                 draggableItem.draggableType = eDraggableType.ClauseButton;
-                draggableItem.OnDropped += OnItemDropped;
+                draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
 
 
                 i_ActiveButtons[item] = button;
@@ -309,9 +325,11 @@ public class QueryBuilder : MonoBehaviour
 
     private void populateSelectionButtons<T>(
         IEnumerable<T> i_Items, 
-        Action<T> i_OnItemSelected,
+        Action<T> i_OnItemDropped,
+        // Action<T> i_OnItemSelected,
         Func<T,string> i_GetLabel,
         Transform i_ParentTransform,
+        Func<T, Transform> i_AssignedSection,
         ObjectPoolService<Button> i_ButtonPool,
         bool i_ClearSelectionPanel = true)
     {
@@ -357,9 +375,11 @@ public class QueryBuilder : MonoBehaviour
             {
                 draggableItem = button.gameObject.AddComponent<DraggableItem>();
             }
-
+            draggableItem.AssignedSection = i_AssignedSection(item);
+Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+        
             draggableItem.draggableType = eDraggableType.SelectionButton;
-            draggableItem.OnDropped += OnItemDropped; // 🔥 Attach event listener
+            draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
 
 
             index++;
@@ -450,10 +470,11 @@ public class QueryBuilder : MonoBehaviour
         List<int> integerValues = new List<int> { 10, 20, 30, 40, 50, 60, 100};
         populateSelectionButtons(
             i_Items: integerValues,
-            i_OnItemSelected: val => OnConditionValueSelected(val),
+            i_OnItemDropped: val => OnConditionValueSelected(val),
             i_GetLabel: val => val.ToString(),
             i_ParentTransform: selectionParent,
             i_ButtonPool: selectionButtonPool,
+            i_AssignedSection: val => whereSection,
             i_ClearSelectionPanel: false);
 
         selectionParent.GetChild(selectionParent.childCount - 2).SetAsFirstSibling(); // Input field
@@ -487,16 +508,25 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
-    internal void OnItemDropped(DraggableItem i_Draggable)
+    private Transform matchClauseToSection(IQueryClause i_Clause)
     {
-        if (i_Draggable.draggableType == eDraggableType.ClauseButton)
+        Transform section = selectSection;
+
+        string name = i_Clause.DisplayName;
+        if (name == QueryConstants.Select)
         {
-            AddClauseToQuery(i_Draggable);
+            section = selectSection;
         }
-        else if (i_Draggable.draggableType == eDraggableType.SelectionButton)
+        else if (name == QueryConstants.From)
         {
-            AddSelectionToQuery(i_Draggable);
+            section = fromSection;
         }
+        else if (name == QueryConstants.Where)
+        {
+            section = whereSection;
+        }
+        
+        return section;
     }
 
     private void AddSelectionToQuery(DraggableItem i_Draggable)
@@ -507,5 +537,10 @@ public class QueryBuilder : MonoBehaviour
     private void AddClauseToQuery(DraggableItem i_Draggable)
     {
         
+    }
+
+    internal void OnItemDropped(DraggableItem draggableItem)
+    {
+        throw new NotImplementedException();
     }
 }

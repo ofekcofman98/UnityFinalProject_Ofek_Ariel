@@ -86,6 +86,24 @@ public class FromClause : IQueryClause
         return table;
     }
 
+
+    public List<object> GetOrderedElements()
+    {
+        List<object> elements = new List<object>();
+
+        if (isClicked)
+        {
+            elements.Add(this); // FROM clause first
+            if (table != null)
+            {
+                elements.Add(table); // Then the table name
+            }
+        }
+
+        return elements;
+    }
+ 
+
     public void Reset()
     {
         table = null;

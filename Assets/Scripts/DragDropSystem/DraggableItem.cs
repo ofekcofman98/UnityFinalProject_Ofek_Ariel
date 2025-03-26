@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Unity.VisualScripting;
 
 public enum eDraggableType
 {
@@ -22,18 +23,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Vector3 originalPosition;
     private Transform canvasTransform;
     private Transform originalContainer; 
+    public bool isInQueryPanel { get; private set; } = false;
 
     private void Awake()
     {
         canvasTransform = GetComponentInParent<Canvas>().transform;
         image = GetComponent<Image>();
         originalContainer = transform.parent; 
-    }
-
-    public void AssignSection(Transform section)
-    {
-        AssignedSection = section;
-        Debug.Log($"🔵 {gameObject.name} assigned to section: {section.name}");
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -59,27 +55,49 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         Debug.Log($"{gameObject.name} End drag");
 
         DropZone dropZone = FindDropZone();
+
         if (image != null) image.raycastTarget = true;
 
-        if (dropZone != null && dropZone.IsValidDrop(this))
+        if (dropZone != null &&  dropZone.IsValidDrop(this))
         {
-            Debug.Log("Dropped inside DropZone!");
             dropZone.OnDrop(eventData); 
-            SetParentAndPosition(dropZone.transform);
+
+            if (isDroppedInQuery(dropZone))
+            {
+                Debug.Log($"### {gameObject.name} should be placed in {AssignedSection.name}");
+                SetParentAndPosition(AssignedSection);
+                
+            }
+            else
+            {
+                SetParentAndPosition(dropZone.transform);
+            }
+
             OnDropped?.Invoke(this); 
+
         }
         else
         {
-            Debug.Log("Dropped outside, returning.");
             SetParentAndPosition(originalParent);
         }
 
         image.raycastTarget = true;
-
-    // 🔥 Ensure Raycast Target is RE-ENABLED after dragging stops
-
     }
 
+    private bool isDroppedInQuery(DropZone i_DropZone)
+    {
+
+        return i_DropZone.isQueryPanel || transform.parent.GetComponent<DropZone>()?.isQueryPanel == true;
+        
+        // return (i_DropZone.isQueryPanel || i_DropZone.isSelectZone || i_DropZone.isWhereZone) 
+        //         && AssignedSection != null;
+ 
+ 
+        // bool wasInQueryPanel = isInQueryPanel;
+        // isInQueryPanel = i_DropZone.isQueryPanel;
+
+        // return wasInQueryPanel != isInQueryPanel;
+    }
 
     private void MoveToTopLayer()
     {
@@ -93,7 +111,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         transform.SetParent(newParent, false);
         transform.localScale = Vector3.one;  // ✅ Ensure consistent size
-        transform.localPosition = Vector3.zero;  // ✅ Reset position for layout
+        // transform.localPosition = Vector3.zero;  // ✅ Reset position for layout
     }
 
     // 🔥 Extracted method for detecting DropZones via Raycast

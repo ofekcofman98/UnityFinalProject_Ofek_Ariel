@@ -10,7 +10,7 @@ public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
     public Query CurrentQuery {get; private set;}
-    [SerializeField] private QueryBuilder queryBuilder;
+    [SerializeField] internal QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
 

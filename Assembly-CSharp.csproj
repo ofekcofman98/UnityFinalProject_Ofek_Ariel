@@ -91,6 +91,9 @@
     <Compile Include="Assets\Scripts\QueryConstants.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\WhereClause.cs" />
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
+    <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

@@ -148,6 +148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 5817499260600485567}
+  draggableType: 0
+  AssignedSection: {fileID: 0}
 --- !u!225 &-849821276101538183
 CanvasGroup:
   m_ObjectHideFlags: 0

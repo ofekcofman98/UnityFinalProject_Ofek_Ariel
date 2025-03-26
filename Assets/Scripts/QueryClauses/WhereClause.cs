@@ -112,6 +112,20 @@ public class WhereClause : IQueryClause
 
     }
 
+    public List<object> GetOrderedElements()
+    {
+        List<object> elements = new List<object>();
+
+        if (isClicked)
+        {
+            elements.Add(this); // WHERE clause first
+            elements.AddRange(Conditions); // Then all conditions
+        }
+
+        return elements;
+    }
+
+
     private void clearConditions()
     {
         Conditions.Clear();
