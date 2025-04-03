@@ -7,5 +7,5 @@ public interface IDropZoneStrategy
 {
     bool IsValidDrop(DraggableItem draggable);
     void HandleDrop(DraggableItem draggable, DropZone zone);
-    // bool DoesTriggerDropAction(DraggableItem i_Draggable);
+    bool IsNewDrop(Transform i_OriginalParent);
 }

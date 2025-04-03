@@ -14,9 +14,9 @@ public class SelectionPanelStrategy : MonoBehaviour, IDropZoneStrategy
     {
         return draggable.draggableType == eDraggableType.SelectionButton;
     }
-    public bool DoesTriggerDropAction(DraggableItem i_Draggable)
-    {
-        return false;
-    }
 
+    public bool IsNewDrop(Transform i_OriginalParent)
+    {
+        return i_OriginalParent != transform;
+    }
 }

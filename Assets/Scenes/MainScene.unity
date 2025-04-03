@@ -226,6 +226,7 @@ GameObject:
   - component: {fileID: 68206423}
   - component: {fileID: 68206422}
   - component: {fileID: 68206424}
+  - component: {fileID: 68206425}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -344,6 +345,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c8ea26b652ce444283013ac0448cdc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &68206425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 68206416}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &157614041
 GameObject:
   m_ObjectHideFlags: 0
@@ -1171,11 +1186,11 @@ GameObject:
   - component: {fileID: 489924553}
   - component: {fileID: 489924559}
   - component: {fileID: 489924558}
-  - component: {fileID: 489924557}
   - component: {fileID: 489924556}
   - component: {fileID: 489924555}
   - component: {fileID: 489924554}
   - component: {fileID: 489924560}
+  - component: {fileID: 489924561}
   m_Layer: 5
   m_Name: FromSection
   m_TagString: Untagged
@@ -1199,8 +1214,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -99.22066}
-  m_SizeDelta: {x: 100, y: 59.480434}
+  m_AnchoredPosition: {x: 188.7815, y: -99.22066}
+  m_SizeDelta: {x: 377.563, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &489924554
 MonoBehaviour:
@@ -1215,11 +1230,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 100
+  m_MinWidth: 377.563
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 377.563
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!114 &489924555
@@ -1235,7 +1250,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &489924556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1249,32 +1264,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropZoneStrategy: {fileID: 489924560}
---- !u!114 &489924557
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 489924552}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &489924558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1288,7 +1277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1326,6 +1315,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   section: {fileID: 489924553}
+--- !u!114 &489924561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489924552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 108.402, y: 31}
+  m_Spacing: {x: 2, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &495878124
 GameObject:
   m_ObjectHideFlags: 0
@@ -1574,11 +1587,11 @@ GameObject:
   - component: {fileID: 603520640}
   - component: {fileID: 603520646}
   - component: {fileID: 603520645}
-  - component: {fileID: 603520644}
   - component: {fileID: 603520643}
   - component: {fileID: 603520642}
   - component: {fileID: 603520641}
   - component: {fileID: 603520647}
+  - component: {fileID: 603520648}
   m_Layer: 5
   m_Name: WhereSection
   m_TagString: Untagged
@@ -1602,8 +1615,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -168.7011}
-  m_SizeDelta: {x: 100, y: 59.480434}
+  m_AnchoredPosition: {x: 188.7815, y: -168.7011}
+  m_SizeDelta: {x: 377.563, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &603520641
 MonoBehaviour:
@@ -1618,11 +1631,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 100
+  m_MinWidth: 377.563
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 377.563
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!114 &603520642
@@ -1638,7 +1651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &603520643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1652,32 +1665,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropZoneStrategy: {fileID: 603520647}
---- !u!114 &603520644
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 603520639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &603520645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1691,7 +1678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1729,6 +1716,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   section: {fileID: 603520640}
+--- !u!114 &603520648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603520639}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 108.402, y: 31}
+  m_Spacing: {x: 2, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &610969001
 GameObject:
   m_ObjectHideFlags: 0
@@ -1893,15 +1904,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   QueryPanel: {fileID: 1646463733}
+  selectSection: {fileID: 1730054475}
+  fromSection: {fileID: 489924553}
+  whereSection: {fileID: 603520640}
   queryPreviewText: {fileID: 725026279}
   executeButton: {fileID: 1454468961}
   selectionButtonPrefab: {fileID: 3405379198985087777, guid: 42e3aa821f99e8f46816619ed5febedc, type: 3}
   selectionParent: {fileID: 1441604730}
   inputFieldPrefab: {fileID: 1191306454125046729, guid: 046839cbe1c7d974c8175e3981858a42, type: 3}
   confirmButtonPrefab: {fileID: 813939451708066866, guid: e25b02819326667428bb52351910eee5, type: 3}
-  selectSection: {fileID: 1730054475}
-  fromSection: {fileID: 489924553}
-  whereSection: {fileID: 603520640}
   ClausesButtonPrefab: {fileID: 1531545398654944520, guid: 87d5ec9f6d9115e49a7e1ddf1f835d96, type: 3}
   clausesParent: {fileID: 1071112809}
 --- !u!4 &657196109
@@ -3450,7 +3461,7 @@ MonoBehaviour:
   m_ChildAlignment: 1
   m_Spacing: 10
   m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 1
+  m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
@@ -4147,11 +4158,11 @@ GameObject:
   - component: {fileID: 1730054475}
   - component: {fileID: 1730054481}
   - component: {fileID: 1730054480}
-  - component: {fileID: 1730054479}
   - component: {fileID: 1730054478}
   - component: {fileID: 1730054477}
   - component: {fileID: 1730054476}
   - component: {fileID: 1730054482}
+  - component: {fileID: 1730054483}
   m_Layer: 5
   m_Name: SelectSection
   m_TagString: Untagged
@@ -4175,8 +4186,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 50, y: -29.740217}
-  m_SizeDelta: {x: 100, y: 59.480434}
+  m_AnchoredPosition: {x: 188.7815, y: -29.740217}
+  m_SizeDelta: {x: 377.563, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1730054476
 MonoBehaviour:
@@ -4191,11 +4202,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: 100
+  m_MinWidth: 377.563
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 377.563
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!114 &1730054477
@@ -4211,7 +4222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_VerticalFit: 2
 --- !u!114 &1730054478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4225,32 +4236,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   dropZoneStrategy: {fileID: 1730054482}
---- !u!114 &1730054479
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1730054474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &1730054480
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4264,7 +4249,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4302,6 +4287,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   section: {fileID: 1730054475}
+--- !u!114 &1730054483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1730054474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 108.402, y: 31}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &1758171901
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,22 +14,21 @@ public class QueryBuilder : MonoBehaviour
 
     [Header("QueryPreview")]
     [SerializeField] public GameObject QueryPanel;
+    [SerializeField] private Transform selectSection;
+    [SerializeField] private Transform fromSection;
+    [SerializeField] private Transform whereSection;
     public TextMeshProUGUI queryPreviewText;
     public Button executeButton;
+    private Transform[] sections;
+    // private Dictionary<object, Button> queryPanelButtons = new Dictionary<object, Button>();
 
 
-    
+        
     [Header("Selection")]
     public GameObject selectionButtonPrefab; 
     public Transform selectionParent;
     [SerializeField] private GameObject inputFieldPrefab;
     [SerializeField] private GameObject confirmButtonPrefab;
-
-
-    [SerializeField] private Transform selectSection;
-    [SerializeField] private Transform fromSection;
-    [SerializeField] private Transform whereSection;
-
     private ObjectPoolService<Button> selectionButtonPool;
 
     
@@ -40,6 +39,8 @@ public class QueryBuilder : MonoBehaviour
     private Dictionary<IQueryClause, Button> activeClauseButtons = new Dictionary<IQueryClause, Button>();
 
     private Query query;
+    private Dictionary<Button, Func<bool>> removalConditions = new Dictionary<Button, Func<bool>>();
+
 
     void Start()
     {
@@ -47,6 +48,9 @@ public class QueryBuilder : MonoBehaviour
         executeButton.onClick.AddListener(ExecuteQuery);
         clauseButtonPool = new ObjectPoolService<Button>(ClausesButtonPrefab.GetComponent<Button>(), clausesParent, 5, 20);
         selectionButtonPool = new ObjectPoolService<Button>(selectionButtonPrefab.GetComponent<Button>(), selectionParent);
+    
+        sections = new[] { selectSection, fromSection, whereSection};
+
     }
 
     public void BuildQuery()
@@ -62,11 +66,7 @@ public class QueryBuilder : MonoBehaviour
 
         updateAvailableClauses();
 
-        if(SupabaseManager.Instance.Tables.Count > 0)
-        {
-            // PopulateTableSelection();
-        }
-        else
+        if(SupabaseManager.Instance.Tables.Count <= 0)
         {
             SupabaseManager.Instance.OnTableNamesFetched -= PopulateTableSelection;
             SupabaseManager.Instance.OnTableNamesFetched += PopulateTableSelection;
@@ -82,6 +82,9 @@ public class QueryBuilder : MonoBehaviour
                 query.ToggleClause(clause);
                 query.UpdateQueryState();
                 query.NotifyClauses();
+                
+                syncQueryUI();
+                // UpdateQueryButtons();
                 UpdateSelectionVisibility();
             },
             i_GetLabel: clause => clause.DisplayName,
@@ -94,6 +97,10 @@ public class QueryBuilder : MonoBehaviour
 
     private void OnTableSelected(Table i_SelectedTable)
     {
+        if (query.fromClause.table != null) 
+        {
+            return;
+        }
         query.SetTable(i_SelectedTable);
         query.UpdateQueryState();
         UpdateSelectionVisibility();
@@ -143,6 +150,7 @@ public class QueryBuilder : MonoBehaviour
         ClearSelectionPanel();
 
         Debug.Log($"state is: {query.currentState}");
+
         switch (query.currentState)
         {
             case eQueryState.SelectingTable:
@@ -185,17 +193,63 @@ public class QueryBuilder : MonoBehaviour
         }
     }
 
+    private void UpdateQueryButtons()
+    {
+        switch (query.currentState)
+        {
+            case eQueryState.None:
+                ClearSection(fromSection);
+                ClearSection(selectSection);
+                ClearSection(whereSection);
+                break;
+
+            // case eQueryState.SelectingColumns:
+            //     if (query.fromClause.table != null)
+            //     {
+            //         PopulateColumnSelection(query.fromClause.table);
+            //     }
+            //     break;
+
+            // case eQueryState.SelectingConditions:
+            //     PopulateConditionSelection();
+            //     break;
+
+            // case eQueryState.None:
+            //     // ClearSelectionPanel();
+            //     break;
+        }
+
+
+
+    }
+
+    private void ClearSection(Transform i_Section)
+    {
+        foreach (Transform child in i_Section)
+        {
+            if (child == null) continue;
+            Button button = child.GetComponent<Button>();
+            if (button != null)
+            {
+                selectionButtonPool.Release(button);  // Or clauseButtonPool depending on source
+            }
+        }
+    }
+
     private void PopulateTableSelection()
     {
-        populateSelectionButtons(
-            i_Items: SupabaseManager.Instance.Tables,
-            i_OnItemDropped: OnTableSelected,
-            i_GetLabel: table => table.Name,
-            i_ParentTransform: selectionParent,
-            i_AssignedSection: table => fromSection,
-            i_ButtonPool: selectionButtonPool
-            // i_ButtonPrefab: selectionButtonPrefab
-            );
+        if (query.fromClause.table == null)
+        {
+            populateSelectionButtons(
+                i_Items: SupabaseManager.Instance.Tables,
+                i_OnItemDropped: OnTableSelected,
+                i_GetLabel: table => table.Name,
+                i_ParentTransform: selectionParent,
+                i_AssignedSection: table => fromSection,
+                i_ButtonPool: selectionButtonPool,
+                i_RemovalCondition: table => query.fromClause.table == null
+                );
+        }
     }
 
     private void PopulateColumnSelection(Table i_Table)
@@ -206,8 +260,9 @@ public class QueryBuilder : MonoBehaviour
             i_GetLabel: column => column.Name,
             i_ParentTransform: selectionParent,
             i_AssignedSection: col => selectSection,
-            i_ButtonPool: selectionButtonPool
-            // i_ButtonPrefab: selectionButtonPrefab
+            i_ButtonPool: selectionButtonPool,
+            i_RemovalCondition: column => query.fromClause.table == null ||
+                                          !query.selectClause.isClicked 
             );
     }
 
@@ -221,8 +276,9 @@ public class QueryBuilder : MonoBehaviour
                 i_GetLabel: column => column.Name,
                 i_ParentTransform: selectionParent,
                 i_AssignedSection: col => whereSection,
-                i_ButtonPool: selectionButtonPool
-                // i_ButtonPrefab: selectionButtonPrefab
+                i_ButtonPool: selectionButtonPool,
+                i_RemovalCondition: column => query.fromClause.table == null ||
+                                              !query.whereClause.isClicked
                 );
         }
     }
@@ -235,8 +291,9 @@ public class QueryBuilder : MonoBehaviour
             i_GetLabel: op => op.GetSQLRepresentation(),
             i_ParentTransform: selectionParent,
             i_AssignedSection: op => whereSection,
-            i_ButtonPool: selectionButtonPool
-            // i_ButtonPrefab: selectionButtonPrefab
+            i_ButtonPool: selectionButtonPool,
+            i_RemovalCondition: op => query.fromClause.table == null ||
+                                      !query.whereClause.isClicked
         );
     }
 
@@ -295,7 +352,9 @@ public class QueryBuilder : MonoBehaviour
             if (!i_ActiveButtons.ContainsKey(item)) 
             {
                 Button button = i_ButtonPool.Get();
-                button.transform.SetParent(i_ParentTransform, false);
+                // button.transform.SetParent(i_ParentTransform, false);
+                InsertButtonInSection(i_ParentTransform, button, eDraggableType.ClauseButton);
+
                 button.gameObject.SetActive(true);
                 button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
 
@@ -309,7 +368,7 @@ public class QueryBuilder : MonoBehaviour
                 }
 
                 draggableItem.AssignedSection = i_AssignedSection(item);
-Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+// Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
                 
                 draggableItem.draggableType = eDraggableType.ClauseButton;
                 draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
@@ -317,10 +376,11 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
 
                 i_ActiveButtons[item] = button;
             }
-            i_ActiveButtons[item].transform.SetSiblingIndex(index);
+            // i_ActiveButtons[item].transform.SetSiblingIndex(index);
             index++;
 
         }
+        
     }
 
     private void populateSelectionButtons<T>(
@@ -331,7 +391,8 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
         Transform i_ParentTransform,
         Func<T, Transform> i_AssignedSection,
         ObjectPoolService<Button> i_ButtonPool,
-        bool i_ClearSelectionPanel = true)
+        bool i_ClearSelectionPanel = true,
+        Func<T, bool> i_RemovalCondition = null)
     {
 
         if (i_Items == null || !i_Items.Any())
@@ -362,7 +423,9 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
                 continue;
             }
 
-            button.transform.SetParent(i_ParentTransform, false);
+            // button.transform.SetParent(i_ParentTransform, false);
+            InsertButtonInSection(i_ParentTransform, button, eDraggableType.SelectionButton);
+
             button.transform.SetSiblingIndex(index);  
             button.gameObject.SetActive(true);
             button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
@@ -376,14 +439,28 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
                 draggableItem = button.gameObject.AddComponent<DraggableItem>();
             }
             draggableItem.AssignedSection = i_AssignedSection(item);
-Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+            Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
         
             draggableItem.draggableType = eDraggableType.SelectionButton;
             draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
 
+            if (i_RemovalCondition != null)
+            {
+                removalConditions[button] = () => i_RemovalCondition(item);
+            }
 
             index++;
         }
+
+        // foreach (Transform sibling in i_ParentTransform)
+        // {
+        //     DraggableItem draggable = sibling.GetComponent<DraggableItem>();
+        //     if (draggable != null && draggable.draggableType == eDraggableType.ClauseButton)
+        //     {
+        //         sibling.SetSiblingIndex(0);
+        //         break;
+        //     }
+        // }
     }
 
     private void ShowInputField()
@@ -431,10 +508,22 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
         {
             return;
         }
-        query.SetConditionValue(FormatString(i_InputValue));
+        string formattedValue = FormatString(i_InputValue);
         
-        ClearSelectionPanel();
+        // ClearSelectionPanel();
         UpdateQueryPreview();
+
+        populateSelectionButtons(
+            i_Items: new List<string> { formattedValue },
+            i_OnItemDropped: val => OnConditionValueSelected(formattedValue),
+            i_GetLabel: val => formattedValue,
+            i_ParentTransform: selectionParent,
+            i_AssignedSection: val => whereSection,
+            i_ButtonPool: selectionButtonPool,
+            i_ClearSelectionPanel: false,
+            i_RemovalCondition: val => query.fromClause.table == null ||
+                                       !query.whereClause.isClicked        
+        );
     }
 
     private bool checkValidInput(string i_InputValue)
@@ -475,8 +564,10 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
             i_ParentTransform: selectionParent,
             i_ButtonPool: selectionButtonPool,
             i_AssignedSection: val => whereSection,
-            i_ClearSelectionPanel: false);
-
+            i_ClearSelectionPanel: false,
+            i_RemovalCondition: val => query.fromClause.table == null ||
+                                       !query.whereClause.isClicked        
+        );
         selectionParent.GetChild(selectionParent.childCount - 2).SetAsFirstSibling(); // Input field
         selectionParent.GetChild(selectionParent.childCount - 1).SetSiblingIndex(1); // Confirm button
     }
@@ -508,6 +599,47 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
         }
     }
 
+    private void syncQueryUI()
+    {
+        EvaluateQueryPanelButtons();
+        UpdateQueryPreview();
+    }
+
+    private void EvaluateQueryPanelButtons()
+    {
+        foreach (var pair in removalConditions.ToList())
+        {
+            Button button = pair.Key;
+            Func<bool> condition = pair.Value;
+
+            if(condition())
+            {
+                removalConditions.Remove(button);
+                selectionButtonPool.Release(button);
+            }
+        }
+    }    
+
+    private void InsertButtonInSection(Transform section, Button button, eDraggableType type)
+    {
+
+        int insertIndex = 0;
+
+        for (int i = 0; i < section.childCount; i++)
+        {
+            DraggableItem existingDraggable = section.GetChild(i).GetComponent<DraggableItem>();
+            if (existingDraggable == null) continue;
+
+            if (type == eDraggableType.SelectionButton && existingDraggable.draggableType == eDraggableType.SelectionButton)
+            {
+                insertIndex = i + 1;
+            }
+        }
+
+        button.transform.SetParent(section, false);
+        button.transform.SetSiblingIndex(insertIndex);
+    }
+   
     private Transform matchClauseToSection(IQueryClause i_Clause)
     {
         Transform section = selectSection;
@@ -529,18 +661,4 @@ Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.Assign
         return section;
     }
 
-    private void AddSelectionToQuery(DraggableItem i_Draggable)
-    {
-        
-    }
-
-    private void AddClauseToQuery(DraggableItem i_Draggable)
-    {
-        
-    }
-
-    internal void OnItemDropped(DraggableItem draggableItem)
-    {
-        throw new NotImplementedException();
-    }
 }

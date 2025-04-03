@@ -15,9 +15,9 @@ public class ClauseDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
     {
         return i_Draggable.draggableType == eDraggableType.ClauseButton;
     }
-    public bool DoesTriggerDropAction(DraggableItem i_Draggable)
+    public bool IsNewDrop(Transform i_OriginalParent)
     {
-        return false;
+        return i_OriginalParent != transform;
     }
 
 }

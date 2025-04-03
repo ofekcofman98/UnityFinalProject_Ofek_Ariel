@@ -14,13 +14,22 @@ public class SectionDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
 
     public bool IsValidDrop(DraggableItem draggable)
     {
-        return true;//draggable.AssignedSection == section;
+        return true;
     }
 
-    public bool DoesTriggerDropAction(DraggableItem i_Draggable)
+    public bool IsNewDrop(Transform i_OriginalParent)
     {
-        return false;
+        bool res = true;
+
+        IDropZoneStrategy originalStrategy = i_OriginalParent.GetComponent<DropZone>()?.GetStrategy();
+        IDropZoneStrategy currentStrategy = GetComponent<DropZone>()?.GetStrategy();
+
+        if ((originalStrategy is QueryDropZoneStrategy || originalStrategy is SectionDropZoneStrategy) &&
+            (currentStrategy is QueryDropZoneStrategy  || currentStrategy is SectionDropZoneStrategy))
+            {
+                res = false;
+            }
+        
+        return res;
     }
-
-
 }

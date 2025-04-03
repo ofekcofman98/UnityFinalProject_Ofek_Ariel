@@ -22,13 +22,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public IDropZoneStrategy CurrentDropZone { get; private set; }
     private Vector3 originalPosition;
     private Transform canvasTransform;
-    private Transform originalContainer; 
+    private int originalSiblingIndex;
+
 
     private void Awake()
     {
         canvasTransform = GetComponentInParent<Canvas>().transform;
         image = GetComponent<Image>();
-        originalContainer = transform.parent; 
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -37,7 +37,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         OriginalParent = transform.parent;
         originalPosition = transform.position;
-
+        originalSiblingIndex = transform.GetSiblingIndex(); 
         MoveToTopLayer();
 
         if (image != null) image.raycastTarget = false;
@@ -58,9 +58,17 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             image.raycastTarget = true;
         }
 
+
         if (dropZone != null)
         {
             IDropZoneStrategy strategy = dropZone.GetStrategy();
+            bool isNewDrop = dropZone.IsNewDrop(OriginalParent);
+
+            if (!isNewDrop)
+            {
+                dropBackToOriginal();
+                return;
+            }
 
             if (strategy != null && strategy.IsValidDrop(this))
             {
@@ -69,12 +77,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             else
             {
-                SetParentAndPosition(OriginalParent); 
+                transform.SetParent(OriginalParent, true);
+                transform.position = originalPosition;
             }
         }
         else
         {
-            SetParentAndPosition(OriginalParent); 
+            dropBackToOriginal();
         }
 
         image.raycastTarget = true;
@@ -88,11 +97,16 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         image.raycastTarget = false;
     }
 
+    private void dropBackToOriginal()
+    {
+        transform.SetParent(OriginalParent, false);
+        transform.SetSiblingIndex(originalSiblingIndex);
+    }
+
     public void SetParentAndPosition(Transform newParent)
     {
         transform.SetParent(newParent, false);
         transform.localScale = Vector3.one;  
-        // transform.localPosition = Vector3.zero;  
     }
 
     private DropZone FindDropZone()
