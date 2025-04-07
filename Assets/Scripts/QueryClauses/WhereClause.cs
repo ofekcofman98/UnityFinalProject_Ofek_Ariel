@@ -27,7 +27,7 @@ public class WhereClause : IQueryClause
         {
             clearConditions();
         }
-
+Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
         UpdateString();
     }
 
@@ -74,7 +74,7 @@ public class WhereClause : IQueryClause
                 WherePart = QueryConstants.Where;
             }
 
-            Debug.Log($"where PArt: {WherePart}");
+            // Debug.Log($"where PArt: {WherePart}");
         }
         else 
         {
@@ -134,7 +134,7 @@ public class WhereClause : IQueryClause
     
     public void Reset()
     {
-        isClicked = false;
+        // isClicked = false;
         isAvailable = false;
         WherePart = QueryConstants.Empty;
         clearConditions();

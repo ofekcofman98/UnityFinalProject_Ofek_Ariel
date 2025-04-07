@@ -29,7 +29,7 @@ public class QueryDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
     public bool IsValidDrop(DraggableItem draggable)
     {
         bool valid = draggable.AssignedSection != null && transform == draggable.AssignedSection.parent;
-        Debug.Log($"[QueryDropZoneStrategy] IsValidDrop: draggable: {draggable.name}, drop target: {transform.name}, assigned section parent: {draggable.AssignedSection?.parent?.name}, valid: {valid}");
+        // Debug.Log($"[QueryDropZoneStrategy] IsValidDrop: draggable: {draggable.name}, drop target: {transform.name}, assigned section parent: {draggable.AssignedSection?.parent?.name}, valid: {valid}");
         return valid;
     }
 

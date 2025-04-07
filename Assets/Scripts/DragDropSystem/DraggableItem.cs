@@ -33,7 +33,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log($"{gameObject.name} Begin drag");
+        // Debug.Log($"{gameObject.name} Begin drag");
 
         OriginalParent = transform.parent;
         originalPosition = transform.position;
@@ -120,11 +120,17 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             DropZone dropZone = result.gameObject.GetComponent<DropZone>();
             if (dropZone != null)
             {
-                Debug.Log($"found {dropZone.ToString()}");
+                // Debug.Log($"found {dropZone.ToString()}");
                 return dropZone;
             }
         }
 
         return null;
     }
+
+    public void ResetEvents()
+    {
+        OnDropped = null;
+    }
+
 }

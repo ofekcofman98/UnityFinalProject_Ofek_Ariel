@@ -7,13 +7,13 @@ using UnityEngine.UIElements;
 using System.Text;
 using Unity.VisualScripting;
 
-public enum eQueryState
-{
-    None, 
-    SelectingTable,
-    SelectingColumns,
-    SelectingConditions,
-}
+// public enum eQueryState
+// {
+//     None, 
+//     SelectingTable,
+//     SelectingColumns,
+//     SelectingConditions,
+// }
 
 public class Query
 {
@@ -25,7 +25,8 @@ public class Query
     public List<IQueryClause> clauses;
     public List<IQueryClause> availableClauses;
     public event Action OnAvailableClausesChanged;
-    public eQueryState currentState { get; set; } = eQueryState.None;
+    // public eQueryState currentState { get; set; } = eQueryState.None;
+    public QueryState queryState;
     public List<List<object>> orderedElements {get; private set;}
 
     public List<Dictionary<string, string>> Results { get; set; } 
@@ -43,6 +44,7 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         whereClause  = new WhereClause();
         clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
+        queryState = new QueryState();
 
         Results = new List<Dictionary<string, string>>();
     }    
@@ -60,91 +62,7 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
 
     public void UpdateQueryState()
     {
-        currentState = eQueryState.None;
-
-        if (!fromClause.isClicked)
-        {
-            return;
-        }
-
-        if (fromClause.table == null)
-        {
-            currentState = eQueryState.SelectingTable;
-            return;
-        }
-
-        if (!selectClause.isClicked)
-        {
-            currentState = eQueryState.SelectingTable;
-            return;
-        }
-
-        currentState = eQueryState.SelectingColumns;
-
-        if (whereClause.isClicked)
-        {
-            currentState = eQueryState.SelectingConditions;
-        }
-    }
-
-
-    public void UpdateQueryState1()
-    {
-        if (!fromClause.isClicked)
-        {
-            currentState = eQueryState.None;
-            selectClause.Reset();
-            fromClause.Reset();
-            whereClause.Reset();
-            
-            CheckAvailableClause(); // Ensure UI updates
-            updateQueryString();
-
-            return;
-        }
-
-        if (fromClause.table == null)
-        {
-            currentState = eQueryState.SelectingTable;
-            selectClause.Reset();
-            whereClause.Reset();
-
-            CheckAvailableClause(); // Ensure UI updates
-            updateQueryString();
-
-            return;
-        }
-
-        if (!selectClause.isClicked)
-        {
-            currentState = eQueryState.SelectingTable;
-            whereClause.Reset();
-
-            CheckAvailableClause(); // Ensure UI updates
-            updateQueryString();
-
-            return;
-        }
-
-        currentState = eQueryState.SelectingColumns;
-
-        if (selectClause.NotEmpty())
-        {
-            whereClause.isAvailable = true;
-        }
-        else
-        {
-            whereClause.Reset();
-        }
-
-        if(whereClause.isClicked)
-        {
-            currentState = eQueryState.SelectingConditions;
-        }
-
-        Debug.Log($"[UpdateQueryState] current state: {currentState}");
-        CheckAvailableClause(); // Ensure UI updates
-        updateQueryString();
+        queryState.UpdateState(this);
     }
 
 
@@ -168,6 +86,7 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         if (clause != null)
         {
             clause.Toggle();
+            Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
             updateQueryString();
         }
     }
@@ -273,7 +192,7 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
     {
         foreach (IQueryClause clause in clauses)
         {
-            Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
+            // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
             clause.OnQueryUpdated(this);
         }
         

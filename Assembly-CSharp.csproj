@@ -73,6 +73,7 @@
     <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\QueryReceiver.cs" />
+    <Compile Include="Assets\Scripts\QueryState.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DraggableItem.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />

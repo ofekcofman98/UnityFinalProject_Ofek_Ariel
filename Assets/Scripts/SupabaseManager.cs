@@ -98,7 +98,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
                 }
 
                 i_Table.SetColumns(columns);
-                Debug.Log($"✅ Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
+                // Debug.Log($"✅ Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
             }
             else
             {

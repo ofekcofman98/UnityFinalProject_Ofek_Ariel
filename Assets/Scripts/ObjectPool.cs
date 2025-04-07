@@ -51,7 +51,7 @@ public class ObjectPoolService<T> where T : MonoBehaviour
     public T Get()
     {
         T obj = m_ObjectPool.Get();
-        Debug.Log($"[POOL] Retrieved object: {obj}");
+        // Debug.Log($"[POOL] Retrieved object: {obj}");
         return obj;
     }
     public void Release(T obj)

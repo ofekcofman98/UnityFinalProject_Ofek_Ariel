@@ -113,6 +113,7 @@ public class QueryBuilder : MonoBehaviour
         {
             Debug.Log($"removing {i_Column.Name} from columns");
             query.RemoveColumn(i_Column);
+            Debug.Log($"is Empty: {!query.selectClause.NotEmpty()}");
         }
         else
         {
@@ -149,9 +150,9 @@ public class QueryBuilder : MonoBehaviour
     {
         ClearSelectionPanel();
 
-        Debug.Log($"state is: {query.currentState}");
+        Debug.Log($"state is: {query.queryState.CurrentState}");
 
-        switch (query.currentState)
+        switch (query.queryState.CurrentState)
         {
             case eQueryState.SelectingTable:
                 PopulateTableSelection();
@@ -165,7 +166,7 @@ public class QueryBuilder : MonoBehaviour
                 break;
 
             case eQueryState.SelectingConditions:
-                PopulateConditionSelection();
+                PopulateConditionColumnSelection();
                 break;
 
             case eQueryState.None:
@@ -191,36 +192,6 @@ public class QueryBuilder : MonoBehaviour
         {
             executeButton.interactable = false;
         }
-    }
-
-    private void UpdateQueryButtons()
-    {
-        switch (query.currentState)
-        {
-            case eQueryState.None:
-                ClearSection(fromSection);
-                ClearSection(selectSection);
-                ClearSection(whereSection);
-                break;
-
-            // case eQueryState.SelectingColumns:
-            //     if (query.fromClause.table != null)
-            //     {
-            //         PopulateColumnSelection(query.fromClause.table);
-            //     }
-            //     break;
-
-            // case eQueryState.SelectingConditions:
-            //     PopulateConditionSelection();
-            //     break;
-
-            // case eQueryState.None:
-            //     // ClearSelectionPanel();
-            //     break;
-        }
-
-
-
     }
 
     private void ClearSection(Transform i_Section)
@@ -254,6 +225,7 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateColumnSelection(Table i_Table)
     {
+        Debug.Log("## PopulateColumnSelection");
         populateSelectionButtons(
             i_Items: i_Table.Columns,
             i_OnItemDropped: OnColumnSelected,
@@ -266,8 +238,9 @@ public class QueryBuilder : MonoBehaviour
             );
     }
 
-    private void PopulateConditionSelection()
+    private void PopulateConditionColumnSelection()
     {
+        Debug.Log("## PopulateConditionColumnSelection");
         if (query.fromClause.table != null)
         {
             populateSelectionButtons(
@@ -278,7 +251,8 @@ public class QueryBuilder : MonoBehaviour
                 i_AssignedSection: col => whereSection,
                 i_ButtonPool: selectionButtonPool,
                 i_RemovalCondition: column => query.fromClause.table == null ||
-                                              !query.whereClause.isClicked
+                                              !query.whereClause.isClicked ||
+                                              !query.selectClause.NotEmpty()
                 );
         }
     }
@@ -413,6 +387,10 @@ public class QueryBuilder : MonoBehaviour
             }
         }
 
+Debug.Log($"[[{Time.time:F2}]] ");
+Debug.Log($"query.whereClause.isClicked: {query.whereClause.isClicked} ");
+Debug.Log($"Query State is: {query.queryState.CurrentState}");        
+
         int index = 0; 
         foreach (T item in i_Items)
         {
@@ -438,8 +416,24 @@ public class QueryBuilder : MonoBehaviour
             {
                 draggableItem = button.gameObject.AddComponent<DraggableItem>();
             }
-            draggableItem.AssignedSection = i_AssignedSection(item);
-            Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+            draggableItem.ResetEvents();
+            // draggableItem.AssignedSection = i_AssignedSection(item);
+
+if(query.queryState.CurrentState == eQueryState.SelectingConditions)
+{
+    draggableItem.AssignedSection = whereSection;
+}
+else if (query.queryState.CurrentState == eQueryState.SelectingColumns)
+{
+    draggableItem.AssignedSection = selectSection;
+}
+else
+{
+    draggableItem.AssignedSection = i_AssignedSection(item);
+}
+
+            
+            // Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
         
             draggableItem.draggableType = eDraggableType.SelectionButton;
             draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
