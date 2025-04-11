@@ -19,16 +19,33 @@ public class WhereClause : IQueryClause
         Conditions = new List<Condition>();     
     }
 
-    public void Toggle()
-    {
-        isClicked = !isClicked;
+//     public void Toggle()
+//     {
+//         isClicked = !isClicked;
 
-        if (!isClicked)
+//         if (!isClicked)
+//         {
+//             clearConditions();
+//         }
+// Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
+//         UpdateString();
+//     }
+
+    public void Activate()
+    {
+        isClicked = true;   
+    }
+
+    public void Deactivate()
+    {
+        if (isClicked)
         {
             clearConditions();
         }
-Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
-        UpdateString();
+        else
+        {
+            isClicked = false;
+        }
     }
 
     public void CreateNewCondition(Column i_Column)
@@ -134,7 +151,7 @@ Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
     
     public void Reset()
     {
-        // isClicked = false;
+        isClicked = false;
         isAvailable = false;
         WherePart = QueryConstants.Empty;
         clearConditions();

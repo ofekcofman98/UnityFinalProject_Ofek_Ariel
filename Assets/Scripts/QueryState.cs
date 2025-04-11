@@ -12,18 +12,20 @@ public enum eQueryState
 
 public class QueryState
 {
-    public eQueryState CurrentState { get; private set; } = eQueryState.None;
+    public eQueryState CurrentState { get; set; } = eQueryState.None;
 
     public void UpdateState(Query i_Query)
     {
         if (!i_Query.fromClause.isClicked)
         {
             CurrentState = eQueryState.None;
+    Debug.Log($"[QueryState] State updated to: {CurrentState}");
             return;
         }
         
         if (i_Query.fromClause.table == null)
         {
+            Debug.Log("i_Query.fromClause.table == null");
             CurrentState = eQueryState.SelectingTable;
             return;
         }
@@ -34,7 +36,7 @@ public class QueryState
             return;
         }
 
-        if (!i_Query.selectClause.NotEmpty())
+        if (i_Query.selectClause.IsEmpty())
         {
             Debug.Log("!i_Query.selectClause.NotEmpty()");
 

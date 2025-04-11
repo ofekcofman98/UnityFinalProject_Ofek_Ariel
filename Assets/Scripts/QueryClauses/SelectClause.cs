@@ -16,19 +16,35 @@
             Columns = new List<Column>();
         }
         
-        public void Toggle()
+        // public void Toggle()
+        // {
+        //     isClicked = !isClicked;
+
+        //     if (!isClicked)
+        //     {
+        //         ClearColumns();
+        //     }
+
+        //     UpdateString();
+        //     // onSelectChanged?.Invoke();
+        // }
+
+        public void Activate()
         {
-            isClicked = !isClicked;
-
-            if (!isClicked)
-            {
-                ClearColumns();
-            }
-
-            UpdateString();
-            // onSelectChanged?.Invoke();
+            isClicked = true;
         }
 
+        public void Deactivate()
+        {
+            if (isClicked)
+            {
+                Reset();
+            }
+            else 
+            {
+                isClicked = false;
+            }
+        }
 
         public void AddColumn(Column i_ColumnToAdd)
         {
@@ -79,16 +95,17 @@
             return Columns.Count > 0 ? string.Join(QueryConstants.Comma , Columns.Select(col => col.Name)) : "*";
         }
 
-        public bool NotEmpty()
+        public bool IsEmpty()
         {
-            return Columns.Count > 0;
+            return Columns.Count == 0;
         }
 
         public void OnQueryUpdated(Query query)
         {
             if (query.fromClause.GetTable() == null)
             {
-                Reset();
+                ClearColumns(); 
+                UpdateString();
             }
 
         }
@@ -109,7 +126,7 @@
 
     public void Reset()
     {
-        // isClicked = false;
+        isClicked = false; // CHECK IT 
         SelectPart = QueryConstants.Select;
         ClearColumns();
     }

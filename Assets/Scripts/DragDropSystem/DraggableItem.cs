@@ -17,7 +17,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Image image;
     public eDraggableType draggableType;
     public Transform OriginalParent;
-    public event Action<DraggableItem> OnDropped;
+    public Action<DraggableItem> OnDropped;
+    public Action OnRemoved;
     [HideInInspector] public Transform AssignedSection; 
     public IDropZoneStrategy CurrentDropZone { get; private set; }
     private Vector3 originalPosition;
@@ -73,7 +74,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             if (strategy != null && strategy.IsValidDrop(this))
             {
                 dropZone.OnDrop(eventData); 
-                OnDropped?.Invoke(this); 
+                // OnDropped?.Invoke(this); 
             }
             else
             {

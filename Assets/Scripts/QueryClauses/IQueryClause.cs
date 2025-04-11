@@ -7,7 +7,9 @@ public interface IQueryClause
     string DisplayName { get; }
     bool isClicked { get; }
     bool isAvailable { get; set; }
-    void Toggle();
+    // void Toggle();
+    void Activate();
+    void Deactivate();
     string ToSQL();        
     string ToSupabase(); 
     void UpdateString();

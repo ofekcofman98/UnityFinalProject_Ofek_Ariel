@@ -9,6 +9,8 @@ public class ClauseDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
         draggable.SetParentAndPosition(zone.transform);
+        draggable.OnRemoved?.Invoke();
+
     }
 
     public bool IsValidDrop(DraggableItem i_Draggable)

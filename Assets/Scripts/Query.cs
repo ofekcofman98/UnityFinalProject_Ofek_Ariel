@@ -30,7 +30,7 @@ public class Query
     public List<List<object>> orderedElements {get; private set;}
 
     public List<Dictionary<string, string>> Results { get; set; } 
-    public bool IsValid => fromClause.table != null && selectClause.NotEmpty();
+    public bool IsValid => fromClause.table != null && !selectClause.IsEmpty();
     public event Action OnQueryUpdated;  
 
 
@@ -81,12 +81,21 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         OnAvailableClausesChanged?.Invoke();
     }
 
-    public void ToggleClause(IQueryClause clause)
+    public void ToggleClause(IQueryClause clause, bool isToggledOn)
     {
         if (clause != null)
         {
-            clause.Toggle();
+            if (isToggledOn)
+            {
+                clause.Activate();
+            }
+            else
+            {
+                clause.Deactivate();
+            }
             Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
+            
+            clause.UpdateString();
             updateQueryString();
         }
     }

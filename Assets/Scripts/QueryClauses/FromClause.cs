@@ -12,17 +12,26 @@ public class FromClause : IQueryClause
     public bool isClicked { get; private set; } = false;
     public bool isAvailable { get; set; } = true;
 
-    public void Toggle()
+    // public void Toggle()
+    // {
+    //     isClicked = !isClicked;
+
+    //     if (!isClicked)
+    //     {
+    //         table = null;
+    //     }
+    //     UpdateString();
+
+    //     // OnFromChanged?.Invoke();
+    // }
+    public void Activate()
     {
-        isClicked = !isClicked;
+        isClicked = true;
+    }
 
-        if (!isClicked)
-        {
-            table = null;
-        }
-        UpdateString();
-
-        // OnFromChanged?.Invoke();
+    public void Deactivate()
+    {
+        Reset();
     }
 
     public void SetTable(Table i_Table)

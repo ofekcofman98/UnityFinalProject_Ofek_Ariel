@@ -39,7 +39,8 @@ public class QueryBuilder : MonoBehaviour
     private Dictionary<IQueryClause, Button> activeClauseButtons = new Dictionary<IQueryClause, Button>();
 
     private Query query;
-    private Dictionary<Button, Func<bool>> removalConditions = new Dictionary<Button, Func<bool>>();
+private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalConditions 
+    = new Dictionary<Button, (Func<bool>, Action)>();
 
 
     void Start()
@@ -79,7 +80,7 @@ public class QueryBuilder : MonoBehaviour
             i_Items: query.availableClauses,
             i_OnItemDropped: clause => 
             {
-                query.ToggleClause(clause);
+                query.ToggleClause(clause, true);
                 query.UpdateQueryState();
                 query.NotifyClauses();
                 
@@ -92,6 +93,16 @@ public class QueryBuilder : MonoBehaviour
             i_AssignedSection: clause => matchClauseToSection(clause),
             i_ButtonPool: clauseButtonPool,
             i_ActiveButtons: activeClauseButtons
+            ,i_OnItemRemoved: clause =>
+            {
+                query.ToggleClause(clause, false);
+                query.UpdateQueryState();
+                query.NotifyClauses();
+                
+                syncQueryUI();
+                // UpdateQueryButtons();
+                UpdateSelectionVisibility();
+            }
         );
     }
 
@@ -101,26 +112,12 @@ public class QueryBuilder : MonoBehaviour
         {
             return;
         }
+        Debug.Log($"[SetTable]: {i_SelectedTable.Name}");
         query.SetTable(i_SelectedTable);
         query.UpdateQueryState();
         UpdateSelectionVisibility();
     }
 
-
-    private void OnColumnSelected(Column i_Column)
-    {
-        if (query.selectClause.Columns.Contains(i_Column))
-        {
-            Debug.Log($"removing {i_Column.Name} from columns");
-            query.RemoveColumn(i_Column);
-            Debug.Log($"is Empty: {!query.selectClause.NotEmpty()}");
-        }
-        else
-        {
-            Debug.Log($"adding {i_Column.Name} to columns");
-            query.AddColumn(i_Column);
-        }
-    }
 
     private void OnConditionColumnSelected(Column i_Column)
     {
@@ -145,121 +142,90 @@ public class QueryBuilder : MonoBehaviour
         query.SetConditionValue(i_Value);
     }
 
-
-    private void UpdateSelectionVisibility()
-    {
-        ClearSelectionPanel();
-
-        Debug.Log($"state is: {query.queryState.CurrentState}");
-
-        switch (query.queryState.CurrentState)
-        {
-            case eQueryState.SelectingTable:
-                PopulateTableSelection();
-                break;
-
-            case eQueryState.SelectingColumns:
-                if (query.fromClause.table != null)
-                {
-                    PopulateColumnSelection(query.fromClause.table);
-                }
-                break;
-
-            case eQueryState.SelectingConditions:
-                PopulateConditionColumnSelection();
-                break;
-
-            case eQueryState.None:
-                ClearSelectionPanel();
-                break;
-        }
-    }
-
-    private void UpdateQueryPreview()
-    {
-        if (query == null)
-        {
-            Debug.LogError("UpdateQueryPreview() - query is NULL before saving!");
-        }
-        queryPreviewText.text = query.QueryString;
-
-        if (query.IsValid)
-        {
-            executeButton.interactable = true;
-            GameManager.Instance.SaveQuery(query);
-        }
-        else
-        {
-            executeButton.interactable = false;
-        }
-    }
-
-    private void ClearSection(Transform i_Section)
-    {
-        foreach (Transform child in i_Section)
-        {
-            if (child == null) continue;
-            Button button = child.GetComponent<Button>();
-            if (button != null)
-            {
-                selectionButtonPool.Release(button);  // Or clauseButtonPool depending on source
-            }
-        }
-    }
-
     private void PopulateTableSelection()
     {
         if (query.fromClause.table == null)
         {
             populateSelectionButtons(
-                i_Items: SupabaseManager.Instance.Tables,
-                i_OnItemDropped: OnTableSelected,
-                i_GetLabel: table => table.Name,
-                i_ParentTransform: selectionParent,
-                i_AssignedSection: table => fromSection,
-                i_ButtonPool: selectionButtonPool,
-                i_RemovalCondition: table => query.fromClause.table == null
+                 i_Items: SupabaseManager.Instance.Tables
+                ,i_OnItemDropped: OnTableSelected
+                ,i_GetLabel: table => table.Name
+                ,i_ParentTransform: selectionParent
+                ,i_AssignedSection: table => fromSection
+                ,i_ButtonPool: selectionButtonPool
+                ,i_RemovalCondition: table => query.fromClause.table == null ||
+                                              !query.fromClause.isClicked 
+                ,i_OnItemRemoved: table => {
+                    query.fromClause.ClearTable();
+                    // query.ClearColumns();
+                    // query.UpdateQueryState();
+                    query.queryState.CurrentState = eQueryState.SelectingTable;
+                    query.NotifyClauses();
+                    syncQueryUI();
+                    UpdateSelectionVisibility();
+                    }
                 );
         }
     }
 
     private void PopulateColumnSelection(Table i_Table)
     {
-        Debug.Log("## PopulateColumnSelection");
-        populateSelectionButtons(
-            i_Items: i_Table.Columns,
-            i_OnItemDropped: OnColumnSelected,
-            i_GetLabel: column => column.Name,
-            i_ParentTransform: selectionParent,
-            i_AssignedSection: col => selectSection,
-            i_ButtonPool: selectionButtonPool,
-            i_RemovalCondition: column => query.fromClause.table == null ||
+        populateSelectionButtons
+        (
+             i_Items: i_Table.Columns
+            ,i_OnItemDropped: col => query.AddColumn(col)
+            ,i_GetLabel: column => column.Name
+            ,i_ParentTransform: selectionParent
+            ,i_AssignedSection: col => selectSection
+            ,i_ButtonPool: selectionButtonPool
+            ,i_RemovalCondition: column => query.fromClause.table == null ||
                                           !query.selectClause.isClicked 
-            );
+            ,i_OnItemRemoved: col => 
+            {
+                // if (query.queryState.CurrentState == eQueryState.SelectingConditions)
+                // {
+                //     UpdateSelectionVisibility();
+                // }
+                query.RemoveColumn(col);
+                
+                if(query.selectClause.IsEmpty())
+                {
+                    query.whereClause.isAvailable = false;
+                }
+            }
+        );
     }
 
     private void PopulateConditionColumnSelection()
     {
-        Debug.Log("## PopulateConditionColumnSelection");
         if (query.fromClause.table != null)
         {
-            populateSelectionButtons(
-                i_Items: query.fromClause.table.Columns,
-                i_OnItemDropped: OnConditionColumnSelected,
-                i_GetLabel: column => column.Name,
-                i_ParentTransform: selectionParent,
-                i_AssignedSection: col => whereSection,
-                i_ButtonPool: selectionButtonPool,
-                i_RemovalCondition: column => query.fromClause.table == null ||
+            populateSelectionButtons
+            (
+                 i_Items: query.fromClause.table.Columns
+                ,i_OnItemDropped: OnConditionColumnSelected
+                ,i_GetLabel: column => column.Name
+                ,i_ParentTransform: selectionParent
+                ,i_AssignedSection: col => whereSection
+                ,i_ButtonPool: selectionButtonPool
+                ,i_RemovalCondition: column => query.fromClause.table == null ||
                                               !query.whereClause.isClicked ||
-                                              !query.selectClause.NotEmpty()
-                );
+                                              query.selectClause.IsEmpty()
+                ,i_OnItemRemoved: col => 
+                {
+                    query.whereClause.Conditions.Clear();
+
+                    query.queryState.CurrentState = eQueryState.SelectingConditions;
+                    UpdateSelectionVisibility();
+                }
+            );
         }
     }
 
     private void PopulateOperatorSelection()
     {
-        populateSelectionButtons(
+        populateSelectionButtons
+        (
             i_Items: OperatorFactory.GetOperators(query.whereClause.newCondition.Column),
             i_OnItemDropped: OnConditionOperatorSelected,
             i_GetLabel: op => op.GetSQLRepresentation(),
@@ -267,48 +233,25 @@ public class QueryBuilder : MonoBehaviour
             i_AssignedSection: op => whereSection,
             i_ButtonPool: selectionButtonPool,
             i_RemovalCondition: op => query.fromClause.table == null ||
-                                      !query.whereClause.isClicked
+                                      !query.whereClause.isClicked ||
+                                      !query.whereClause.isAvailable ||
+                                      query.whereClause.Conditions.Count == 0
         );
     }
 
-    private void PopulateValueSelection()
-    {
-        if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
-        {
-            Debug.LogError("PopulateValueSelection() - No condition column selected!");
-            return;
-        }
-
-        ClearSelectionPanel();
-        switch (query.whereClause.newCondition.Column.DataType)
-        {
-            case eDataType.Integer:
-                ShowNumberInputOptions();
-                break;
-
-            case eDataType.String:
-                ShowInputField();
-                break;
-
-            case eDataType.DateTime:
-                pickDateTime();
-                break;
-                
-            default:
-                Debug.LogWarning($"Unsupported data type: {query.whereClause.newCondition.Column.DataType}");
-                break;
-        }
-    }
 
     private void populateClauseButtons<T>(
         IEnumerable<T> i_Items,
         Action<T> i_OnItemDropped,
-        // Action<T> i_OnItemSelected,
         Func<T, string> i_GetLabel,
         Transform i_ParentTransform,
         Func<T, Transform> i_AssignedSection,
         ObjectPoolService<Button> i_ButtonPool,
-        Dictionary<T, Button> i_ActiveButtons)
+        Dictionary<T, Button> i_ActiveButtons,
+
+        Func<T, bool> i_RemovalCondition = null,
+        Action<T> i_OnItemRemoved = null)
+
     {
 
         foreach (var key in i_ActiveButtons.Keys.ToList()) // Loop through all stored buttons
@@ -341,11 +284,10 @@ public class QueryBuilder : MonoBehaviour
                     draggableItem = button.gameObject.AddComponent<DraggableItem>();
                 }
 
-                draggableItem.AssignedSection = i_AssignedSection(item);
-// Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
-                
+                draggableItem.AssignedSection = i_AssignedSection(item);                
                 draggableItem.draggableType = eDraggableType.ClauseButton;
                 draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
+                draggableItem.OnRemoved += () => i_OnItemRemoved(item);
 
 
                 i_ActiveButtons[item] = button;
@@ -360,13 +302,13 @@ public class QueryBuilder : MonoBehaviour
     private void populateSelectionButtons<T>(
         IEnumerable<T> i_Items, 
         Action<T> i_OnItemDropped,
-        // Action<T> i_OnItemSelected,
         Func<T,string> i_GetLabel,
         Transform i_ParentTransform,
         Func<T, Transform> i_AssignedSection,
         ObjectPoolService<Button> i_ButtonPool,
         bool i_ClearSelectionPanel = true,
-        Func<T, bool> i_RemovalCondition = null)
+        Func<T, bool> i_RemovalCondition = null,
+        Action<T> i_OnItemRemoved = null)
     {
 
         if (i_Items == null || !i_Items.Any())
@@ -388,8 +330,11 @@ public class QueryBuilder : MonoBehaviour
         }
 
 Debug.Log($"[[{Time.time:F2}]] ");
+Debug.Log($"query.selectClause.isClicked: {query.selectClause.isClicked} ");
+Debug.Log($"query.fromClause.isClicked: {query.fromClause.isClicked} ");
 Debug.Log($"query.whereClause.isClicked: {query.whereClause.isClicked} ");
 Debug.Log($"Query State is: {query.queryState.CurrentState}");        
+Debug.Log($"");        
 
         int index = 0; 
         foreach (T item in i_Items)
@@ -417,44 +362,20 @@ Debug.Log($"Query State is: {query.queryState.CurrentState}");
                 draggableItem = button.gameObject.AddComponent<DraggableItem>();
             }
             draggableItem.ResetEvents();
-            // draggableItem.AssignedSection = i_AssignedSection(item);
-
-if(query.queryState.CurrentState == eQueryState.SelectingConditions)
-{
-    draggableItem.AssignedSection = whereSection;
-}
-else if (query.queryState.CurrentState == eQueryState.SelectingColumns)
-{
-    draggableItem.AssignedSection = selectSection;
-}
-else
-{
-    draggableItem.AssignedSection = i_AssignedSection(item);
-}
-
-            
-            // Debug.Log($"[AssignSection] {i_GetLabel(item)} assigned to {draggableItem.AssignedSection.name}");
+            draggableItem.AssignedSection = i_AssignedSection(item);
         
             draggableItem.draggableType = eDraggableType.SelectionButton;
+           
             draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
-
-            if (i_RemovalCondition != null)
-            {
-                removalConditions[button] = () => i_RemovalCondition(item);
-            }
+            draggableItem.OnRemoved += () => i_OnItemRemoved(item);
+if (i_RemovalCondition != null)
+{
+    Action removeAction = () => i_OnItemRemoved?.Invoke(item);
+    removalConditions[button] = (() => i_RemovalCondition(item), removeAction);
+}
 
             index++;
         }
-
-        // foreach (Transform sibling in i_ParentTransform)
-        // {
-        //     DraggableItem draggable = sibling.GetComponent<DraggableItem>();
-        //     if (draggable != null && draggable.draggableType == eDraggableType.ClauseButton)
-        //     {
-        //         sibling.SetSiblingIndex(0);
-        //         break;
-        //     }
-        // }
     }
 
     private void ShowInputField()
@@ -571,6 +492,83 @@ else
         GameManager.Instance.ExecuteQuery();
     }
 
+    private void UpdateSelectionVisibility()
+    {
+        ClearSelectionPanel();
+
+        Debug.Log($"state is: {query.queryState.CurrentState}");
+
+        switch (query.queryState.CurrentState)
+        {
+            case eQueryState.SelectingTable:
+                PopulateTableSelection();
+                break;
+
+            case eQueryState.SelectingColumns:
+                if (query.fromClause.table != null)
+                {
+                    PopulateColumnSelection(query.fromClause.table);
+                }
+                break;
+
+            case eQueryState.SelectingConditions:
+                PopulateConditionColumnSelection();
+                break;
+
+            case eQueryState.None:
+                ClearSelectionPanel();
+                break;
+        }
+    }
+
+    private void PopulateValueSelection()
+    {
+        if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
+        {
+            Debug.LogError("PopulateValueSelection() - No condition column selected!");
+            return;
+        }
+
+        ClearSelectionPanel();
+        switch (query.whereClause.newCondition.Column.DataType)
+        {
+            case eDataType.Integer:
+                ShowNumberInputOptions();
+                break;
+
+            case eDataType.String:
+                ShowInputField();
+                break;
+
+            case eDataType.DateTime:
+                pickDateTime();
+                break;
+                
+            default:
+                Debug.LogWarning($"Unsupported data type: {query.whereClause.newCondition.Column.DataType}");
+                break;
+        }
+    }
+
+    private void UpdateQueryPreview()
+    {
+        if (query == null)
+        {
+            Debug.LogError("UpdateQueryPreview() - query is NULL before saving!");
+        }
+        queryPreviewText.text = query.QueryString;
+
+        if (query.IsValid)
+        {
+            executeButton.interactable = true;
+            GameManager.Instance.SaveQuery(query);
+        }
+        else
+        {
+            executeButton.interactable = false;
+        }
+    }
+
     private void ClearSelectionPanel()
     {        
         if (selectionParent.childCount == 0)
@@ -604,10 +602,11 @@ else
         foreach (var pair in removalConditions.ToList())
         {
             Button button = pair.Key;
-            Func<bool> condition = pair.Value;
+            var (condition, removeAction) = pair.Value;
 
             if(condition())
             {
+                // removeAction?.Invoke();
                 removalConditions.Remove(button);
                 selectionButtonPool.Release(button);
             }

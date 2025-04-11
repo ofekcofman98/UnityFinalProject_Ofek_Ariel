@@ -8,6 +8,7 @@ public class QueryDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
         draggable.SetParentAndPosition(draggable.AssignedSection);
+        draggable.OnDropped?.Invoke(draggable);
     }
 
     public bool IsNewDrop(Transform i_OriginalParent)
