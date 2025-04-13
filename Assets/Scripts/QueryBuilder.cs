@@ -236,9 +236,13 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
                                       !query.whereClause.isClicked ||
                                       !query.whereClause.isAvailable ||
                                       query.whereClause.Conditions.Count == 0
+            ,i_OnItemRemoved: op => 
+            {
+                query.SetConditionOperator(null);
+                PopulateOperatorSelection();
+            }
         );
     }
-
 
     private void populateClauseButtons<T>(
         IEnumerable<T> i_Items,
@@ -368,11 +372,12 @@ Debug.Log($"");
            
             draggableItem.OnDropped += (droppedItem) => i_OnItemDropped(item);
             draggableItem.OnRemoved += () => i_OnItemRemoved(item);
-if (i_RemovalCondition != null)
-{
-    Action removeAction = () => i_OnItemRemoved?.Invoke(item);
-    removalConditions[button] = (() => i_RemovalCondition(item), removeAction);
-}
+
+            if (i_RemovalCondition != null)
+            {
+                Action removeAction = () => i_OnItemRemoved?.Invoke(item);
+                removalConditions[button] = (() => i_RemovalCondition(item), removeAction);
+            }
 
             index++;
         }
@@ -437,7 +442,12 @@ if (i_RemovalCondition != null)
             i_ButtonPool: selectionButtonPool,
             i_ClearSelectionPanel: false,
             i_RemovalCondition: val => query.fromClause.table == null ||
-                                       !query.whereClause.isClicked        
+                                       !query.whereClause.isClicked  
+            ,i_OnItemRemoved: val => 
+            {
+                query.clearConditionValue();
+                PopulateValueSelection();
+            }      
         );
     }
 

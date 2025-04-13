@@ -132,16 +132,37 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
 
     public void SetConditionOperator(IOperatorStrategy i_Operator)
     {
-        whereClause.newCondition.Operator = i_Operator;
+        if (whereClause.newCondition != null)
+        {
+            whereClause.newCondition.Operator = i_Operator;
+        }
         NotifyClauses();
         updateQueryString();
     }
 
     public void SetConditionValue(object i_Value)
     {
-        whereClause.newCondition.Value = i_Value;
-        AddCondition();
-        updateQueryString();
+        if (whereClause.newCondition != null)
+        {
+            whereClause.newCondition.Value = i_Value;
+            AddCondition();
+            updateQueryString();
+        }
+    }
+
+    public void clearConditionValue()
+    {
+        if (whereClause.Conditions.Count > 0)
+        {
+            Condition last = whereClause.Conditions.Last();
+            whereClause.Conditions.Remove(last);
+
+            whereClause.CreateNewCondition(last.Column);
+            whereClause.newCondition.Operator = last.Operator;
+
+            NotifyClauses();
+            updateQueryString();
+        }
     }
 
     public void AddCondition()
