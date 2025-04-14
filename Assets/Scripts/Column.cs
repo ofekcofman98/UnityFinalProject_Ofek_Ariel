@@ -15,6 +15,9 @@ public class Column
 {
     public string Name { get; private set; }
     public eDataType DataType { get; set; }
+    
+    [NonSerialized]
+    public Table ParentTable;
 
     public Column(string i_Name, eDataType i_DataType)
     {

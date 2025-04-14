@@ -15,6 +15,8 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
     public List<Table> Tables {get; private set;}
     public Action OnTableNamesFetched;
+    public Action OnSchemeFullyLoaded { get; internal set; }
+    private int _columnsLoaded = 0;
 
     private Dictionary<string, JArray> tableDataCache = new Dictionary<string, JArray>(); // ✅ Cache
 
@@ -22,22 +24,15 @@ public class SupabaseManager : Singleton<SupabaseManager>
     {
         Tables = new List<Table>();
         StartCoroutine(FetchTables());
-        
     }
+
     public string SupabaseUrl => supabaseUrl;
     public string ApiKey => apiKey;
 
+
     IEnumerator FetchTables()
     {
-        string url = $"{supabaseUrl}/rest/v1/rpc/get_table_names";
-
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes("{}")); // Empty JSON body for POST
-
-        request.SetRequestHeader("apikey", apiKey);
-        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-        request.SetRequestHeader("Content-Type", "application/json");
+        UnityWebRequest request = createPostRequest("get_table_names", "{}");
 
         yield return request.SendWebRequest();
 
@@ -65,18 +60,9 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
     private IEnumerator FetchTableColumns(Table i_Table)
     {
-        Debug.Log($"Starting fetching columns for {i_Table.Name}");
-
-        string url = $"{supabaseUrl}/rest/v1/rpc/get_columns";
-
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes($"{{\"table_name\":\"{i_Table.Name}\"}}"));
-
-        request.SetRequestHeader("apikey", apiKey);
-        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-        request.SetRequestHeader("Content-Type", "application/json");
-
+        string json =  $"{{\"table_name\":\"{i_Table.Name}\"}}";
+        UnityWebRequest request = createPostRequest("get_columns", json);
+        
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
@@ -94,11 +80,12 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
                     eDataType mappedType = MapSupabaseType(columnType);
 
-                    columns.Add(new Column(columnName, mappedType));
+                    Column newColumn = new Column(columnName, mappedType);
+                    newColumn.ParentTable = i_Table;
+                    columns.Add(newColumn);
                 }
 
                 i_Table.SetColumns(columns);
-                // Debug.Log($"✅ Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
             }
             else
             {
@@ -110,54 +97,78 @@ public class SupabaseManager : Singleton<SupabaseManager>
             Debug.LogError($"Failed to fetch columns for {i_Table.Name}: {request.error}");
             yield break;
         }
+
+        _columnsLoaded++;
+
+        if (_columnsLoaded == Tables.Count)
+        {
+            StartCoroutine(FetchForeignKeys());
+        }
     }
 
+    private IEnumerator FetchForeignKeys()
+    {
+        UnityWebRequest request = createPostRequest("get_foreign_keys");
+        yield return request.SendWebRequest();
 
-    // private IEnumerator FetchTableColumns(Table i_Table)
-    // {
-    //     Debug.Log($"Starting fetching colums for {i_Table.Name}");
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
+            if (jsonResponse.Count > 0)
+            {
+                foreach (JObject obj in jsonResponse)
+                {
+                    string fromTableText = obj["table_name"].ToString();
+                    string fromColumnText = obj["column_name"].ToString();
+                    string toTableText = obj["foreign_table_name"].ToString();
+                    string toColumnText = obj["foreign_column_name"].ToString();
+                
+                    Table fromTable = Tables.FirstOrDefault(t => t.Name == fromTableText);            
+                    if (fromTable != null)
+                    {
+                        Column fromColumn = fromTable.Columns.FirstOrDefault(col => col.Name == fromColumnText);
+                        Table toTable = Tables.FirstOrDefault(t => t.Name == toTableText);
+                        Column toColumn = toTable.Columns.FirstOrDefault(col => col.Name == toColumnText);
+                        if (fromColumn != null && toTable != null && toColumn != null)
+                        {
+                            ForeignKey foreignKey = new ForeignKey(fromColumn, toTable, toColumn);
+                            fromTable.AddForeignKey(foreignKey);
+                        }
+                        else
+                        {
+                            Debug.LogWarning($"⚠️ FK could not be resolved: {fromTableText}.{fromColumnText} -> {toTableText}.{toColumnText}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"⚠️ {fromTableText} could not be found");
+                    }
+                }
+            }
+        }
+        else
+        {
+            Debug.LogError("Failed to fetch foreign keys: " + request.error);
+        }
+        
+Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
+        OnSchemeFullyLoaded?.Invoke();
+    }
 
-    //     string url = $"{supabaseUrl}/rest/v1/{i_Table.Name}?select=*";
-    //     // string url1 = $"{supabaseUrl}/rest/v1/information_schema.columns?table_name=eq.{i_Table.Name}&select=column_name,data_type";
+    private UnityWebRequest createPostRequest(string i_EndPoint, string i_JsonBody = "{}")
+    {
+        string url = $"{supabaseUrl}/rest/v1/rpc/{i_EndPoint}";
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
 
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(i_JsonBody));
 
-    //     UnityWebRequest request = UnityWebRequest.Get(url);
-    //     request.SetRequestHeader("apikey", apiKey);
-    //     request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-    //     request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("apikey", apiKey);
+        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
+        request.SetRequestHeader("Content-Type", "application/json");
 
-
-    //     yield return request.SendWebRequest();
-
-    //     if (request.result == UnityWebRequest.Result.Success)
-    //     {            
-    //         JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
-
-    //         if (jsonResponse.Count > 0)
-    //         {
-    //             JObject firstRow = (JObject)jsonResponse[0];                 
-    //             List<Column> columns = new List<Column>();
-
-    //             foreach (JProperty column in firstRow.Properties()) 
-    //             {
-
-    //                 columns.Add(new Column(column.Name));
-    //             }
-
-    //             i_Table.SetColumns(columns);
-    //             Debug.Log($"Columns for {i_Table.Name}: {string.Join(", ", columns.Select(col => col.Name))}");
-    //         }
-    //         else
-    //         {
-    //             Debug.LogWarning($"No data found for table: {i_Table.Name}");
-    //         }
-    //     }
-    //     else
-    //     {
-    //         Debug.LogError($"Failed to fetch columns for {i_Table.Name}: {request.error}");
-    //         yield break;
-    //     }
-    // }
+        return request;
+    }
 
     private eDataType MapSupabaseType(string supabaseType)
     {

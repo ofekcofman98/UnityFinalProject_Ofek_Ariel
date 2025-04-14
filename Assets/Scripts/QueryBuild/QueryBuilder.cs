@@ -11,7 +11,6 @@ using System.Linq;
 
 public class QueryBuilder : MonoBehaviour
 {
-
     [Header("QueryPreview")]
     [SerializeField] public GameObject QueryPanel;
     [SerializeField] private Transform selectSection;
@@ -19,9 +18,6 @@ public class QueryBuilder : MonoBehaviour
     [SerializeField] private Transform whereSection;
     public TextMeshProUGUI queryPreviewText;
     public Button executeButton;
-    private Transform[] sections;
-    // private Dictionary<object, Button> queryPanelButtons = new Dictionary<object, Button>();
-
 
         
     [Header("Selection")]
@@ -49,9 +45,6 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
         executeButton.onClick.AddListener(ExecuteQuery);
         clauseButtonPool = new ObjectPoolService<Button>(ClausesButtonPrefab.GetComponent<Button>(), clausesParent, 5, 20);
         selectionButtonPool = new ObjectPoolService<Button>(selectionButtonPrefab.GetComponent<Button>(), selectionParent);
-    
-        sections = new[] { selectSection, fromSection, whereSection};
-
     }
 
     public void BuildQuery()
@@ -134,12 +127,6 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
         }        
         query.SetConditionOperator(i_Operator);
         PopulateValueSelection();
-    }
-
-    private void OnConditionValueSelected(object i_Value)
-    {
-        Debug.Log("new condition added");
-        query.SetConditionValue(i_Value);
     }
 
     private void PopulateTableSelection()
@@ -333,13 +320,6 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
             }
         }
 
-Debug.Log($"[[{Time.time:F2}]] ");
-Debug.Log($"query.selectClause.isClicked: {query.selectClause.isClicked} ");
-Debug.Log($"query.fromClause.isClicked: {query.fromClause.isClicked} ");
-Debug.Log($"query.whereClause.isClicked: {query.whereClause.isClicked} ");
-Debug.Log($"Query State is: {query.queryState.CurrentState}");        
-Debug.Log($"");        
-
         int index = 0; 
         foreach (T item in i_Items)
         {
@@ -350,15 +330,11 @@ Debug.Log($"");
                 continue;
             }
 
-            // button.transform.SetParent(i_ParentTransform, false);
             InsertButtonInSection(i_ParentTransform, button, eDraggableType.SelectionButton);
 
             button.transform.SetSiblingIndex(index);  
             button.gameObject.SetActive(true);
             button.GetComponentInChildren<TextMeshProUGUI>().text = i_GetLabel(item);
-
-            // button.onClick.RemoveAllListeners();
-            // button.onClick.AddListener(() => i_OnItemSelected(item));
 
             DraggableItem draggableItem = button.GetComponent<DraggableItem>();
             if (draggableItem == null)
@@ -435,7 +411,7 @@ Debug.Log($"");
 
         populateSelectionButtons(
             i_Items: new List<string> { formattedValue },
-            i_OnItemDropped: val => OnConditionValueSelected(formattedValue),
+            i_OnItemDropped: val => query.SetConditionValue(formattedValue),
             i_GetLabel: val => formattedValue,
             i_ParentTransform: selectionParent,
             i_AssignedSection: val => whereSection,
@@ -484,7 +460,7 @@ Debug.Log($"");
         List<int> integerValues = new List<int> { 10, 20, 30, 40, 50, 60, 100};
         populateSelectionButtons(
             i_Items: integerValues,
-            i_OnItemDropped: val => OnConditionValueSelected(val),
+            i_OnItemDropped: val => query.SetConditionValue(val),
             i_GetLabel: val => val.ToString(),
             i_ParentTransform: selectionParent,
             i_ButtonPool: selectionButtonPool,

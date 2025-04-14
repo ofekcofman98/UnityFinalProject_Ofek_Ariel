@@ -10,9 +10,11 @@ public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
     public Query CurrentQuery {get; private set;}
+
     [SerializeField] internal QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
+    [SerializeField] private SchemeDisplayer schemeDisplayer;
 
     [SerializeField] private QuerySender querySender;
     [SerializeField] private QueryReceiver queryReceiver;
@@ -39,6 +41,23 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         SqlMode = false;
+        SupabaseManager.Instance.OnSchemeFullyLoaded += OnSchemeLoaded;
+    }
+
+    private void OnSchemeLoaded()
+    {
+            Debug.Log("🎯 GameManager received OnSchemeFullyLoaded");
+
+        if (schemeDisplayer != null)
+        {
+                    Debug.Log("🧱 Calling schemeDisplayer.DisplaySchema()");
+
+            schemeDisplayer.DisplaySchema();
+        }
+        else
+        {
+                Debug.LogWarning("❌ schemeDisplayer is null in GameManager");
+        }
     }
 
     internal void SetSqlMode(bool i_Visible = true)
@@ -114,58 +133,29 @@ public class GameManager : Singleton<GameManager>
     private void HandleQueryResults(JArray jsonResponse)
     {
 
-    Debug.Log($"📥 GameManager received {jsonResponse.Count} rows!");
+        Debug.Log($"📥 GameManager received {jsonResponse.Count} rows!");
 
-    if (CurrentQuery == null)
-    {
-        Debug.LogError("🚨 CurrentQuery is NULL!");
-        return;
-    }
+        if (CurrentQuery == null)
+        {
+            Debug.LogError("🚨 CurrentQuery is NULL!");
+            return;
+        }
 
-    if (CurrentQuery.selectClause.Columns.Count == 0)
-    {
-        Debug.LogError("🚨 CurrentQuery.Columns is EMPTY!");
-        return;
-    }
-    Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
+        if (CurrentQuery.selectClause.Columns.Count == 0)
+        {
+            Debug.LogError("🚨 CurrentQuery.Columns is EMPTY!");
+            return;
+        }
+        Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
-    if (tableDisplayer != null)
-    {
-        tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);
-    }
-    else
-    {
-        Debug.LogError("❌ TableDisplayer is missing!");
-    }
-
-
-    // if (CurrentQuery.SelectedColumns.Count == 0)
-    // {
-    //     Debug.LogError("🚨 CurrentQuery.SelectedColumns is EMPTY!");
-    //     return;
-    // }
-
-    // Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.SelectedColumns)}");
-
-    // if (tableDisplayer != null)
-    // {
-    //     tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.SelectedColumns);
-    // }
-    // else
-    // {
-    //     Debug.LogError("❌ TableDisplayer is missing!");
-    // }
-
-        // Debug.Log($"GameManager received {jsonResponse.Count} rows from QueryExecutor.");
-        
-        // if (tableDisplayer != null)
-        // {
-        //     tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.SelectedColumns);
-        // }
-        // else
-        // {
-        //     Debug.LogError("TableDisplayer is missing from GameManager.");
-        // }
+        if (tableDisplayer != null)
+        {
+            tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);
+        }
+        else
+        {
+            Debug.LogError("❌ TableDisplayer is missing!");
+        }
     }
 
 
