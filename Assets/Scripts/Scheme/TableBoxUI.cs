@@ -7,29 +7,28 @@ public class TableBoxUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI tableNameText;
     [SerializeField] private Transform columnListParent;
-    [SerializeField] private TextMeshProUGUI columnTextPrefab;
+    [SerializeField] private GameObject columnTextPrefab;
 
     private Dictionary<string, RectTransform> columnLabelMap = new Dictionary<string, RectTransform>();
+    private Dictionary<string, GameObject> columnGOMap = new();
 
     public void Init(Table i_Table)
     {
         tableNameText.text = i_Table.Name;
-
-        Debug.Log($"INIT to table: {i_Table.Name}, columns count: {i_Table.Columns.Count}");
-
         foreach(Column column in i_Table.Columns)
         {
-            Debug.Log($"📦 Creating column: {column.Name} for table {i_Table.Name}");
+            var columnGO = Instantiate(columnTextPrefab, columnListParent);
+            columnGO.GetComponentInChildren<TextMeshProUGUI>().text = column.Name;
 
-            var columnText = Instantiate(columnTextPrefab, columnListParent);
-            columnText.text = $"{column.Name}";
-
-            columnLabelMap[column.Name] = columnText.GetComponent<RectTransform>();
+            RectTransform rt = columnGO.GetComponentInChildren<TextMeshProUGUI>().transform.parent.GetComponent<RectTransform>();
+            columnLabelMap[column.Name.ToLowerInvariant().Trim()] = rt;
         }
+
+        
     }
 
     public RectTransform GetColumnRect(string i_ColumnName)
     {
-        return columnLabelMap.TryGetValue(i_ColumnName, out var rect) ? rect : null;
+        return columnLabelMap.TryGetValue(i_ColumnName.ToLowerInvariant().Trim(), out RectTransform o_Rect) ? o_Rect : null;
     }
 }

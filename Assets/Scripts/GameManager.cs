@@ -16,8 +16,11 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private TableDisplayer tableDisplayer;
     [SerializeField] private SchemeDisplayer schemeDisplayer;
 
+    [SerializeField] private bool simulateMobileInEditor = false;
+
     [SerializeField] private QuerySender querySender;
     [SerializeField] private QueryReceiver queryReceiver;
+    [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     void Awake()
     {
@@ -41,34 +44,42 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         SqlMode = false;
-        SupabaseManager.Instance.OnSchemeFullyLoaded += OnSchemeLoaded;
+        SetSqlMode(); 
     }
 
-    private void OnSchemeLoaded()
-    {
-            Debug.Log("🎯 GameManager received OnSchemeFullyLoaded");
-
-        if (schemeDisplayer != null)
-        {
-                    Debug.Log("🧱 Calling schemeDisplayer.DisplaySchema()");
-
-            schemeDisplayer.DisplaySchema();
-        }
-        else
-        {
-                Debug.LogWarning("❌ schemeDisplayer is null in GameManager");
-        }
-    }
 
     internal void SetSqlMode(bool i_Visible = true)
     {
-        if (CurrentQuery == null)
-        {
-            CurrentQuery = new Query();
-        }
-        queryBuilder.BuildQuery();
+        // if (CurrentQuery == null)
+        // {
+        //     CurrentQuery = new Query();
+        // }
+        // queryBuilder.BuildQuery();
+        // canvasSwitcher.ShowSqlModeCanvas(i_Visible);
 
+            // If null, auto-detect based on platform
+    if (i_Visible == null)
+    {
+#if UNITY_EDITOR
+        // Simulate mobile manually (e.g., from a toggle in the Inspector)
+        i_Visible = simulateMobileInEditor;
+#else
+        i_Visible = Application.isMobilePlatform;
+#endif
     }
+
+    SqlMode = i_Visible;
+
+    if (CurrentQuery == null)
+    {
+        CurrentQuery = new Query();
+    }
+
+    queryBuilder.BuildQuery();
+    canvasSwitcher.ShowSqlModeCanvas(SqlMode);
+}
+
+    
 
     public void SaveQuery(Query i_Query)
     {

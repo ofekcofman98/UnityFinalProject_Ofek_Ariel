@@ -67,6 +67,7 @@
     <Compile Include="Assets\Scripts\QuerySender.cs" />
     <Compile Include="Assets\Scripts\QueryExecutor.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryBuilder.cs" />
+    <Compile Include="Assets\Scripts\CanvasSwitcher.cs" />
     <Compile Include="Assets\Scripts\Condition.cs" />
     <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
     <Compile Include="Assets\Scripts\Column.cs" />
@@ -80,6 +81,8 @@
     <Compile Include="Assets\Scripts\QueryBuild\QueryUIManager.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
+    <Compile Include="Assets\Scripts\QueryBuilder.cs" />
+    <Compile Include="Assets\Scripts\Scheme\SchemeLayoutManager.cs" />
     <Compile Include="Assets\Scripts\DataTypeStrategy.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryPreviewManager.cs" />
