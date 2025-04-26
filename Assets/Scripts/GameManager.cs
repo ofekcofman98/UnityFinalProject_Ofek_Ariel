@@ -5,13 +5,14 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
-    public Query CurrentQuery {get; private set;}
+    public Query CurrentQuery {get; set;}
 
-    [SerializeField] internal QueryBuilder queryBuilder;
+    private QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
     [SerializeField] private SchemeDisplayer schemeDisplayer;
@@ -20,10 +21,14 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private QuerySender querySender;
     [SerializeField] private QueryReceiver queryReceiver;
-    [SerializeField] private CanvasSwitcher canvasSwitcher;
+    // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     void Awake()
     {
+
+    DontDestroyOnLoad(this.gameObject);
+    SceneManager.sceneLoaded += OnSceneLoaded;
+
         if (querySender == null)
         {
             Debug.LogWarning("QuerySender is not assigned in the Inspector! Trying to find it...");
@@ -38,48 +43,104 @@ public class GameManager : Singleton<GameManager>
         {
             queryExecutor.OnQueryExecuted += HandleQueryResults;
         }
-
-
     }
+
     void Start()
     {
-        SqlMode = false;
-        SetSqlMode(); 
+        string currentScene = SceneManager.GetActiveScene().name;
+        if (currentScene == "MobileClientScene")
+        {
+            InitMobileScene();
+        }
+        else if (currentScene == "MainScene")
+        {
+            InitMainScene();
+        }
+
     }
 
+    private void InitMainScene()
+    {
+        SqlMode = false;
+
+        if (queryExecutor == null)
+        {
+            queryExecutor = FindObjectOfType<QueryExecutor>();
+            if (queryExecutor != null)
+                queryExecutor.OnQueryExecuted += HandleQueryResults;
+        }
+
+        if (queryReceiver == null)
+            queryReceiver = FindObjectOfType<QueryReceiver>();
+
+        // if (canvasSwitcher != null)
+        //     canvasSwitcher.ShowSqlModeCanvas(false);
+
+    }
+
+    private void InitMobileScene()
+    {
+        SqlMode = true;
+
+        CurrentQuery ??= new Query();
+
+        queryBuilder = FindObjectOfType<QueryBuilder>();
+        // if (queryBuilder != null)
+        // {
+        //     queryBuilder.BuildQuery();
+        // }
+    }
 
     internal void SetSqlMode(bool i_Visible = true)
     {
-        // if (CurrentQuery == null)
-        // {
-        //     CurrentQuery = new Query();
-        // }
-        // queryBuilder.BuildQuery();
-        // canvasSwitcher.ShowSqlModeCanvas(i_Visible);
+        SqlMode = i_Visible;
 
-            // If null, auto-detect based on platform
-    if (i_Visible == null)
-    {
-#if UNITY_EDITOR
-        // Simulate mobile manually (e.g., from a toggle in the Inspector)
-        i_Visible = simulateMobileInEditor;
-#else
-        i_Visible = Application.isMobilePlatform;
-#endif
-    }
+        if (i_Visible)
+        {
+            CurrentQuery ??= new Query();
+            if (SceneManager.GetActiveScene().name != SceneNames.k_MobileClientScene)
+                SceneManager.LoadScene(SceneNames.k_MobileClientScene);
+        }
+        else
+        {
+            if (SceneManager.GetActiveScene().name != SceneNames.k_MainScene)
+                SceneManager.LoadScene(SceneNames.k_MainScene);
+        }
 
-    SqlMode = i_Visible;
+//             // If null, auto-detect based on platform
+//     if (i_Visible == null)
+//     {
+// #if UNITY_EDITOR
+//         // Simulate mobile manually (e.g., from a toggle in the Inspector)
+//         i_Visible = simulateMobileInEditor;
+// #else
+//         i_Visible = Application.isMobilePlatform;
+// #endif
+//     }
 
-    if (CurrentQuery == null)
-    {
-        CurrentQuery = new Query();
-    }
+//     SqlMode = i_Visible;
 
-    queryBuilder.BuildQuery();
-    canvasSwitcher.ShowSqlModeCanvas(SqlMode);
+//     if (CurrentQuery == null)
+//     {
+//         CurrentQuery = new Query();
+//     }
+
+//     queryBuilder.BuildQuery();
+//     canvasSwitcher.ShowSqlModeCanvas(SqlMode);
 }
 
     
+private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    if (scene.name == "MobileClientScene")
+    {
+        InitMobileScene();
+    }
+    else if (scene.name == "MainScene")
+    {
+        InitMainScene();
+    }
+}
 
     public void SaveQuery(Query i_Query)
     {

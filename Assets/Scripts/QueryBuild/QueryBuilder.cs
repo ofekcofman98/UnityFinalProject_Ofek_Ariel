@@ -11,6 +11,8 @@ using System.Linq;
 
 public class QueryBuilder : MonoBehaviour
 {
+    public bool IsReady { get; private set; } = false;
+
     [Header("QueryPreview")]
     [SerializeField] public GameObject QueryPanel;
     [SerializeField] private Transform selectSection;
@@ -39,16 +41,34 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
     = new Dictionary<Button, (Func<bool>, Action)>();
 
 
-    void Start()
+    void Awake()
     {
+        IsReady = true;
         QueryPanel.SetActive(false);
         executeButton.onClick.AddListener(ExecuteQuery);
         clauseButtonPool = new ObjectPoolService<Button>(ClausesButtonPrefab.GetComponent<Button>(), clausesParent, 5, 20);
+        Debug.Log("called");
         selectionButtonPool = new ObjectPoolService<Button>(selectionButtonPrefab.GetComponent<Button>(), selectionParent);
+    }
+
+    void Start()
+    {
+        // if (GameManager.Instance.CurrentQuery == null)
+        // {
+        //     GameManager.Instance.CurrentQuery = new Query();
+        // }
+
+        // BuildQuery(); // ✅ Let Unity control the timing
+
     }
 
     public void BuildQuery()
     {
+        if (!checkIsReady())
+        {
+            return;
+        }
+
         QueryPanel.SetActive(true);
         
         if (query == null)
@@ -66,6 +86,57 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
             SupabaseManager.Instance.OnTableNamesFetched += PopulateTableSelection;
         }
     }
+
+    private bool checkIsReady()
+    {
+        bool res = true;
+        if (!IsReady)
+        {
+            Debug.LogWarning("⚠️ QueryBuilder.BuildQuery() called before initialization is complete.");
+            res = false;
+        }
+
+        if (SupabaseManager.Instance == null || SupabaseManager.Instance.Tables == null)
+        {
+            Debug.LogWarning("⚠️ SupabaseManager or Tables not ready yet.");
+            res = false;
+        }
+
+        if (SupabaseManager.Instance.Tables.Count == 0)
+        {
+            Debug.LogWarning("⚠️ Supabase tables are empty — cannot build query.");
+            res = false;
+        }
+
+        return res;
+    }
+
+    private void OnEnable()
+    {
+        if (SupabaseManager.Instance != null)
+        {
+            SupabaseManager.Instance.OnSchemeFullyLoaded += HandleSchemeReady;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (SupabaseManager.Instance != null)
+        {
+            SupabaseManager.Instance.OnSchemeFullyLoaded -= HandleSchemeReady;
+        }
+    }
+
+    private void HandleSchemeReady()
+    {
+        Debug.Log("✅ QueryBuilder: Supabase scheme is fully loaded. Building query UI.");
+
+        if (GameManager.Instance.CurrentQuery == null)
+            GameManager.Instance.CurrentQuery = new Query();
+
+        BuildQuery();
+    }
+
 
     private void updateAvailableClauses()
     {
