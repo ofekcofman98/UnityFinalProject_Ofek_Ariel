@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "New Mission", menuName = "SQL Detective/Mission")]
+// [CreateAssetMenu(fileName = "New Mission", menuName = "SQL Detective/Mission")]
 public class MissionData : ScriptableObject
 {
     public string missingTitle;

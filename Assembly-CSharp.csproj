@@ -67,22 +67,23 @@
     <Compile Include="Assets\Scripts\QuerySender.cs" />
     <Compile Include="Assets\Scripts\QueryExecutor.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryBuilder.cs" />
-    <Compile Include="Assets\Scripts\CanvasSwitcher.cs" />
     <Compile Include="Assets\Scripts\Condition.cs" />
     <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
     <Compile Include="Assets\Scripts\Column.cs" />
+    <Compile Include="Assets\Scripts\Display\SetTargetDisplay.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
     <Compile Include="Assets\Scripts\ForeignKey.cs" />
     <Compile Include="Assets\Scripts\Table.cs" />
     <Compile Include="Assets\Scripts\QueryReceiver.cs" />
     <Compile Include="Assets\Scripts\QueryState.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DraggableItem.cs" />
+    <Compile Include="Assets\Scripts\QueryData.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneLoader.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryUIManager.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
+    <Compile Include="Assets\Scripts\DisplayActivator.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
-    <Compile Include="Assets\Scripts\QueryBuilder.cs" />
     <Compile Include="Assets\Scripts\Scheme\SchemeLayoutManager.cs" />
     <Compile Include="Assets\Scripts\DataTypeStrategy.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="Assets\Scripts\MissionData.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\QueryDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\Mission.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\IQueryClause.cs" />
     <Compile Include="Assets\Scripts\QueryConstants.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\WhereClause.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\QueryValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

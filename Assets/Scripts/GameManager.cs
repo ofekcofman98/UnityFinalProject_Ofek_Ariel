@@ -5,30 +5,34 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
+    [SerializeField] private GameObject pcCanvas;
+    [SerializeField] private GameObject mobileCanvas;
+
+
     public Query CurrentQuery {get; set;}
 
-    private QueryBuilder queryBuilder;
+    [SerializeField] private QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
     [SerializeField] private SchemeDisplayer schemeDisplayer;
 
-    [SerializeField] private bool simulateMobileInEditor = false;
 
     [SerializeField] private QuerySender querySender;
     [SerializeField] private QueryReceiver queryReceiver;
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
-    void Awake()
+    protected override void Awake()
     {
 
-    DontDestroyOnLoad(this.gameObject);
-    SceneManager.sceneLoaded += OnSceneLoaded;
-
+    // DontDestroyOnLoad(this.gameObject);
+    // SceneManager.sceneLoaded += OnSceneLoaded;
+        base.Awake(); 
         if (querySender == null)
         {
             Debug.LogWarning("QuerySender is not assigned in the Inspector! Trying to find it...");
@@ -46,101 +50,42 @@ public class GameManager : Singleton<GameManager>
     }
 
     void Start()
-    {
-        string currentScene = SceneManager.GetActiveScene().name;
-        if (currentScene == "MobileClientScene")
+    {        
+        if (pcCanvas != null)
         {
-            InitMobileScene();
+            pcCanvas.SetActive(true);
         }
-        else if (currentScene == "MainScene")
+        if (mobileCanvas != null)
         {
-            InitMainScene();
-        }
-
-    }
-
-    private void InitMainScene()
-    {
-        SqlMode = false;
-
-        if (queryExecutor == null)
-        {
-            queryExecutor = FindObjectOfType<QueryExecutor>();
-            if (queryExecutor != null)
-                queryExecutor.OnQueryExecuted += HandleQueryResults;
+            mobileCanvas.SetActive(false);
         }
 
-        if (queryReceiver == null)
-            queryReceiver = FindObjectOfType<QueryReceiver>();
-
-        // if (canvasSwitcher != null)
-        //     canvasSwitcher.ShowSqlModeCanvas(false);
-
-    }
-
-    private void InitMobileScene()
-    {
-        SqlMode = true;
-
-        CurrentQuery ??= new Query();
-
-        queryBuilder = FindObjectOfType<QueryBuilder>();
-        // if (queryBuilder != null)
+        // string currentScene = SceneManager.GetActiveScene().name;
+        // if (currentScene == "MobileClientScene")
         // {
-        //     queryBuilder.BuildQuery();
+        //     InitMobileScene();
         // }
+        // else if (currentScene == "MainScene")
+        // {
+        //     InitMainScene();
+        // }
+
     }
 
-    internal void SetSqlMode(bool i_Visible = true)
+    internal void SetSqlMode(bool i_IsSqlMode)
     {
-        SqlMode = i_Visible;
+        SqlMode = i_IsSqlMode;
 
-        if (i_Visible)
+        if (pcCanvas != null)
         {
-            CurrentQuery ??= new Query();
-            if (SceneManager.GetActiveScene().name != SceneNames.k_MobileClientScene)
-                SceneManager.LoadScene(SceneNames.k_MobileClientScene);
-        }
-        else
-        {
-            if (SceneManager.GetActiveScene().name != SceneNames.k_MainScene)
-                SceneManager.LoadScene(SceneNames.k_MainScene);
+            pcCanvas.SetActive(!i_IsSqlMode);
         }
 
-//             // If null, auto-detect based on platform
-//     if (i_Visible == null)
-//     {
-// #if UNITY_EDITOR
-//         // Simulate mobile manually (e.g., from a toggle in the Inspector)
-//         i_Visible = simulateMobileInEditor;
-// #else
-//         i_Visible = Application.isMobilePlatform;
-// #endif
-//     }
-
-//     SqlMode = i_Visible;
-
-//     if (CurrentQuery == null)
-//     {
-//         CurrentQuery = new Query();
-//     }
-
-//     queryBuilder.BuildQuery();
-//     canvasSwitcher.ShowSqlModeCanvas(SqlMode);
-}
-
-    
-private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-{
-    if (scene.name == "MobileClientScene")
-    {
-        InitMobileScene();
+        if (mobileCanvas != null)
+        {
+            mobileCanvas.SetActive(i_IsSqlMode);
+        }
     }
-    else if (scene.name == "MainScene")
-    {
-        InitMainScene();
-    }
-}
 
     public void SaveQuery(Query i_Query)
     {
@@ -230,5 +175,28 @@ private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         }
     }
 
+
+private void SetupSplitScreen()
+{
+    Camera[] allCameras = FindObjectsOfType<Camera>();
+
+    if (allCameras.Length < 2)
+    {
+        Debug.LogError("❌ Expected at least two cameras for split screen setup!");
+        return;
+    }
+
+    // Example: assume first camera is MainScene camera, second camera is MobileClientScene camera
+    Camera mainCamera = allCameras[0];
+    Camera mobileCamera = allCameras[1];
+
+    // Configure main camera to left half
+    mainCamera.rect = new Rect(0f, 0f, 0.5f, 1f);
+
+    // Configure mobile camera to right half
+    mobileCamera.rect = new Rect(0.5f, 0f, 0.5f, 1f);
+
+    Debug.Log("✅ Split screen setup done!");
+}
 
 }

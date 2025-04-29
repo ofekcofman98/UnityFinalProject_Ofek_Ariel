@@ -113,17 +113,19 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
 
     private void OnEnable()
     {
-        if (SupabaseManager.Instance != null)
-        {
-            SupabaseManager.Instance.OnSchemeFullyLoaded += HandleSchemeReady;
-        }
+    var supabase = SupabaseManager.Instance;
+    if (supabase != null)
+    {
+        supabase.OnSchemeFullyLoaded += HandleSchemeReady;
+    }
     }
 
     private void OnDisable()
     {
-        if (SupabaseManager.Instance != null)
+        var supabase = FindObjectOfType<SupabaseManager>();
+        if (supabase != null)
         {
-            SupabaseManager.Instance.OnSchemeFullyLoaded -= HandleSchemeReady;
+            supabase.OnSchemeFullyLoaded -= HandleSchemeReady;
         }
     }
 

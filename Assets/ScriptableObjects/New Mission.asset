@@ -14,6 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missingTitle: Find all EvidenceID
   missionDescription: 
-  requiredTableStr: CrimeEvidence
   requiredColumns: []
   requiredCondition: 
