@@ -42,6 +42,12 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
             _instance = null;
         }
     }
+
+    protected static void SetInstance(T instance)
+    {
+        _instance = instance;
+    }
+
 }
 
 // public abstract class Singleton <T>: MonoBehaviour where T: MonoBehaviour
