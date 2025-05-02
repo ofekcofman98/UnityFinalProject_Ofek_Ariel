@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -27,6 +28,12 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QueryReceiver queryReceiver;
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
+    [SerializeField] private QueryValidator queryValidator;
+    [SerializeField] private MissionSequence missionSequence;
+    private int currentMissionIndex = 0;
+    public MissionData currentMission => missionSequence.Missions[currentMissionIndex];
+    public event Action<bool> OnQueryIsCorrect;
+
     protected override void Awake()
     {
 
@@ -46,11 +53,12 @@ public class GameManager : Singleton<GameManager>
         else
         {
             queryExecutor.OnQueryExecuted += HandleQueryResults;
+            queryExecutor.OnQueryExecuted += ValidateQuery;
         }
     }
 
     void Start()
-    {        
+    {   
         if (pcCanvas != null)
         {
             pcCanvas.SetActive(true);
@@ -59,17 +67,23 @@ public class GameManager : Singleton<GameManager>
         {
             mobileCanvas.SetActive(false);
         }
+    }
 
-        // string currentScene = SceneManager.GetActiveScene().name;
-        // if (currentScene == "MobileClientScene")
-        // {
-        //     InitMobileScene();
-        // }
-        // else if (currentScene == "MainScene")
-        // {
-        //     InitMainScene();
-        // }
+    private void startGame()
+    {
 
+    }
+
+    private void goToNextMission()
+    {
+        if (currentMissionIndex < missionSequence.Missions.Count)
+        {
+            currentMissionIndex++;
+        }
+        else
+        {
+            Debug.Log("Game Over!");
+        }
     }
 
     internal void SetSqlMode(bool i_IsSqlMode)
@@ -145,7 +159,9 @@ public class GameManager : Singleton<GameManager>
 
 
         queryExecutor.Execute(CurrentQuery);
+        
     }
+
 
     private void HandleQueryResults(JArray jsonResponse)
     {
@@ -175,28 +191,21 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-
-private void SetupSplitScreen()
-{
-    Camera[] allCameras = FindObjectsOfType<Camera>();
-
-    if (allCameras.Length < 2)
+    private void ValidateQuery(JArray jsonResponse)
     {
-        Debug.LogError("❌ Expected at least two cameras for split screen setup!");
-        return;
+        bool res = queryValidator.ValidateQuery(CurrentQuery, jsonResponse, missionSequence.Missions[currentMissionIndex]);
+
+        if (res)
+        {
+            Debug.Log("Query is correct!");
+            goToNextMission();
+            OnQueryIsCorrect?.Invoke(true);
+        }
+        else
+        {
+            Debug.Log("Query is incorrect.");
+            OnQueryIsCorrect?.Invoke(false);
+        }
     }
-
-    // Example: assume first camera is MainScene camera, second camera is MobileClientScene camera
-    Camera mainCamera = allCameras[0];
-    Camera mobileCamera = allCameras[1];
-
-    // Configure main camera to left half
-    mainCamera.rect = new Rect(0f, 0f, 0.5f, 1f);
-
-    // Configure mobile camera to right half
-    mobileCamera.rect = new Rect(0.5f, 0f, 0.5f, 1f);
-
-    Debug.Log("✅ Split screen setup done!");
-}
 
 }

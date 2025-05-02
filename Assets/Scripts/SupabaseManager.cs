@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 
 public class SupabaseManager : Singleton<SupabaseManager>
 {
-    private string supabaseUrl = "https://vwudsbcqlhwajpkmcpsz.supabase.co";
-    private string apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dWRzYmNxbGh3YWpwa21jcHN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkxNDQ5OTQsImV4cCI6MjA1NDcyMDk5NH0.9nDEBqlbCpUEmAjyEXwN0KzdCa89uBSjI_I2HkMn1_s";
+    private string supabaseUrl = ServerData.k_SupabaseUrl;
+    private string apiKey = ServerData.k_ApiKey;
 
     public List<Table> Tables {get; private set;}
     public Action OnTableNamesFetched;
@@ -33,7 +33,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
     IEnumerator FetchTables()
     {
-        UnityWebRequest request = createPostRequest("get_table_names", "{}");
+        UnityWebRequest request = SupabaseUtility.CreatePostRpcRequest("get_table_names", "{}");
 
         yield return request.SendWebRequest();
 
@@ -64,7 +64,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
     private IEnumerator FetchTableColumns(Table i_Table)
     {
         string json =  $"{{\"table_name\":\"{i_Table.Name}\"}}";
-        UnityWebRequest request = createPostRequest("get_columns", json);
+        UnityWebRequest request = SupabaseUtility.CreatePostRpcRequest("get_columns", json);
         
         yield return request.SendWebRequest();
 
@@ -111,7 +111,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
 
     private IEnumerator FetchForeignKeys()
     {
-        UnityWebRequest request = createPostRequest("get_foreign_keys");
+        UnityWebRequest request = SupabaseUtility.CreatePostRpcRequest("get_foreign_keys");
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
@@ -158,20 +158,6 @@ Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
         OnSchemeFullyLoaded?.Invoke();
     }
 
-    private UnityWebRequest createPostRequest(string i_EndPoint, string i_JsonBody = "{}")
-    {
-        string url = $"{supabaseUrl}/rest/v1/rpc/{i_EndPoint}";
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
-
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(i_JsonBody));
-
-        request.SetRequestHeader("apikey", apiKey);
-        request.SetRequestHeader("Authorization", $"Bearer {apiKey}");
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        return request;
-    }
 
     private eDataType MapSupabaseType(string supabaseType)
     {
@@ -197,72 +183,5 @@ Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
                 return eDataType.String;
         }
     }
-    
 
-// public async Task Initialize(string url, string key)
-// {
-//     var options = new SupabaseOptions
-//     {
-//         AutoConnectRealtime = false
-//     };
-
-//     client = new Client(url, key, options);
-//     await client.InitializeAsync();
-
-//     Debug.Log("✅ Supabase client initialized.");
-// }
-
-//     #if UNITY_EDITOR
-//     public static async Task EditorInitializeAsync()
-//     {
-//         if (Instance == null) // Use public Instance property
-//         {
-//             var go = new GameObject("SupabaseManager (Editor Init)");
-//             var supabaseManager = go.AddComponent<SupabaseManager>();
-//             DontDestroyOnLoad(go);
-
-//             SetInstance(supabaseManager); // ✅ Safe controlled setting
-//             await supabaseManager.EditorFetchTables();
-//         }
-//     }
-//     #endif
-
-// #if UNITY_EDITOR
-// public async Task EditorFetchTables()
-// {
-//     Tables = new List<Table>();
-//     _columnsLoaded = 0;
-
-//     Debug.Log("🟡 Starting EditorFetchTables");
-
-//     var fetchTablesCoroutine = FetchTables();
-//     await CoroutineAsTask(fetchTablesCoroutine);
-
-//     Debug.Log($"🟢 EditorFetchTables done. Tables fetched: {Tables?.Count ?? -1}");
-// }
-// #endif
-
-// private async Task CoroutineAsTask(IEnumerator coroutine)
-// {
-//     var tcs = new TaskCompletionSource<bool>();
-
-//     void OnComplete() => tcs.TrySetResult(true);
-//     GameManager.Instance.StartCoroutine(WrapCoroutine(coroutine, OnComplete));
-
-//     await tcs.Task;
-// }
-
-// private IEnumerator WrapCoroutine(IEnumerator coroutine, Action onComplete)
-// {
-//     yield return coroutine;
-//     onComplete?.Invoke();
-// }
-
-
-
-}
-
-internal class SupabaseOptions
-{
-    public bool AutoConnectRealtime { get; set; }
 }

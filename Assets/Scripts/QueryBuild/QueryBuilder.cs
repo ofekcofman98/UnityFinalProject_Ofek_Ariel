@@ -12,6 +12,7 @@ using System.Linq;
 public class QueryBuilder : MonoBehaviour
 {
     public bool IsReady { get; private set; } = false;
+    [SerializeField] private QueryUIManager queryUIManager;
 
     [Header("QueryPreview")]
     [SerializeField] public GameObject QueryPanel;
@@ -85,6 +86,9 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
             SupabaseManager.Instance.OnTableNamesFetched -= PopulateTableSelection;
             SupabaseManager.Instance.OnTableNamesFetched += PopulateTableSelection;
         }
+
+        queryUIManager.ShowUI();
+        GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
     }
 
     private bool checkIsReady()

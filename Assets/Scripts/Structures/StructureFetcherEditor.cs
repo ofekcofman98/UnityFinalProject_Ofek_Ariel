@@ -7,11 +7,12 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Unity.EditorCoroutines.Editor;
+using System;
 
 public class SchemaFetcherEditor : EditorWindow
 {
-    private const string SupabaseUrl = "https://vwudsbcqlhwajpkmcpsz.supabase.co";
-    private const string ApiKey  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dWRzYmNxbGh3YWpwa21jcHN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzkxNDQ5OTQsImV4cCI6MjA1NDcyMDk5NH0.9nDEBqlbCpUEmAjyEXwN0KzdCa89uBSjI_I2HkMn1_s";
+    private const string SupabaseUrl = ServerData.k_SupabaseUrl;
+    private const string ApiKey = ServerData.k_ApiKey;
     private const string SavePath = "Assets/SQLDetective/Data/Schema";
 
     [MenuItem("SQL Detective/Fetch Supabase Schema")]
@@ -101,5 +102,29 @@ Debug.Log($"File already exists? {fileExists}");
 
         return request;
     }
+
+
+    private IEnumerator FetchTableData(string tableName, Action<JArray> onComplete)
+    {
+        string url = $"{SupabaseUrl}/rest/v1/{tableName}?select=*";
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("apikey", ApiKey);
+        request.SetRequestHeader("Authorization", $"Bearer {ApiKey}");
+        request.SetRequestHeader("Accept", "application/json");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            JArray data = JArray.Parse(request.downloadHandler.text);
+            onComplete?.Invoke(data);
+        }
+        else
+        {
+            Debug.LogError($"❌ Failed to fetch data from {tableName}: {request.error}");
+        }
+    }
+
 }
 #endif

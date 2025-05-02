@@ -33,19 +33,14 @@ public class QueryExecutor : MonoBehaviour
 
         //https://vwudsbcqlhwajpkmcpsz.supabase.co/rest/v1/Persons?select=age&age=eq.40
         
-        string url = $"{SupabaseManager.Instance.SupabaseUrl}/rest/v1/{query.fromClause.table.Name}?select={query.GetSelectFields()}&{query.whereClause.ToSupabase()}";
+        string url = $"{ServerData.k_SupabaseUrl}/rest/v1/{query.fromClause.table.Name}?select={query.GetSelectFields()}&{query.whereClause.ToSupabase()}";
 
     // if (!string.IsNullOrEmpty(query.WherePartSupaBase))
     // {
     //     url += $"&{query.WherePartSupaBase}";  // Append filters as URL params
     // }
     
-        Debug.Log($"THE URL IS: {url}");
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("apikey", SupabaseManager.Instance.ApiKey);
-        request.SetRequestHeader("Authorization", $"Bearer {SupabaseManager.Instance.ApiKey}");
-        request.SetRequestHeader("Content-Type", "application/json");
-
+        UnityWebRequest request = SupabaseUtility.CreateGetRequest(url);
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)

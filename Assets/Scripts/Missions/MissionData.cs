@@ -11,4 +11,7 @@ public class MissionData : ScriptableObject
     public string requiredTable;
     public List<string> requiredColumns;
     public string requiredCondition;
+
+    public string expectedPrimaryKeyField;
+    public string expectedRowIdValue;
 }
