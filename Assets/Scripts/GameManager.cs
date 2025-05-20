@@ -18,7 +18,7 @@ public class GameManager : Singleton<GameManager>
 
     public Query CurrentQuery {get; set;}
 
-    [SerializeField] private QueryBuilder queryBuilder;
+    [SerializeField] public QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
     [SerializeField] private SchemeDisplayer schemeDisplayer;
@@ -29,9 +29,10 @@ public class GameManager : Singleton<GameManager>
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     [SerializeField] private QueryValidator queryValidator;
-    [SerializeField] private MissionSequence missionSequence;
-    private int currentMissionIndex = 0;
-    public MissionData currentMission => missionSequence.Missions[currentMissionIndex];
+    [SerializeField] public MissionsManager missionManager;
+    [SerializeField] public QueryUIManager queryUIManager;
+
+
     public event Action<bool> OnQueryIsCorrect;
 
     protected override void Awake()
@@ -53,12 +54,25 @@ public class GameManager : Singleton<GameManager>
         else
         {
             queryExecutor.OnQueryExecuted += HandleQueryResults;
-            queryExecutor.OnQueryExecuted += ValidateQuery;
+            queryExecutor.OnQueryExecuted += result =>
+            {
+                if (missionManager != null)
+                {
+                    missionManager.ValidateMission(CurrentQuery, result, queryValidator);
+                }
+            };
+            missionManager.OnMissionValidated += isCorrect => 
+            {
+                OnQueryIsCorrect?.Invoke(isCorrect);
+            };
+
         }
     }
 
     void Start()
     {   
+        queryUIManager.Init(missionManager);
+
         if (pcCanvas != null)
         {
             pcCanvas.SetActive(true);
@@ -74,17 +88,6 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    private void goToNextMission()
-    {
-        if (currentMissionIndex < missionSequence.Missions.Count)
-        {
-            currentMissionIndex++;
-        }
-        else
-        {
-            Debug.Log("Game Over!");
-        }
-    }
 
     internal void SetSqlMode(bool i_IsSqlMode)
     {
@@ -190,22 +193,4 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("❌ TableDisplayer is missing!");
         }
     }
-
-    private void ValidateQuery(JArray jsonResponse)
-    {
-        bool res = queryValidator.ValidateQuery(CurrentQuery, jsonResponse, missionSequence.Missions[currentMissionIndex]);
-
-        if (res)
-        {
-            Debug.Log("Query is correct!");
-            goToNextMission();
-            OnQueryIsCorrect?.Invoke(true);
-        }
-        else
-        {
-            Debug.Log("Query is incorrect.");
-            OnQueryIsCorrect?.Invoke(false);
-        }
-    }
-
 }

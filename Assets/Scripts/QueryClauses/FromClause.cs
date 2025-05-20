@@ -31,7 +31,8 @@ public class FromClause : IQueryClause
 
     public void Deactivate()
     {
-        Reset();
+        table = null;
+        isClicked = false;
     }
 
     public void SetTable(Table i_Table)
@@ -115,7 +116,7 @@ public class FromClause : IQueryClause
 
     public void Reset()
     {
-        table = null;
-        isClicked = false;
+        // table = null;
+        // isClicked = false;
     }
 }

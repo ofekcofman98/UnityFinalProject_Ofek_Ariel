@@ -6,6 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Mission", menuName = "SQL Detective/Mission")]
 public class MissionData : ScriptableObject
 {
+    public int missionNumber;
     public string missionTitle;
     [TextArea(3, 5)] public string missionDescription; 
     public string requiredTable;

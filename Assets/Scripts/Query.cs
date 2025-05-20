@@ -218,6 +218,15 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         return orderedElements;
     }
 
+    public void Reset()
+    {
+        foreach (IQueryClause clause in clauses)
+        {
+            clause.Deactivate();
+            clause.Reset();
+        }
+    }
+
     public void NotifyClauses()
     {
         foreach (IQueryClause clause in clauses)

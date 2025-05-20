@@ -38,6 +38,7 @@ public class QueryBuilder : MonoBehaviour
     private Dictionary<IQueryClause, Button> activeClauseButtons = new Dictionary<IQueryClause, Button>();
 
     private Query query;
+
 private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalConditions 
     = new Dictionary<Button, (Func<bool>, Action)>();
 
@@ -54,13 +55,7 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
 
     void Start()
     {
-        // if (GameManager.Instance.CurrentQuery == null)
-        // {
-        //     GameManager.Instance.CurrentQuery = new Query();
-        // }
-
-        // BuildQuery(); // ✅ Let Unity control the timing
-
+        GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
     }
 
     public void BuildQuery()
@@ -88,7 +83,7 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
         }
 
         queryUIManager.ShowUI();
-        GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
+        // GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
     }
 
     private bool checkIsReady()
@@ -219,6 +214,7 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
                 ,i_ButtonPool: selectionButtonPool
                 ,i_RemovalCondition: table => query.fromClause.table == null ||
                                               !query.fromClause.isClicked 
+
                 ,i_OnItemRemoved: table => {
                     query.fromClause.ClearTable();
                     // query.ClearColumns();
@@ -244,12 +240,9 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
             ,i_ButtonPool: selectionButtonPool
             ,i_RemovalCondition: column => query.fromClause.table == null ||
                                           !query.selectClause.isClicked 
+
             ,i_OnItemRemoved: col => 
             {
-                // if (query.queryState.CurrentState == eQueryState.SelectingConditions)
-                // {
-                //     UpdateSelectionVisibility();
-                // }
                 query.RemoveColumn(col);
                 
                 if(query.selectClause.IsEmpty())
@@ -716,5 +709,96 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
         
         return section;
     }
+
+    public void ResetQuery()
+    {
+        // queryResetInProgress = true;
+
+    // 🔥 Actually remove all clause buttons that are still visible
+    foreach (var pair in activeClauseButtons)
+    {
+        clauseButtonPool.Release(pair.Value);
+    }
+    activeClauseButtons.Clear();
+
+    // Clear selection panel
+    ClearSelectionPanel();
+
+    // 🔁 Replace the query with a new one
+    query = new Query();
+    query.OnQueryUpdated += UpdateQueryPreview;
+    query.OnAvailableClausesChanged += updateAvailableClauses;
+
+    // 💡 Reset preview and rebuild UI
+    queryPreviewText.text = "";
+    updateAvailableClauses();
+syncQueryUI();
+    // queryResetInProgress = false;
+    foreach (Transform child in selectSection)
+    Debug.Log("🟡 Leftover in SELECT: " + child.name);
+
+foreach (Transform child in fromSection)
+    Debug.Log("🟡 Leftover in FROM: " + child.name);
+
+foreach (Transform child in whereSection)
+    Debug.Log("🟡 Leftover in WHERE: " + child.name);
+
+
+        // Debug.Log("🔄 Resetting query...");
+
+        // foreach (var pair in activeClauseButtons)
+        // {
+        //     clauseButtonPool.Release(pair.Value);
+        // }
+        // activeClauseButtons.Clear();
+
+        // // Release all pooled selection buttons
+        // foreach (Transform child in selectionParent)
+        // {
+        //     if (child.TryGetComponent<Button>(out Button btn))
+        //     {
+        //         selectionButtonPool.Release(btn);
+        //     }
+        //     else
+        //     {
+        //         Destroy(child.gameObject); // in case it's the input field or confirm button
+        //     }
+        // }
+
+        // ClearDropZone(selectSection);
+        // ClearDropZone(fromSection);
+        // ClearDropZone(whereSection);
+
+        // // Clear removal conditions map
+        // removalConditions.Clear();
+
+        // // Reset query instance completely
+        // query = new Query();
+        // query.OnQueryUpdated += UpdateQueryPreview;
+        // query.OnAvailableClausesChanged += updateAvailableClauses;
+
+        // // Clear preview
+        // queryPreviewText.text = "";
+
+        // // Reset buttons
+        // queryUIManager.executeButton.gameObject.SetActive(true);
+        // queryUIManager.continueButton.gameObject.SetActive(false);
+
+        // // Rebuild clause buttons from scratch
+        // updateAvailableClauses();
+
+        // // Hide selection panel until clause is activated
+        // ClearSelectionPanel();
+    }
+
+    private void ClearDropZone(Transform section)
+    {
+        for (int i = section.childCount - 1; i >= 0; i--)
+        {
+            Destroy(section.GetChild(i).gameObject);
+        }
+    }
+
+
 
 }
