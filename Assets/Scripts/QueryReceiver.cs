@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 
 public class QueryReceiver : MonoBehaviour
 {
-    private const string k_pcIP = "192.168.1.228"; 
+    private const string k_pcIP = "localhost";//"192.168.1.228"; 
     private string serverUrl = $"http://{k_pcIP}:8080/get-query";
     private Coroutine listeningCoroutine;
     
@@ -59,6 +59,13 @@ private IEnumerator CheckForNewQuery()
 
                     Query receivedQuery = new Query();
                     receivedQuery.QueryString = receivedJson.Trim();
+
+if (GameManager.Instance.CurrentQuery != null)
+{
+    receivedQuery.fromClause = GameManager.Instance.CurrentQuery.fromClause;
+    receivedQuery.selectClause = GameManager.Instance.CurrentQuery.selectClause;
+    receivedQuery.whereClause = GameManager.Instance.CurrentQuery.whereClause;
+}
 
                     GameManager.Instance.SaveQuery(receivedQuery);
                 }

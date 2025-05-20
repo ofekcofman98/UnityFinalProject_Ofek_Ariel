@@ -21,7 +21,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private TableDisplayer tableDisplayer;
-    [SerializeField] private SchemeDisplayer schemeDisplayer;
+    [SerializeField] public SchemeDisplayer schemeDisplayer;
 
 
     [SerializeField] private QuerySender querySender;
@@ -81,6 +81,7 @@ public class GameManager : Singleton<GameManager>
         {
             mobileCanvas.SetActive(false);
         }
+            SupabaseManager.Instance.OnSchemeFullyLoaded += () => UnlockInitialTables();
     }
 
     private void startGame()
@@ -165,7 +166,6 @@ public class GameManager : Singleton<GameManager>
         
     }
 
-
     private void HandleQueryResults(JArray jsonResponse)
     {
 
@@ -193,4 +193,21 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("❌ TableDisplayer is missing!");
         }
     }
+
+    private void UnlockInitialTables()
+    {
+        Table crimeEvidence = SupabaseManager.Instance.Tables
+            .FirstOrDefault(t => t.Name == "CrimeEvidence");
+        Debug.Log($"TABLE first column: {crimeEvidence.Columns[0]}");
+        if (crimeEvidence != null)
+        {
+            crimeEvidence.UnlockTable();
+            Debug.Log("🔓 'CrimeEvidence' table unlocked at game start.");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ 'CrimeEvidence' table not found.");
+        }
+    }
+
 }

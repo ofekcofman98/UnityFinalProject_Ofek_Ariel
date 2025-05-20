@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public class MissionsManager : MonoBehaviour
         if (isValid)
         {
             Debug.Log("✅ Mission complete!");
+            checkUnlocking();
             OnMissionValidated?.Invoke(true);
             // CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
@@ -30,6 +32,21 @@ public class MissionsManager : MonoBehaviour
         }
 
         OnMissionValidated?.Invoke(isValid);
+    }
+
+    private void checkUnlocking()
+    {
+        if (CurrentMission.unlocksTable && !string.IsNullOrEmpty(CurrentMission.tableToUnlock))
+        {
+            Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
+            t => t.Name == CurrentMission.tableToUnlock);
+
+            if (unlockedTable != null)
+            {
+                unlockedTable.UnlockTable();
+                Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+            }
+        }
     }
 
     public void GoToNextMission()

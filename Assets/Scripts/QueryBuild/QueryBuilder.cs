@@ -203,10 +203,12 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
 
     private void PopulateTableSelection()
     {
+        var unlockedTables = SupabaseManager.Instance.Tables.Where(t => t.IsUnlocked);
+
         if (query.fromClause.table == null)
         {
             populateSelectionButtons(
-                 i_Items: SupabaseManager.Instance.Tables
+                 i_Items: unlockedTables
                 ,i_OnItemDropped: OnTableSelected
                 ,i_GetLabel: table => table.Name
                 ,i_ParentTransform: selectionParent

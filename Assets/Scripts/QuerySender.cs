@@ -11,7 +11,7 @@ using System;
 
 public class QuerySender : MonoBehaviour
 {
-    private const string k_pcIP = "192.168.1.228";
+    private const string k_pcIP = "localhost";//"192.168.1.228";
     private string serverUrl = $"http://{k_pcIP}:8080/send-query"; 
 
     public void SendQueryToServer(Query query)

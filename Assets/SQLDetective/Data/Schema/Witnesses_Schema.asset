@@ -16,7 +16,7 @@ MonoBehaviour:
   Columns:
   - ColumnName: witness_id
     DataType: uuid
-  - ColumnName: person_id
-    DataType: uuid
   - ColumnName: testimony
+    DataType: text
+  - ColumnName: person_id
     DataType: text

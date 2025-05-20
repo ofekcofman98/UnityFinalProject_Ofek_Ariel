@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,10 @@ public class SchemeDisplayer : MonoBehaviour
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform lineContainerTransform;
     [SerializeField] private float lineWidth = 20f;
+    
+    [SerializeField] private GameObject newTablePopup;
+    [SerializeField] private TextMeshProUGUI SchemaText;
+
     public SchemeLayoutManager layoutManager;
     private bool isVisible = false;
 
@@ -38,6 +43,19 @@ public class SchemeDisplayer : MonoBehaviour
         layoutManager.LayoutTables(SupabaseManager.Instance.Tables);        
         Canvas.ForceUpdateCanvases();
         HandleForeignKeys();
+        SchemaText.text = "Schema";
+
+    }
+
+    public void ShowSchemaWithNewUnlock(string i_TableName)
+    {
+        layoutManager.layoutParent.gameObject.SetActive(true);
+        lineContainerTransform.gameObject.SetActive(true);
+
+        DisplaySchema(); // always redraw
+
+        // newTablePopup.SetActive(true);
+        SchemaText.text = $"New table unlocked: {i_TableName}";
     }
 
 

@@ -78,6 +78,20 @@ public class MissionDataEditor : Editor
         EditorGUILayout.Space(10);
         mission.requiredCondition = EditorGUILayout.TextField("Required Condition", mission.requiredCondition);
 
+EditorGUILayout.Space(10);
+EditorGUILayout.LabelField("Table Unlock Settings", EditorStyles.boldLabel);
+
+mission.unlocksTable = EditorGUILayout.Toggle("Unlocks Table?", mission.unlocksTable);
+
+if (mission.unlocksTable)
+{
+    int unlockIndex = Mathf.Max(0, tables.FindIndex(t => t.TableName == mission.tableToUnlock));
+    unlockIndex = EditorGUILayout.Popup("Table to Unlock", unlockIndex, tableNames);
+    mission.tableToUnlock = tableNames[unlockIndex];
+}
+
+
+
         if (GUI.changed)
         {
             EditorUtility.SetDirty(mission);

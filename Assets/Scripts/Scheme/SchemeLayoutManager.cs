@@ -15,7 +15,7 @@ public class SchemeLayoutManager : MonoBehaviour
     [SerializeField] private float horizontalSpacing = 20f;
     [SerializeField] private float verticalSpacing = 20f;
     [SerializeField] private float paddingLeft = 20f;
-    [SerializeField] private float paddingTop = 30f;
+    [SerializeField] private float paddingTop = 60f;
 
     
     private Dictionary<string, TableBoxUI> tableBoxMap = new Dictionary<string, TableBoxUI>();

@@ -10,16 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 80f0d36b8ceb591468f025dc55dbf4c9, type: 3}
-  m_Name: 1
+  m_Name: 3
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: introduction to SQL
-  missionDescription: Retrieve evidence_id from the CrimeEvidence table
-  requiredTable: CrimeEvidence
+  missionTitle: Persons
+  missionDescription: Select all the columns of the people that older than 30.
+  requiredTable: Persons
   requiredColumns:
-  - evidence_id
+  - first_name
+  - last_name
+  - age
+  - person_id
   requiredCondition: 
-  expectedPrimaryKeyField: time
-  expectedRowIdValue: 2024-02-10
-  unlocksTable: 1
-  tableToUnlock: Witnesses
+  expectedPrimaryKeyField: age
+  expectedRowIdValue: 30
+  unlocksTable: 0
+  tableToUnlock: 

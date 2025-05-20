@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TableName: Persons
   Columns:
-  - ColumnName: person_id
-    DataType: uuid
   - ColumnName: first_name
     DataType: text
   - ColumnName: last_name
     DataType: text
   - ColumnName: age
     DataType: integer
+  - ColumnName: person_id
+    DataType: text

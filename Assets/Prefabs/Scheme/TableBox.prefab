@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5331369571238969589}
   - component: {fileID: 5676652202555099972}
   - component: {fileID: 9007383687054579741}
+  - component: {fileID: 331888566903982204}
   m_Layer: 5
   m_Name: TableBox
   m_TagString: Untagged
@@ -121,6 +122,7 @@ MonoBehaviour:
   tableNameText: {fileID: 1705044625525689181}
   columnListParent: {fileID: 5947282546898713560}
   columnTextPrefab: {fileID: 2820239455913361085, guid: fa8b96869b1ec13468101c563fd95a1b, type: 3}
+  canvasGroup: {fileID: 331888566903982204}
 --- !u!114 &9007383687054579741
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +137,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!225 &331888566903982204
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1136226476580617511}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3552428779729976531
 GameObject:
   m_ObjectHideFlags: 0

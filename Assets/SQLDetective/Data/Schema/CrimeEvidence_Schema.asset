@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   TableName: CrimeEvidence
   Columns:
-  - ColumnName: evidence_id
-    DataType: uuid
   - ColumnName: time
     DataType: date
   - ColumnName: victim_id
@@ -26,3 +24,5 @@ MonoBehaviour:
     DataType: text
   - ColumnName: witness_id
     DataType: uuid
+  - ColumnName: evidence_id
+    DataType: integer

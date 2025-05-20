@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -58,6 +60,11 @@ public class QueryUIManager : MonoBehaviour
         // Reset the query
         GameManager.Instance.queryBuilder.ResetQuery();
 
+        if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
+        {
+            string tableName = GameManager.Instance.missionManager.CurrentMission.tableToUnlock;
+            showNewTable(tableName);
+        }
         // Move to next mission
         GameManager.Instance.missionManager.GoToNextMission();
 
@@ -65,5 +72,12 @@ public class QueryUIManager : MonoBehaviour
         ShowUI();
     }
 
-
+    private void showNewTable(string tableName)
+    {
+        Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
+        if (table != null)
+        {
+            GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
+        }
+    }
 }

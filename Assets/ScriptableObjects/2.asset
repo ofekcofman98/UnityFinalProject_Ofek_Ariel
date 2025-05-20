@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Witnesses
-  missionDescription: Select all columns from Witnesses
+  missionDescription: Select the tetimony from person 003
   requiredTable: Witnesses
   requiredColumns:
-  - witness_id
-  - person_id
   - testimony
   requiredCondition: 
-  expectedPrimaryKeyField: witness_id
-  expectedRowIdValue: d0e90653-f6c2-41e3-9f6c-c2e8f575e782
+  expectedPrimaryKeyField: person_id
+  expectedRowIdValue: 003
+  unlocksTable: 1
+  tableToUnlock: Persons
