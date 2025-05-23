@@ -14,17 +14,25 @@ using Newtonsoft.Json.Linq;
 
 public class QueryReceiver : MonoBehaviour
 {
-    private const string k_pcIP = "192.168.1.228"; 
-    private string serverUrl = $"http://{k_pcIP}:8080/get-query";
+    private const string k_pcIP = "node-query-server-591845120560.us-central1.run.app"; 
+    private string serverUrl = $"https://{k_pcIP}/get-query";
     private Coroutine listeningCoroutine;
-    
+
     public void StartListening()
     {
+        Debug.Log("🎧 StartListening() called.");
+
         if (listeningCoroutine == null)
         {
+            Debug.Log("✅ Starting CheckForNewQuery coroutine.");
             listeningCoroutine = StartCoroutine(CheckForNewQuery());
         }
+        else
+        {
+            Debug.Log("ℹ️ Already listening.");
+        }
     }
+
 
     public void StopListening()
     {
@@ -35,51 +43,58 @@ public class QueryReceiver : MonoBehaviour
         }
     }
 
-
-private IEnumerator CheckForNewQuery()
-{
-    while (true)
+    private IEnumerator CheckForNewQuery()
     {
-        UnityWebRequest request = UnityWebRequest.Get(serverUrl);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
+        while (true)
         {
-            string receivedJson = request.downloadHandler.text;
-            Debug.Log($"📥 Raw Query JSON: {receivedJson}");
+            Debug.Log("📡 Polling the server for new query...");
 
-            try
+            UnityWebRequest request = UnityWebRequest.Get(serverUrl);
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
             {
-                JObject parsedJson = JObject.Parse(receivedJson);
-                string queryString = parsedJson["query"]?.ToString();
+                string receivedJson = request.downloadHandler.text;
+                Debug.Log("📥 Raw JSON: " + receivedJson);
 
-                if (!string.IsNullOrEmpty(receivedJson))
+                try
                 {
-                    Debug.Log($"📥 Raw Query JSON: {receivedJson}");
+                    Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
 
-                    Query receivedQuery = new Query();
-                    receivedQuery.QueryString = receivedJson.Trim();
+                    if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
+                    {
+                        Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
 
-                    GameManager.Instance.SaveQuery(receivedQuery);
+                        receivedQuery.PostDeserialize();
+                        GameManager.Instance.SaveQuery(receivedQuery);
+                        GameManager.Instance.ExecuteLocally(receivedQuery);
+
+                        StopListening();  // Stop polling after successful retrieval
+                        yield break;
+                    }
+                    else
+                    {
+                        Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Debug.LogWarning("⚠️ Received an empty query. Waiting for new queries...");
+                    Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
                 }
             }
-            catch (Exception ex)
+            else if (request.responseCode == 204)
             {
-                Debug.LogError($"❌ JSON Parsing Error: {ex.Message}");
+                Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
             }
-        }
-        else
-        {
-            Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
-        }
+            else
+            {
+                Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+            }
 
-        yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(2f);  // Wait before next poll
+        }
     }
+
 }
-}
-    
+
 

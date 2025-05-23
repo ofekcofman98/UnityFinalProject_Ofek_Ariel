@@ -7,7 +7,7 @@ using UnityEngine;
 public class FromClause : IQueryClause
 {
     public Table table { get; set; }
-    public string FromPart { get; private set; } = QueryConstants.Empty;
+    public string FromPart { get; set; } = QueryConstants.Empty;
     public string DisplayName => QueryConstants.From;
     public bool isClicked { get; private set; } = false;
     public bool isAvailable { get; set; } = true;

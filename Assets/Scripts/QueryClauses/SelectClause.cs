@@ -1,4 +1,5 @@
-    using System.Collections;
+using Newtonsoft.Json;
+using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using UnityEngine;
@@ -6,10 +7,10 @@
     public class SelectClause : IQueryClause
     {
         public string DisplayName => QueryConstants.Select;
-        public List<Column> Columns { get; set; }
-        public string SelectPart { get; private set; } = QueryConstants.Empty;
-        public bool isClicked { get; private set; } = false;
-        public bool isAvailable { get; set; } = true;
+        [JsonProperty] public List<Column> Columns { get; set; }
+        [JsonProperty] public string SelectPart { get; set; } = QueryConstants.Empty;
+        [JsonProperty] public bool isClicked { get; set; } = false;
+        [JsonProperty] public bool isAvailable { get; set; } = true;
 
         public SelectClause()
         {

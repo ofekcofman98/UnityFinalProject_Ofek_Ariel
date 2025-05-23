@@ -6,10 +6,10 @@ using UnityEngine;
 [System.Serializable]
 public class Table
 {
-    public string Name { get; private set; }
-    public List<Column> Columns { get; private set; }
-    public List<ForeignKey> ForeignKeys { get; private set; }
-    public bool IsUnlocked { get; private set; }
+    public string Name { get; set; }
+    public List<Column> Columns { get; set; }
+    public List<ForeignKey> ForeignKeys { get; set; }
+    public bool IsUnlocked { get; set; }
 
     public Table(string i_TableName, bool i_IsUnlocked = false)
     {

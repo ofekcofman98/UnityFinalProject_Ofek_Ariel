@@ -40,7 +40,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
         if (request.result == UnityWebRequest.Result.Success)
         {
             JArray jsonResponse = JArray.Parse(request.downloadHandler.text);
-                    Debug.Log($"📦 Received {jsonResponse.Count} tables from Supabase");
+            Debug.Log($"📦 Received {jsonResponse.Count} tables from Supabase");
 
             Tables.Clear();
 

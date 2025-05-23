@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +14,8 @@ public enum eDataType
 [System.Serializable]
 public class Column
 {
-    public string Name { get; private set; }
+
+    [JsonProperty] public string Name { get; set; }
     public eDataType DataType { get; set; }
     
     [NonSerialized]

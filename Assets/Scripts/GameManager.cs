@@ -70,18 +70,38 @@ public class GameManager : Singleton<GameManager>
     }
 
     void Start()
-    {   
+    {
         queryUIManager.Init(missionManager);
 
+        bool isMobile = Application.isMobilePlatform;
+
+        // Show the correct canvas
         if (pcCanvas != null)
-        {
-            pcCanvas.SetActive(true);
-        }
+            pcCanvas.SetActive(!isMobile);
+
         if (mobileCanvas != null)
+            mobileCanvas.SetActive(isMobile);
+
+        // Platform-specific logic
+        if (!isMobile)
         {
-            mobileCanvas.SetActive(false);
+            // PC: Start polling the server for queries
+            if (queryReceiver != null)
+            {
+                Debug.Log("🖥 PC detected — starting QueryReceiver to listen for mobile queries.");
+                queryReceiver.StartListening();
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ QueryReceiver is null — cannot listen for queries.");
+            }
+        }
+        else
+        {
+            Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
         }
     }
+
 
     private void startGame()
     {
@@ -140,30 +160,32 @@ public class GameManager : Singleton<GameManager>
             Debug.LogError("QueryExecutor is missing!");
             return;
         }
-        
+
         if (querySender != null)
         {
-            Debug.Log("Sending Query: " + CurrentQuery.QueryString);
+            Debug.Log("📤 Sending query to server: " + CurrentQuery.QueryString);
             querySender.SendQueryToServer(CurrentQuery);
-        }
-        else
-        {
-            Debug.LogWarning("QuerySender is missing, skipping sending.");
         }
 
         if (queryReceiver != null)
         {
-            queryReceiver.StartListening();
+            Debug.Log("🎧 Preparing to listen for the next query...");
+            queryReceiver.StartListening();  // this triggers polling
         }
-        else
-        {
-            Debug.LogWarning("QueryReceiver is missing, skipping listening.");
-        }
-
-
-        queryExecutor.Execute(CurrentQuery);
-        
     }
+
+    public void ExecuteLocally(Query i_Query)
+    {
+        if (queryExecutor == null)
+        {
+            Debug.LogError("QueryExecutor is missing!");
+            return;
+        }
+
+        Debug.Log("🧠 Executing received query locally: " + CurrentQuery?.QueryString);
+        queryExecutor.Execute(i_Query);
+    }
+
 
 
     private void HandleQueryResults(JArray jsonResponse)
@@ -186,6 +208,9 @@ public class GameManager : Singleton<GameManager>
 
         if (tableDisplayer != null)
         {
+            Debug.Log($"🖥 pcCanvas active? {pcCanvas?.activeSelf}");
+            Debug.Log($"📊 tableDisplayer is null? {tableDisplayer == null}");
+            Debug.Log($"🧪 Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(c => c.Name))}");
             tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);
         }
         else

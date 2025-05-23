@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "192914387738",
+    "project_id": "sqldetective-ariel-and-ofek",
+    "storage_bucket": "sqldetective-ariel-and-ofek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192914387738:android:c415c3d28a6140ba17f2a3",
+        "android_client_info": {
+          "package_name": "com.SQLDetectiveWeb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHUV1uL_wjnpCf5XO8T6kq_VZM6ZQEgbY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
