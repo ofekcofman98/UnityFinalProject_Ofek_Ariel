@@ -96,6 +96,7 @@
     <Compile Include="Assets\Scripts\QueryBuild\QueryPreviewManager.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DropZone.cs" />
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
+    <Compile Include="Assets\Scripts\MouseLook.cs" />
     <Compile Include="Assets\Scripts\SupabaseManager.cs" />
     <Compile Include="Assets\Scripts\Scheme\TableBoxUI.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\FromClause.cs" />
