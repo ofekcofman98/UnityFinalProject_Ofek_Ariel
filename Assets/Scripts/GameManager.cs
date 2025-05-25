@@ -103,6 +103,28 @@ public class GameManager : Singleton<GameManager>
         {
             mobileCanvas.SetActive(i_IsSqlMode);
         }
+
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = !i_IsSqlMode;
+        }
+
+        MouseLook mouseLook = FindObjectOfType<MouseLook>();
+        if (mouseLook != null)
+        {
+            if (i_IsSqlMode)
+            {
+                mouseLook.UnlockCursor();
+                mouseLook.enabled = false;
+            }
+            else
+            {
+                mouseLook.LockCursor();
+                mouseLook.enabled = true;
+            }
+        }
+
     }
 
     public void SaveQuery(Query i_Query)
