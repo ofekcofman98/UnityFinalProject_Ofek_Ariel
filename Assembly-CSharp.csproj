@@ -91,7 +91,6 @@
     <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionsManager.cs" />
     <Compile Include="Assets\Scripts\Structures\TableStructure.cs" />
-    <Compile Include="Assets\Mini Toon Office\Readme\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\Scheme\SchemeLayoutManager.cs" />
     <Compile Include="Assets\Scripts\DataTypeStrategy.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
@@ -122,6 +121,7 @@
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\ServerData.cs" />
+    <Compile Include="Assets\ExternalAssets\Mini Toon Office\Readme\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\UnlockingSystem.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\QueryValidator.cs" />

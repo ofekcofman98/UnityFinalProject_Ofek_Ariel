@@ -10,6 +10,8 @@ public class QueryUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI missionNumber;
     [SerializeField] private TextMeshProUGUI missionTitle;
     [SerializeField] private TextMeshProUGUI missionDescription;
+
+
     private MissionsManager missionManager;
 
     private bool isQueryCorrect;

@@ -12,7 +12,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
-    [SerializeField] private GameObject pcCanvas;
+    [SerializeField] private GameObject pcGameCanvas;
+    [SerializeField] private GameObject pcQueryCanvas;
     [SerializeField] private GameObject mobileCanvas;
 
 
@@ -34,6 +35,10 @@ public class GameManager : Singleton<GameManager>
 
 
     public event Action<bool> OnQueryIsCorrect;
+
+
+    private bool isQueryUIVisible = false;
+
 
     protected override void Awake()
     {
@@ -73,9 +78,9 @@ public class GameManager : Singleton<GameManager>
     {   
         queryUIManager.Init(missionManager);
 
-        if (pcCanvas != null)
+        if (pcGameCanvas != null)
         {
-            pcCanvas.SetActive(true);
+            pcGameCanvas.SetActive(true);
         }
         if (mobileCanvas != null)
         {
@@ -90,41 +95,31 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    internal void SetSqlMode(bool i_IsSqlMode)
+    public void SetSqlMode()
     {
-        SqlMode = i_IsSqlMode;
+        SqlMode = !SqlMode;
 
-        if (pcCanvas != null)
+        if (pcGameCanvas != null)
         {
-            pcCanvas.SetActive(!i_IsSqlMode);
+            pcGameCanvas.SetActive(!SqlMode);
         }
+
+        if (pcQueryCanvas != null)
+        {
+            pcQueryCanvas.SetActive(SqlMode);
+        }
+
 
         if (mobileCanvas != null)
         {
-            mobileCanvas.SetActive(i_IsSqlMode);
+            mobileCanvas.SetActive(SqlMode);
         }
 
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerMovement != null)
         {
-            playerMovement.enabled = !i_IsSqlMode;
+            playerMovement.enabled = !SqlMode;
         }
-
-        MouseLook mouseLook = FindObjectOfType<MouseLook>();
-        if (mouseLook != null)
-        {
-            if (i_IsSqlMode)
-            {
-                mouseLook.UnlockCursor();
-                mouseLook.enabled = false;
-            }
-            else
-            {
-                mouseLook.LockCursor();
-                mouseLook.enabled = true;
-            }
-        }
-
     }
 
     public void SaveQuery(Query i_Query)
@@ -232,4 +227,21 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    internal void ToggleQueryUI()
+    {
+        isQueryUIVisible = !isQueryUIVisible;
+        if (isQueryUIVisible)
+        {
+            if (pcGameCanvas != null)
+            {
+                pcGameCanvas.SetActive(!isQueryUIVisible);
+            }
+
+            if (mobileCanvas != null)
+            {
+                mobileCanvas.SetActive(isQueryUIVisible);
+            }
+
+        }
+    }
 }

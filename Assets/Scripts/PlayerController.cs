@@ -23,15 +23,9 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (!sqlMode)
+            if (GameManager.Instance.SqlMode)
             {
-                sqlMode = true;
-                GameManager.Instance.SetSqlMode(true);
-            }
-            else
-            {
-                sqlMode = false;
-                GameManager.Instance.SetSqlMode(false);
+                GameManager.Instance.ToggleQueryUI();
             }
         }
     }
