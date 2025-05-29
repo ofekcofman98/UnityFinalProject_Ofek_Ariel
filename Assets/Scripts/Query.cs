@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using System.Text;
 using Unity.VisualScripting;
+using Newtonsoft.Json;
 
 // public enum eQueryState
 // {
@@ -17,13 +18,13 @@ using Unity.VisualScripting;
 
 public class Query
 {
-    private string m_QueryString;
+    [JsonProperty] private string m_QueryString;
 
     public SelectClause selectClause; 
     public FromClause fromClause;
     public WhereClause whereClause;
-    public List<IQueryClause> clauses;
-    public List<IQueryClause> availableClauses;
+    [JsonIgnore] public List<IQueryClause> clauses;
+    [JsonIgnore] public List<IQueryClause> availableClauses;
     public event Action OnAvailableClausesChanged;
     // public eQueryState currentState { get; set; } = eQueryState.None;
     public QueryState queryState;
@@ -34,8 +35,8 @@ public class Query
     public event Action OnQueryUpdated;  
 
 
-private Dictionary<IQueryClause, Button> clauseButtons = new Dictionary<IQueryClause, Button>();
-private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, Button>();
+    [JsonIgnore] private Dictionary<IQueryClause, Button> clauseButtons = new Dictionary<IQueryClause, Button>();
+    [JsonIgnore] private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, Button>();
 
     public Query()
     {
@@ -236,5 +237,12 @@ private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, But
         }
         
     }
+
+    public void PostDeserialize()
+    {
+        clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
+        availableClauses = new List<IQueryClause> { selectClause, fromClause };
+    }
+
 
 }
