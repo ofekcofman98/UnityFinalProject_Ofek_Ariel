@@ -8,6 +8,7 @@ public class TableBoxUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tableNameText;
     [SerializeField] private Transform columnListParent;
     [SerializeField] private GameObject columnTextPrefab;
+    [SerializeField] private GameObject lockOverlay;
     [SerializeField] private CanvasGroup canvasGroup;
 
 
@@ -25,9 +26,10 @@ public class TableBoxUI : MonoBehaviour
             RectTransform rt = columnGO.GetComponentInChildren<TextMeshProUGUI>().transform.parent.GetComponent<RectTransform>();
             columnLabelMap[column.Name.ToLowerInvariant().Trim()] = rt;
         }
-
+        
         bool isUnlocked = i_Table.IsUnlocked;
         canvasGroup.alpha = isUnlocked ? 1f : 0.4f; 
+        lockOverlay.SetActive(!isUnlocked);
     }
 
     public RectTransform GetColumnRect(string i_ColumnName)
