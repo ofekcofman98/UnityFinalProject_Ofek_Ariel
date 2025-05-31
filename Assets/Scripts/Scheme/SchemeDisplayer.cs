@@ -95,16 +95,6 @@ public class SchemeDisplayer : MonoBehaviour
         Vector3 top = isLeft ? worldCorners[1] : worldCorners[2];
         Vector3 worldMid = (top + bottom) * 0.5f;
 
-        for (int i = 0; i<4; i++)
-        {
-            GameObject startMarker = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            startMarker.transform.localScale = Vector3.one * 10f;
-            startMarker.transform.position = worldCorners[i];
-        }
-
-        GameObject startMarker1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        startMarker1.transform.localScale = Vector3.one * 10f;
-        startMarker1.transform.position = worldMid;
         
         return worldMid;
     }

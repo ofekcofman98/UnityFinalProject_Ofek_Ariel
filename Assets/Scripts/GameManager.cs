@@ -270,4 +270,9 @@ public class GameManager : Singleton<GameManager>
 
         }
     }
+
+    internal void TeleportPlayerTo(Vector3 position)
+    {
+        Debug.Log("Teleport!");
+    }
 }
