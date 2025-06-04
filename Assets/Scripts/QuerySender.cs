@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 public class QuerySender : MonoBehaviour
 {
-    private const string k_pcIP = "node-query-server-591845120560.us-central1.run.app";
+    private const string k_pcIP = "python-query-server-591845120560.us-central1.run.app";
     private string serverUrl = $"https://{k_pcIP}/send-query"; 
 
     public void SendQueryToServer(Query query)

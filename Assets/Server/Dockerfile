@@ -1,13 +1,17 @@
-FROM node:18-alpine
+# Use a lightweight Python base image
+FROM python:3.10-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
+# Copy files
+COPY server.py requirements.txt ./
 
-COPY . .
+# Install dependencies
+RUN pip install -r requirements.txt
 
-ENV PORT 8080
-EXPOSE 8080
+# Set Flask environment
+ENV PORT=8080
 
-CMD ["node", "server.js"]
+# Run the server
+CMD ["python", "server.py"]
