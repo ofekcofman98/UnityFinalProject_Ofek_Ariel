@@ -111,7 +111,7 @@ public class MissionsManager : Singleton<MissionsManager>
         yield return new WaitForSeconds(2.5f);
         GoToNextMission();
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
-        GameManager.Instance.queryUIManager.ShowUI();
+        GameManager.Instance.MissionUIManager.ShowUI();
 
     }
 

@@ -5,7 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 
-public class QueryUIManager : MonoBehaviour
+public class MissionUIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI MobileMissionNumber;
     [SerializeField] private TextMeshProUGUI MobileMissionTitle;
@@ -35,7 +35,7 @@ public class QueryUIManager : MonoBehaviour
     {
         if (missionManager == null)
         {
-            Debug.LogError("MissionManager not set on QueryUIManager.");
+            Debug.LogError("MissionManager not set on MissionUIManager.");
             return;
         }
 

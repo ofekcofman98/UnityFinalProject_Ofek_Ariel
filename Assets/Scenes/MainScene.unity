@@ -5201,7 +5201,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1087351237}
   m_HandleRect: {fileID: 1087351236}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -12991,7 +12991,7 @@ GameObject:
   - component: {fileID: 1829252719}
   - component: {fileID: 1829252718}
   m_Layer: 0
-  m_Name: QueryUIManager
+  m_Name: MissionUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13072,7 +13072,7 @@ MonoBehaviour:
   queryReceiver: {fileID: 1194503377}
   queryValidator: {fileID: 1249424914}
   missionManager: {fileID: 442066647}
-  queryUIManager: {fileID: 1829252718}
+  MissionUIManager: {fileID: 1829252718}
 --- !u!4 &1832505887
 Transform:
   m_ObjectHideFlags: 0
@@ -13501,7 +13501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ea6cbf7b773f0a4cabde1922520fcd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  queryUIManager: {fileID: 1829252718}
+  missionUIManager: {fileID: 1829252718}
   QueryPanel: {fileID: 1614230819}
   selectSection: {fileID: 1091105435}
   fromSection: {fileID: 971172619}

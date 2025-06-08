@@ -30,8 +30,8 @@ public class GameManager : Singleton<GameManager>
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     [SerializeField] private QueryValidator queryValidator;
-    [SerializeField] public MissionsManager missionManager;
-    [SerializeField] public QueryUIManager queryUIManager;
+    [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
+    [SerializeField] public MissionUIManager MissionUIManager;
 
 
     public event Action<bool> OnQueryIsCorrect;
@@ -76,7 +76,7 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        queryUIManager.Init(missionManager);
+        MissionUIManager.Init(missionManager);
 
         bool isMobile = Application.isMobilePlatform;
 

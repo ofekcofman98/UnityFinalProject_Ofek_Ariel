@@ -12,7 +12,7 @@ using System.Linq;
 public class QueryBuilder : MonoBehaviour
 {
     public bool IsReady { get; private set; } = false;
-    [SerializeField] private QueryUIManager queryUIManager;
+    [SerializeField] private MissionUIManager missionUIManager;
 
     [Header("QueryPreview")]
     [SerializeField] public GameObject QueryPanel;
@@ -55,7 +55,7 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
 
     void Start()
     {
-        GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
+        GameManager.Instance.OnQueryIsCorrect += missionUIManager.ShowResult;
     }
 
     public void BuildQuery()
@@ -82,7 +82,7 @@ private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalC
             SupabaseManager.Instance.OnTableNamesFetched += PopulateTableSelection;
         }
 
-        queryUIManager.ShowUI();
+        missionUIManager.ShowUI();
         // GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
     }
 
