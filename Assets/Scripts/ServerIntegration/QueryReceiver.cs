@@ -47,7 +47,7 @@ public class QueryReceiver : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("📡 Polling the server for new query...");
+            // Debug.Log("📡 Polling the server for new query...");
 
             UnityWebRequest request = UnityWebRequest.Get(serverUrl);
             yield return request.SendWebRequest();
@@ -55,7 +55,7 @@ public class QueryReceiver : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string receivedJson = request.downloadHandler.text;
-                Debug.Log("📥 Raw JSON: " + receivedJson);
+                // Debug.Log("📥 Raw JSON: " + receivedJson);
 
                 try
                 {
@@ -73,7 +73,7 @@ public class QueryReceiver : MonoBehaviour
                     }
                     else
                     {
-                        Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                        // Debug.Log("⏳ Received query object is empty or missing QueryString.");
                     }
                 }
                 catch (Exception ex)

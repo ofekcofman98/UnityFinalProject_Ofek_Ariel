@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-public class MissionsManager : MonoBehaviour
+public class MissionsManager : Singleton<MissionsManager>
 {
     [SerializeField] private MissionSequence missionSequence;
 
@@ -13,26 +13,41 @@ public class MissionsManager : MonoBehaviour
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
     public event Action<bool> OnMissionValidated;
 
-    public void ValidateMission(Query query, JArray result, QueryValidator validator)
+    private void ValidateMission()
     {
-        bool isValid = validator.ValidateQuery(query, result, CurrentMission);
-
+        bool isValid = CurrentMission.Validate();
         if (isValid)
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
             OnMissionValidated?.Invoke(true);
-            // CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
+            CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
         else
         {
             Debug.Log("❌ Mission failed.");
             OnMissionValidated?.Invoke(false);
-
         }
-
-        OnMissionValidated?.Invoke(isValid);
     }
+
+    public void ValidateSqlMission(Query query, JArray result, QueryValidator validator)
+    {
+        if (CurrentMission is SQLMissionData sql)
+        {
+            sql.SetValidationContext(query, result, validator);
+            ValidateMission();
+        }
+    }
+
+    public void ValidateInteractableMission(string id)
+    {
+        if (CurrentMission is InteractableMissionData im)
+        {
+            im.SetTriggeredObject(id);
+            ValidateMission();
+        }
+    }
+
 
     private void checkUnlocking()
     {
@@ -48,6 +63,22 @@ public class MissionsManager : MonoBehaviour
             }
         }
     }
+
+    public void ReportInteractableUsed(string id)
+    {
+        if (CurrentMission is InteractableMissionData m &&
+            m.requiredObjectId == id)
+        {
+            Debug.Log("Correct Object!");
+            GoToNextMission();
+            
+        }
+        else
+        {
+            Debug.Log("Incorrect object!");
+        }
+    }
+
 
     public void GoToNextMission()
     {
@@ -77,11 +108,8 @@ public class MissionsManager : MonoBehaviour
     private IEnumerator DelayedAdvance()
     {
         Debug.Log("🟡 You unlocked a new table!");
-        
         yield return new WaitForSeconds(2.5f);
-
         GoToNextMission();
-
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
         GameManager.Instance.queryUIManager.ShowUI();
 

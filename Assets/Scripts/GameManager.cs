@@ -63,7 +63,7 @@ public class GameManager : Singleton<GameManager>
             {
                 if (missionManager != null)
                 {
-                    missionManager.ValidateMission(CurrentQuery, result, queryValidator);
+                    missionManager.ValidateSqlMission(CurrentQuery, result, queryValidator);
                 }
             };
             missionManager.OnMissionValidated += isCorrect => 
@@ -105,7 +105,7 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
         }
-            SupabaseManager.Instance.OnSchemeFullyLoaded += () => UnlockInitialTables();
+            // SupabaseManager.Instance.OnSchemeFullyLoaded += () => UnlockInitialTables();
     }
 
 
@@ -237,21 +237,21 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void UnlockInitialTables()
-    {
-        Table crimeEvidence = SupabaseManager.Instance.Tables
-            .FirstOrDefault(t => t.Name == "CrimeEvidence");
-        Debug.Log($"TABLE first column: {crimeEvidence.Columns[0]}");
-        if (crimeEvidence != null)
-        {
-            crimeEvidence.UnlockTable();
-            Debug.Log("🔓 'CrimeEvidence' table unlocked at game start.");
-        }
-        else
-        {
-            Debug.LogWarning("⚠️ 'CrimeEvidence' table not found.");
-        }
-    }
+    // private void UnlockInitialTables()
+    // {
+    //     Table crimeEvidence = SupabaseManager.Instance.Tables
+    //         .FirstOrDefault(t => t.Name == "CrimeEvidence");
+    //     Debug.Log($"TABLE first column: {crimeEvidence.Columns[0]}");
+    //     if (crimeEvidence != null)
+    //     {
+    //         crimeEvidence.UnlockTable();
+    //         Debug.Log("🔓 'CrimeEvidence' table unlocked at game start.");
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("⚠️ 'CrimeEvidence' table not found.");
+    //     }
+    // }
 
     internal void ToggleQueryUI()
     {
@@ -260,14 +260,19 @@ public class GameManager : Singleton<GameManager>
         {
             if (pcGameCanvas != null)
             {
-                pcGameCanvas.SetActive(!isQueryUIVisible);
+                pcGameCanvas.SetActive(isQueryUIVisible);
             }
 
             if (mobileCanvas != null)
             {
-                mobileCanvas.SetActive(isQueryUIVisible);
+                mobileCanvas.SetActive(!isQueryUIVisible);
             }
 
         }
+    }
+
+    internal void TeleportPlayerTo(Vector3 position)
+    {
+        Debug.Log("Teleport!");
     }
 }

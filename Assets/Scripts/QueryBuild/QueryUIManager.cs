@@ -7,9 +7,14 @@ using UnityEngine;
 
 public class QueryUIManager : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI missionNumber;
-    [SerializeField] private TextMeshProUGUI missionTitle;
-    [SerializeField] private TextMeshProUGUI missionDescription;
+    [SerializeField] private TextMeshProUGUI MobileMissionNumber;
+    [SerializeField] private TextMeshProUGUI MobileMissionTitle;
+    [SerializeField] private TextMeshProUGUI MobileMissionDescription;
+
+    [SerializeField] private TextMeshProUGUI PcMissionNumber;
+    [SerializeField] private TextMeshProUGUI PcMissionTitle;
+    [SerializeField] private TextMeshProUGUI PcMissionDescription;
+
 
 
     private MissionsManager missionManager;
@@ -36,20 +41,30 @@ public class QueryUIManager : MonoBehaviour
 
         MissionData mission = missionManager.CurrentMission;
 
-        missionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
-        missionTitle.text = mission.missionTitle;
-        missionDescription.text = mission.missionDescription;
-        missionDescription.color = Color.white;
+        MobileMissionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
+        MobileMissionTitle.text = mission.missionTitle;
+        MobileMissionDescription.text = mission.missionDescription;
+        MobileMissionDescription.color = Color.white;
+
+        PcMissionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
+        PcMissionTitle.text = mission.missionTitle;
+        PcMissionDescription.text = mission.missionDescription;
+        PcMissionDescription.color = Color.white;
+
     }
 
     public void ShowResult(bool i_Result)
     {
         isQueryCorrect = i_Result;
         
-        missionTitle.text = "";
-        missionDescription.text = $"Query is {k_IsCorrectString}";
-        missionDescription.color = k_Color;
+        MobileMissionTitle.text = "";
+        MobileMissionDescription.text = $"Query is {k_IsCorrectString}";
+        MobileMissionDescription.color = k_Color;
         
+        PcMissionTitle.text = "";
+        PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
+        PcMissionDescription.color = k_Color;
+
         executeButton.gameObject.SetActive(!i_Result);
         continueButton.gameObject.SetActive(i_Result);
     }
@@ -68,7 +83,7 @@ public class QueryUIManager : MonoBehaviour
             showNewTable(tableName);
         }
         // Move to next mission
-        GameManager.Instance.missionManager.GoToNextMission();
+        // GameManager.Instance.missionManager.GoToNextMission();
 
         // Refresh mission UI
         ShowUI();

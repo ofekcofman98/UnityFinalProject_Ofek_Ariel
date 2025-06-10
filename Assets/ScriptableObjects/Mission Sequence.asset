@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f9bd0c18431b824ea0e61e824014f39, type: 3}
-  m_Name: Mission Sequence1
+  m_Name: Mission Sequence
   m_EditorClassIdentifier: 
   Missions:
-  - {fileID: 11400000, guid: d92f3a600be1c41488b578882181bbe0, type: 2}
+  - {fileID: 11400000, guid: 8eb64749dd5260d448308eb7005101cc, type: 2}
   - {fileID: 11400000, guid: 252db3d67dde82648b3bb047d4d1e010, type: 2}
   - {fileID: 11400000, guid: 84bd4db0247a7f240b75daf047f0f883, type: 2}

@@ -15,7 +15,7 @@ public enum ValidationMode
 
 public class QueryValidator : MonoBehaviour
 {
-    public bool ValidateQuery(Query i_Query, JArray i_Result ,MissionData i_MissionData)
+    public bool ValidateQuery(Query i_Query, JArray i_Result ,SQLMissionData i_MissionData)
     {
     if (i_Query == null || i_Query.fromClause == null || i_Query.fromClause.table == null)
     {

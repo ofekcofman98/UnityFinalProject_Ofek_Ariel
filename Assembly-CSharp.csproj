@@ -60,23 +60,26 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.40f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\QuerySender.cs" />
+    <Compile Include="Assets\Scripts\Missions\IMissionValidator.cs" />
+    <Compile Include="Assets\Scripts\SQLObjects\Table.cs" />
     <Compile Include="Assets\Scripts\QueryExecutor.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\QueryReceiver.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryBuilder.cs" />
+    <Compile Include="Assets\Scripts\Interact\ComputerInteract.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\ServerData.cs" />
     <Compile Include="Assets\Scripts\Missions\Mission.cs" />
-    <Compile Include="Assets\Scripts\Condition.cs" />
+    <Compile Include="Assets\Scripts\Missions\InteractableMissionData.cs" />
     <Compile Include="Assets\Samples\Native WebSockets\1.1.5\Example\Connection.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionSequence.cs" />
     <Compile Include="Assets\Scripts\Player\IsOverUICheck.cs" />
     <Compile Include="Assets\Scripts\CoroutineRunner.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\MultiDeviceQueryUIManager.cs" />
-    <Compile Include="Assets\Scripts\Column.cs" />
     <Compile Include="Assets\Scripts\Display\SetTargetDisplay.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
-    <Compile Include="Assets\Scripts\ForeignKey.cs" />
-    <Compile Include="Assets\Scripts\Table.cs" />
-    <Compile Include="Assets\Scripts\QueryReceiver.cs" />
+    <Compile Include="Assets\Scripts\Popup\IPopup.cs" />
+    <Compile Include="Assets\Scripts\Missions\SQLMissionData.cs" />
     <Compile Include="Assets\Scripts\QueryState.cs" />
+    <Compile Include="Assets\Scripts\Interact\PlayerInteraction.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DraggableItem.cs" />
     <Compile Include="Assets\Scripts\QueryData.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneLoader.cs" />
@@ -84,7 +87,9 @@
     <Compile Include="Assets\Scripts\QueryBuild\QueryUIManager.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\DisplayActivator.cs" />
+    <Compile Include="Assets\Scripts\SQLObjects\Condition.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
+    <Compile Include="Assets\Scripts\Supabase\SupabaseManager.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionsManager.cs" />
     <Compile Include="Assets\Scripts\Structures\TableStructure.cs" />
     <Compile Include="Assets\Scripts\Scheme\SchemeLayoutManager.cs" />
@@ -93,8 +98,12 @@
     <Compile Include="Assets\Scripts\QueryBuild\QueryPreviewManager.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DropZone.cs" />
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
-    <Compile Include="Assets\Scripts\SupabaseManager.cs" />
+    <Compile Include="Assets\Scripts\Interact\DoorInteract.cs" />
+    <Compile Include="Assets\Scripts\Popup\Popup.cs" />
     <Compile Include="Assets\Scripts\Scheme\TableBoxUI.cs" />
+    <Compile Include="Assets\Scripts\Supabase\SupaBaseUtility.cs" />
+    <Compile Include="Assets\Scripts\SQLObjects\Column.cs" />
+    <Compile Include="Assets\Scripts\SQLObjects\ForeignKey.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\FromClause.cs" />
     <Compile Include="Assets\Scripts\DeviceManager.cs" />
     <Compile Include="Assets\Scripts\ModeManager.cs" />
@@ -105,9 +114,10 @@
     <Compile Include="Assets\Scripts\Structures\ColumnStructure.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\QueryDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionData.cs" />
     <Compile Include="Assets\Scripts\Player\MouseLook.cs" />
-    <Compile Include="Assets\Scripts\SupaBaseUtility.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\QuerySender.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\IQueryClause.cs" />
     <Compile Include="Assets\Scripts\QueryConstants.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\WhereClause.cs" />
@@ -116,11 +126,10 @@
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
-    <Compile Include="Assets\Scripts\ServerData.cs" />
-    <Compile Include="Assets\ExternalAssets\Mini Toon Office\Readme\Scripts\Readme.cs" />
     <Compile Include="Assets\Scripts\UnlockingSystem.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\QueryValidator.cs" />
+    <Compile Include="Assets\Scripts\Interact\InteractableObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />

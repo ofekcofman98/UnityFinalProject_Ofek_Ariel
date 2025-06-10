@@ -9,9 +9,9 @@ using System.Collections;
 using System;
 using UnityEngine.Networking;
 
-[CustomEditor(typeof(MissionData))]
+[CustomEditor(typeof(MissionData), true)]
 public class MissionDataEditor : Editor
-{ 
+{
     private List<TableStructure> tables;
     private string[] tableNames;
     private int selectedTableIndex;
@@ -37,15 +37,38 @@ public class MissionDataEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        MissionData mission = (MissionData)target;
+        MissionData baseMission = (MissionData)target;
 
-        // Title & description
-        mission.missionTitle = EditorGUILayout.TextField("Mission Title", mission.missionTitle);
-        mission.missionDescription = EditorGUILayout.TextArea(mission.missionDescription, GUILayout.MinHeight(60));
+        // Shared fields
+        baseMission.missionTitle = EditorGUILayout.TextField("Mission Title", baseMission.missionTitle);
+        baseMission.missionDescription = EditorGUILayout.TextArea(baseMission.missionDescription, GUILayout.MinHeight(60));
 
         EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Table Unlock Settings", EditorStyles.boldLabel);
+        baseMission.unlocksTable = EditorGUILayout.Toggle("Unlocks Table?", baseMission.unlocksTable);
 
-        // Table selection
+        if (baseMission.unlocksTable)
+        {
+            baseMission.tableToUnlock = DrawTableUnlockDropdown(baseMission.tableToUnlock);
+        }
+
+        EditorGUILayout.Space(15);
+
+        // 🔍 Show specific section by subclass
+        if (baseMission is SQLMissionData sql)
+        {
+            DrawSQLSection(sql);
+        }
+        else if (baseMission is InteractableMissionData interactable)
+        {
+            DrawInteractableSection(interactable);
+        }
+
+        if (GUI.changed)
+            EditorUtility.SetDirty(baseMission);
+    }
+    private void DrawSQLSection(SQLMissionData mission)
+    {
         selectedTableIndex = Mathf.Max(0, tables.FindIndex(t => t.TableName == mission.requiredTable));
         selectedTableIndex = EditorGUILayout.Popup("Required Table", selectedTableIndex, tableNames);
         mission.requiredTable = tableNames[selectedTableIndex];
@@ -54,7 +77,7 @@ public class MissionDataEditor : Editor
 
         EditorGUILayout.LabelField("Required Columns", EditorStyles.boldLabel);
 
-        // Initialize selection dictionary if needed
+        // Rebuild selection dictionary
         foreach (var col in selectedTable.Columns)
         {
             if (!columnSelections.ContainsKey(col.ColumnName))
@@ -64,78 +87,30 @@ public class MissionDataEditor : Editor
             }
         }
 
-        // Show checkboxes
-        List<string> selectedColumns = new List<string>();
+        // Column checkboxes
+        List<string> selectedCols = new List<string>();
         foreach (var col in selectedTable.Columns)
         {
             columnSelections[col.ColumnName] = EditorGUILayout.ToggleLeft(col.ColumnName, columnSelections[col.ColumnName]);
-            if (columnSelections[col.ColumnName])
-                selectedColumns.Add(col.ColumnName);
+            if (columnSelections[col.ColumnName]) selectedCols.Add(col.ColumnName);
         }
+        mission.requiredColumns = selectedCols;
 
-        mission.requiredColumns = selectedColumns;
-
-        EditorGUILayout.Space(10);
         mission.requiredCondition = EditorGUILayout.TextField("Required Condition", mission.requiredCondition);
 
-EditorGUILayout.Space(10);
-EditorGUILayout.LabelField("Table Unlock Settings", EditorStyles.boldLabel);
+        DrawRowSelection(sqlMission: mission);
+    }
 
-mission.unlocksTable = EditorGUILayout.Toggle("Unlocks Table?", mission.unlocksTable);
+    private void DrawInteractableSection(InteractableMissionData mission)
+    {
+        mission.requiredObjectId = EditorGUILayout.TextField("Required Interactable ID", mission.requiredObjectId);
+    }
 
-if (mission.unlocksTable)
-{
-    int unlockIndex = Mathf.Max(0, tables.FindIndex(t => t.TableName == mission.tableToUnlock));
-    unlockIndex = EditorGUILayout.Popup("Table to Unlock", unlockIndex, tableNames);
-    mission.tableToUnlock = tableNames[unlockIndex];
-}
-
-
-
-        if (GUI.changed)
-        {
-            EditorUtility.SetDirty(mission);
-        }
-
-
-        if (GUILayout.Button("Fetch Sample Rows"))
-        {
-            EditorCoroutineUtility.StartCoroutine(FetchTableData(mission.requiredTable, OnRowsFetched), this);
-        }
-
-
-        if (fetchedRows.Count > 0)
-        {
-            // Get all available keys from the first row
-            string[] fieldOptions = fetchedRows[0].Keys.ToArray();
-
-            // Make primary key dropdown
-            int pkIndex = Array.IndexOf(fieldOptions, mission.expectedPrimaryKeyField);
-            if (pkIndex < 0) pkIndex = 0;
-
-            pkIndex = EditorGUILayout.Popup("Primary Key Field", pkIndex, fieldOptions);
-            mission.expectedPrimaryKeyField = fieldOptions[pkIndex];
-
-            // Now show the row dropdown
-            selectedRowIndex = Mathf.Clamp(selectedRowIndex, 0, fetchedRows.Count - 1);
-            selectedRowIndex = EditorGUILayout.Popup("Expected Row", selectedRowIndex, rowLabels);
-
-            if (fetchedRows.Count > selectedRowIndex &&
-            fetchedRows[selectedRowIndex].TryGetValue(mission.expectedPrimaryKeyField, out string value))
-            {
-                mission.expectedRowIdValue = value;
-                EditorGUILayout.HelpBox($"Selected value: {value}", MessageType.Info);
-            }
-            else
-            {
-                EditorGUILayout.HelpBox($"⚠️ Row does not contain key '{mission.expectedPrimaryKeyField}'", MessageType.Warning);
-            }
-
-            if (GUI.changed)
-            {
-                EditorUtility.SetDirty(mission);
-            }
-        }
+    private string DrawTableUnlockDropdown(string currentTable)
+    {
+        int unlockIndex = Mathf.Max(0, tables.FindIndex(t => t.TableName == currentTable));
+        unlockIndex = EditorGUILayout.Popup("Table to Unlock", unlockIndex, tableNames);
+        return tableNames[unlockIndex];
     }
 
     private void OnRowsFetched(JArray data)
@@ -184,6 +159,45 @@ if (mission.unlocksTable)
             Debug.LogError($"❌ Failed to fetch data from Supabase: {request.error}");
         }
     }
+    
+    private void DrawRowSelection(SQLMissionData sqlMission)
+    {
+        if (GUILayout.Button("Fetch Sample Rows"))
+        {
+            EditorCoroutineUtility.StartCoroutine(FetchTableData(sqlMission.requiredTable, OnRowsFetched), this);
+        }
+
+        if (fetchedRows.Count > 0)
+        {
+            string[] fieldOptions = fetchedRows[0].Keys.ToArray();
+
+            int pkIndex = Array.IndexOf(fieldOptions, sqlMission.expectedPrimaryKeyField);
+            if (pkIndex < 0) pkIndex = 0;
+
+            pkIndex = EditorGUILayout.Popup("Primary Key Field", pkIndex, fieldOptions);
+            sqlMission.expectedPrimaryKeyField = fieldOptions[pkIndex];
+
+            selectedRowIndex = Mathf.Clamp(selectedRowIndex, 0, fetchedRows.Count - 1);
+            selectedRowIndex = EditorGUILayout.Popup("Expected Row", selectedRowIndex, rowLabels);
+
+            if (fetchedRows.Count > selectedRowIndex &&
+                fetchedRows[selectedRowIndex].TryGetValue(sqlMission.expectedPrimaryKeyField, out string value))
+            {
+                sqlMission.expectedRowIdValue = value;
+                EditorGUILayout.HelpBox($"Selected value: {value}", MessageType.Info);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox($"⚠️ Row does not contain key '{sqlMission.expectedPrimaryKeyField}'", MessageType.Warning);
+            }
+
+            if (GUI.changed)
+            {
+                EditorUtility.SetDirty(sqlMission);
+            }
+        }
+    }
+
 
 }
 #endif
