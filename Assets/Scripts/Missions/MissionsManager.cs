@@ -11,6 +11,7 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private int currentMissionIndex = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
+    public int Lives { get; private set; } = 3;
     public event Action<bool> OnMissionValidated;
 
     private void ValidateMission()
@@ -25,6 +26,16 @@ public class MissionsManager : Singleton<MissionsManager>
         }
         else
         {
+            if(currentMissionIndex == missionSequence.Missions.Count - 1)
+            {
+                Debug.Log("You arrested the wrong suspect !");
+                Lives--;
+                if(Lives == 0)
+                    Debug.Log($"You have {Lives} lives left.");
+                else
+                    Debug.Log("Game over :/");
+
+            }
             Debug.Log("❌ Mission failed.");
             OnMissionValidated?.Invoke(false);
         }
