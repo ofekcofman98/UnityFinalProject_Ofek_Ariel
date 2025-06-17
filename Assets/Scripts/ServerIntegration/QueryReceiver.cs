@@ -23,16 +23,18 @@ public class QueryReceiver : MonoBehaviour
     {
         Debug.Log("🎧 StartListening() called.");
 
-
-        if (listeningCoroutine == null)
+        if(!m_isMobile)
         {
-            Debug.Log("✅ Starting CheckForNewQuery coroutine.");
-            listeningCoroutine = StartCoroutine(CheckForNewQuery());
-        }
-        else
-        {
-            Debug.Log("ℹ️ Already listening.");
-        }
+            if (listeningCoroutine == null)
+            {
+                Debug.Log("✅ Starting CheckForNewQuery coroutine.");
+                listeningCoroutine = StartCoroutine(CheckForNewQuery());
+            }
+            else
+            {
+                Debug.Log("ℹ️ Already listening.");
+            }
+        }       
     }
 
 
@@ -47,55 +49,55 @@ public class QueryReceiver : MonoBehaviour
 
     private IEnumerator CheckForNewQuery()
     {
-        while (true)
-        {
-            // Debug.Log("📡 Polling the server for new query...");
-
-            UnityWebRequest request = UnityWebRequest.Get(serverUrl);
-            yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
+        
+            while (true)
             {
-                string receivedJson = request.downloadHandler.text;
-                // Debug.Log("📥 Raw JSON: " + receivedJson);
+                // Debug.Log("📡 Polling the server for new query...");
 
-                try
+                UnityWebRequest request = UnityWebRequest.Get(serverUrl);
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
                 {
-                    Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
+                    string receivedJson = request.downloadHandler.text;
+                    // Debug.Log("📥 Raw JSON: " + receivedJson);
 
-                    if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
+                    try
                     {
-                        Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
+                        Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
 
-                        receivedQuery.PostDeserialize();
-                        GameManager.Instance.SaveQuery(receivedQuery);
-                        GameManager.Instance.ExecuteLocally(receivedQuery);
+                        if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
+                        {
+                            Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
 
-                        yield break;
+                            receivedQuery.PostDeserialize();
+                            GameManager.Instance.SaveQuery(receivedQuery);
+                            GameManager.Instance.ExecuteLocally(receivedQuery);
+
+                            yield break;
+                        }
+                        else
+                        {
+                            // Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        // Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                        Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
                     }
                 }
-                catch (Exception ex)
+                else if (request.responseCode == 204)
                 {
-                    Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
+                    Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
                 }
-            }
-            else if (request.responseCode == 204)
-            {
-                Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
-            }
-            else
-            {
-                Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
-            }
+                else
+                {
+                    Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+                }
 
-            yield return new WaitForSeconds(2f);  // Wait before next poll
-        }
+                yield return new WaitForSeconds(2f);  // Wait before next poll
+            }    
     }
-
 }
 
 

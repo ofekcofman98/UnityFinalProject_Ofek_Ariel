@@ -11,6 +11,7 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private int currentMissionIndex = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
+    private int m_Lives = 3;
     public event Action<bool> OnMissionValidated;
 
     private void ValidateMission()
@@ -23,9 +24,19 @@ public class MissionsManager : Singleton<MissionsManager>
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
-        else
+        else 
         {
             Debug.Log("❌ Mission failed.");
+            if (currentMissionIndex == missionSequence.Missions.Count - 1)
+            {
+                Debug.Log("❌ You arrested the wrong suspect !.");
+                m_Lives--;
+                if(m_Lives > 0)
+                    Debug.Log($"You have {m_Lives} lives left .");
+                else
+                    Debug.Log("Game over :/");
+
+            }
             OnMissionValidated?.Invoke(false);
         }
     }
