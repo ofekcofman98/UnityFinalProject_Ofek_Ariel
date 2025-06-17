@@ -9,7 +9,11 @@ public class ClauseDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
         draggable.SetParentAndPosition(zone.transform);
+        // draggable.OnRemoved?.Invoke();
+    if (IsNewDrop(draggable.OriginalParent))
+    {
         draggable.OnRemoved?.Invoke();
+    }
 
     }
 

@@ -129,6 +129,21 @@ public class WhereClause : IQueryClause
 
     }
 
+    public bool NeedsCondition()
+    {
+        if (!isClicked)
+        {
+            return false; // Clause not active
+        }
+        if (newCondition == null)
+        {
+            return false; // No pending condition
+        }    
+
+        // A condition is "incomplete" if it has no operator or no value
+        return newCondition.Operator == null || newCondition.Value == null;
+    }
+
     public List<object> GetOrderedElements()
     {
         List<object> elements = new List<object>();

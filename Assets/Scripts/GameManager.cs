@@ -32,6 +32,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
     [SerializeField] public MissionUIManager MissionUIManager;
+    [SerializeField] public PlatformUIManager platformUIManager;
 
 
     public event Action<bool> OnQueryIsCorrect;
@@ -80,12 +81,20 @@ public class GameManager : Singleton<GameManager>
 
         bool isMobile = Application.isMobilePlatform;
 
-        // Show the correct canvas
-        if (pcQueryCanvas != null)
-            pcQueryCanvas.SetActive(!isMobile);
 
-        if (mobileCanvas != null)
-            mobileCanvas.SetActive(isMobile);
+// Debug.Log("Device Type: " + SystemInfo.deviceType);
+// Debug.Log("Platform: " + Application.platform);
+// Debug.Log("Is Mobile: " + Application.isMobilePlatform);
+
+//         // Show the correct canvas
+//         if (pcGameCanvas != null)
+//             pcGameCanvas.SetActive(!isMobile);
+
+//         if (pcQueryCanvas != null)
+//             pcQueryCanvas.SetActive(!isMobile);
+
+//         if (mobileCanvas != null)
+//             mobileCanvas.SetActive(isMobile);
 
         // Platform-specific logic
         if (!isMobile)

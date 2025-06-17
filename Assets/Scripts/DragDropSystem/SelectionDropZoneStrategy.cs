@@ -8,7 +8,12 @@ public class SelectionPanelStrategy : MonoBehaviour, IDropZoneStrategy
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
         draggable.SetParentAndPosition(transform);
+        // draggable.OnRemoved?.Invoke();
+    if (IsNewDrop(draggable.OriginalParent))
+    {
         draggable.OnRemoved?.Invoke();
+    }
+
     }
 
     public bool IsValidDrop(DraggableItem draggable)

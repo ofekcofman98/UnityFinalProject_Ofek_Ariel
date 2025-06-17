@@ -64,6 +64,7 @@ public class Query
     public void UpdateQueryState()
     {
         queryState.UpdateState(this);
+        // queryState.Update(this);
     }
 
 
@@ -188,7 +189,8 @@ public class Query
     private void updateQueryString()
     {
         Debug.Log($"QUERY STRING IS: {QueryString}");
-        QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
+        // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
+        QueryString = string.Join("\n", clauses.Select(c => c.ToSQL()));
     }
 
     internal string GetSelectFields()

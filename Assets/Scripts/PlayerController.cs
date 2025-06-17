@@ -14,19 +14,19 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        getInput();
-    }
+    // void Update()
+    // {
+    //     getInput();
+    // }
 
-    private void getInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (GameManager.Instance.SqlMode)
-            {
-                GameManager.Instance.ToggleQueryUI();
-            }
-        }
-    }
+    // private void getInput()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.Space))
+    //     {
+    //         if (GameManager.Instance.SqlMode)
+    //         {
+    //             GameManager.Instance.ToggleQueryUI();
+    //         }
+    //     }
+    // }
 }

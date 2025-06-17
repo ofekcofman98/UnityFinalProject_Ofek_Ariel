@@ -26,6 +26,8 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private int originalSiblingIndex;
 
 
+private bool _isDragging = false;   // ✅ Prevents re-entering drag state
+
     private void Awake()
     {
         canvasTransform = GetComponentInParent<Canvas>().transform;
@@ -34,7 +36,11 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Debug.Log($"{gameObject.name} Begin drag");
+
+if (_isDragging) return;               // ✅ Prevents duplicate execution
+_isDragging = true;                    // ✅ Mark that drag started
+
+Debug.Log($"🟡 BEGIN DRAG: {gameObject.name}");
 
         OriginalParent = transform.parent;
         originalPosition = transform.position;
@@ -88,6 +94,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         image.raycastTarget = true;
+_isDragging = false;  // ✅ Allow drag again after completing one
 
     }
 
