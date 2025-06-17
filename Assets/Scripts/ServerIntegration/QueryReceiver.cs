@@ -16,11 +16,13 @@ public class QueryReceiver : MonoBehaviour
 {
     private const string k_pcIP = ServerData.k_pcIP;
     private string serverUrl = $"https://{k_pcIP}/get-query";
+    private bool m_isMobile = Application.isMobilePlatform;
     private Coroutine listeningCoroutine;
 
     public void StartListening()
     {
         Debug.Log("🎧 StartListening() called.");
+
 
         if (listeningCoroutine == null)
         {
