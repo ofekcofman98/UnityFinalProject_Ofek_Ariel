@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 using UnityEngine;
 using System.Threading;
+using UnityEditor.Search;
 
 
 namespace Assets.Scripts.ServerIntegration
 {
-    internal class GameStateSender
+    internal class GameStateSender : Singleton<GameStateSender>
     {
         private const string k_pcIP = ServerData.k_pcIP;
         private string serverUrl = $"https://{k_pcIP}/send-state";
@@ -25,100 +26,51 @@ namespace Assets.Scripts.ServerIntegration
             serverUrl = i_ServerUrl;
         }
 
-        public void StartListening()
+
+        public void UpdatePhone()
         {
-            if (_isRunning) return;
-
-            Debug.Log("🎧 Starting async polling...");
-            _isRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
-        }
-
-        public void StopListening()
-        {
-            if (!_isRunning) return;
-
-            Debug.Log("🛑 Stopping polling...");
-            _isRunning = false;
-            _cts.Cancel();
-        }
-
-
-        private Task AwaitUnityWebRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-
-            operation.completed += _ => tcs.SetResult(true);
-
-            return tcs.Task;
-        }
-
-
-        private async Task PollAsync(CancellationToken token)
-        {
-            try
+            if (!m_isMobile)
             {
-                while (!token.IsCancellationRequested)
+                // Construct the payload with the correct key and value
+                var payload = new Dictionary<string, bool>
+                 {
+                    { "isLevelDone", true }
+                 };
+
+                string jsonPayload = JsonConvert.SerializeObject(payload);
+                Debug.Log($"📤 JSON Payload: {jsonPayload}");
+
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+
+                UnityWebRequest request = new UnityWebRequest(serverUrl + "/send-state", "POST")
                 {
-                    Debug.Log("⏳ Polling server for new state update...");
+                    uploadHandler = new UploadHandlerRaw(bodyRaw),
+                    downloadHandler = new DownloadHandlerBuffer()
+                };
 
-                    using (UnityWebRequest request = UnityWebRequest.Get(serverUrl))
+                request.disposeUploadHandlerOnDispose = true;
+                request.disposeDownloadHandlerOnDispose = true;
+                request.SetRequestHeader("Content-Type", "application/json");
+
+                // Send request asynchronously
+                UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+
+                operation.completed += _ =>
+                {
+                    if (request.result == UnityWebRequest.Result.Success)
                     {
-                        await AwaitUnityWebRequest(request);
-
-                        if (request.result == UnityWebRequest.Result.Success)
-                        {
-                            string receivedJson = request.downloadHandler.text;
-                            // Debug.Log("📥 Raw JSON: " + receivedJson);
-
-                            try
-                            {
-                                Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
-
-                                if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
-                                {
-                                    Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
-
-                                    receivedQuery.PostDeserialize();
-                                    GameManager.Instance.SaveQuery(receivedQuery);
-                                    GameManager.Instance.ExecuteLocally(receivedQuery);
-
-                                    return; // Exit polling loop on success
-                                }
-                                else
-                                {
-                                    // Debug.Log("⏳ Received query object is empty or missing QueryString.");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
-                            }
-                        }
-                        else if (request.responseCode == 204)
-                        {
-                            Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
-                        }
-                        else
-                        {
-                            Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
-                        }
+                        Debug.Log($"✅ State Sent Successfully! Response: {request.downloadHandler.text}");
                     }
-
-                    await Task.Delay(2000, token); // Wait 2 seconds before retrying
-                }
-            }
-            catch (TaskCanceledException)
-            {
-                Debug.Log("🟡 Polling was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"❌ Unexpected error in polling: {ex.Message}");
+                    else
+                    {
+                        Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
+                        Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
+                    }
+                };
             }
         }
+
+
     }
 
 }

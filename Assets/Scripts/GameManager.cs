@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Assets.Scripts.ServerIntegration;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
@@ -113,6 +114,7 @@ public class GameManager : Singleton<GameManager>
         else
         {
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
+            GameStateReceiver.Instance.StartListening();
         }
             // SupabaseManager.Instance.OnSchemeFullyLoaded += () => UnlockInitialTables();
     }

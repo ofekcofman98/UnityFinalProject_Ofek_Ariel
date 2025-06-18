@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.ServerIntegration;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
+            GameStateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
@@ -116,7 +118,7 @@ public class MissionsManager : Singleton<MissionsManager>
         // Wait for player to click Continue
     }
 
-    private IEnumerator DelayedAdvance()
+    public IEnumerator DelayedAdvance()
     {
         Debug.Log("🟡 You unlocked a new table!");
         yield return new WaitForSeconds(2.5f);

@@ -61,8 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Missions\IMissionValidator.cs" />
-    <Compile Include="Assets\Scripts\ServerIntegration\GameStateReceiver.cs" />
-    <Compile Include="Assets\Scripts\ServerIntegration\GameStateSender.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Table.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryUIRenderer.cs" />
     <Compile Include="Assets\Scripts\QueryExecutor.cs" />
@@ -101,6 +99,7 @@
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
     <Compile Include="Assets\Scripts\Interact\DoorInteract.cs" />
     <Compile Include="Assets\Scripts\Popup\Popup.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\GameStateSender.cs" />
     <Compile Include="Assets\Scripts\Scheme\TableBoxUI.cs" />
     <Compile Include="Assets\Scripts\Supabase\SupaBaseUtility.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Column.cs" />
@@ -129,6 +128,7 @@
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\GameStateReceiver.cs" />
     <Compile Include="Assets\Scripts\UnlockingSystem.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\QueryValidator.cs" />

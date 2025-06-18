@@ -11,7 +11,7 @@ using System.Threading;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    internal class GameStateReceiver
+    internal class GameStateReceiver : Singleton<GameStateReceiver>
     {
         private const string k_pcIP = ServerData.k_pcIP;
         private string serverUrl = $"https://{k_pcIP}/get-state";
@@ -28,10 +28,13 @@ namespace Assets.Scripts.ServerIntegration
         {
             if (_isRunning) return;
 
-            Debug.Log("🎧 Starting async polling...");
-            _isRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
+            if (m_isMobile)
+            {
+                Debug.Log("🎧 Starting async polling...");
+                _isRunning = true;
+                _cts = new CancellationTokenSource();
+                _ = PollAsync(_cts.Token); // Fire-and-forget
+            }
         }
 
         public void StopListening()
@@ -54,7 +57,6 @@ namespace Assets.Scripts.ServerIntegration
             return tcs.Task;
         }
 
-
         private async Task PollAsync(CancellationToken token)
         {
             try
@@ -63,50 +65,25 @@ namespace Assets.Scripts.ServerIntegration
                 {
                     Debug.Log("⏳ Polling server for new state update...");
 
-                    using (UnityWebRequest request = UnityWebRequest.Get(serverUrl))
+                    using (UnityWebRequest request = UnityWebRequest.Get(serverUrl + "/get-state"))
                     {
                         await AwaitUnityWebRequest(request);
 
-                        if (request.result == UnityWebRequest.Result.Success)
+                        if ((int)request.responseCode == 200)
                         {
-                            string receivedJson = request.downloadHandler.text;
-                            // Debug.Log("📥 Raw JSON: " + receivedJson);
-
-                            try
-                            {
-                                Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
-
-                                if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
-                                {
-                                    Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
-
-                                    receivedQuery.PostDeserialize();
-                                    GameManager.Instance.SaveQuery(receivedQuery);
-                                    GameManager.Instance.ExecuteLocally(receivedQuery);
-
-                                    return; // Exit polling loop on success
-                                }
-                                else
-                                {
-                                    // Debug.Log("⏳ Received query object is empty or missing QueryString.");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
-                            }
+                            MissionsManager.Instance.DelayedAdvance();
                         }
-                        else if (request.responseCode == 204)
+                        else if ((int)request.responseCode == 204)
                         {
-                            Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
+                            Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
                         }
                         else
                         {
-                            Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+                            Debug.LogError($"❌ Unexpected server response: {request.responseCode} | {request.error}");
                         }
                     }
 
-                    await Task.Delay(2000, token); // Wait 2 seconds before retrying
+                    await Task.Delay(2000, token); // Wait before polling again
                 }
             }
             catch (TaskCanceledException)
@@ -118,5 +95,7 @@ namespace Assets.Scripts.ServerIntegration
                 Debug.LogError($"❌ Unexpected error in polling: {ex.Message}");
             }
         }
+
+
     }
 }
