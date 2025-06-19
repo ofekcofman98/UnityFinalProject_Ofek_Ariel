@@ -88,8 +88,10 @@
     <Compile Include="Assets\Scripts\QueryData.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneLoader.cs" />
     <Compile Include="Assets\Scripts\Query.cs" />
+    <Compile Include="Assets\Scripts\QueryClauses\JoinClause.cs" />
     <Compile Include="Assets\Scripts\ObjectPool.cs" />
     <Compile Include="Assets\Scripts\DisplayActivator.cs" />
+    <Compile Include="Assets\Scripts\SQLObjects\JoinEntry.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Condition.cs" />
     <Compile Include="Assets\Scripts\Singleton.cs" />
     <Compile Include="Assets\Scripts\Supabase\SupabaseManager.cs" />
