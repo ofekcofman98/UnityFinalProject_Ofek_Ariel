@@ -7,6 +7,7 @@ public static class QueryConstants
 {
     public const string Select = "SELECT";
     public const string From = "FROM";
+    public const string Join = "JOIN";
     public const string Where = "WHERE";
     public const string Comma = ", ";
     public const string Empty = "";

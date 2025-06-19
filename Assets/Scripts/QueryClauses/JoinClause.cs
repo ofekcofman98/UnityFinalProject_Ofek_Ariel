@@ -2,17 +2,51 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JoinClause : MonoBehaviour
+public class JoinClause : IQueryClause
 {
-    // Start is called before the first frame update
-    void Start()
+    public string DisplayName => QueryConstants.Join;
+    public string JoinPart { get; set; } = QueryConstants.Empty;
+    public bool isClicked { get; private set; }
+    public bool isAvailable { get; set; }
+
+    private List<JoinEntry> joinEntries = new();
+
+    public void Activate() => isClicked = true;
+    public void Deactivate() { isClicked = false; joinEntries.Clear(); }
+
+    public void AddJoin(Table toTable, Column fromCol, Column toCol)
     {
-        
+        joinEntries.Add(new JoinEntry(toTable, fromCol, toCol));
+        UpdateString();
     }
 
-    // Update is called once per frame
-    void Update()
+    public string ToSQL()
     {
-        
+        return JoinPart;
+    }
+
+    public string ToSupabase()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void UpdateString()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void OnQueryUpdated(Query query)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public List<object> GetOrderedElements()
+    {
+        throw new System.NotImplementedException();
     }
 }

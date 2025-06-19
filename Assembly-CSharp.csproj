@@ -117,6 +117,7 @@
     <Compile Include="Assets\Scripts\Scheme\SchemeDisplayer.cs" />
     <Compile Include="Assets\Scripts\Structures\StructureFetcherEditor.cs" />
     <Compile Include="Assets\Scripts\Structures\StructureFetcher.cs" />
+    <Compile Include="Assets\Scripts\SuspectsManager.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Structures\ColumnStructure.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\QueryDropZoneStrategy.cs" />

@@ -28,7 +28,7 @@ public class Query
     public event Action OnAvailableClausesChanged;
     // public eQueryState currentState { get; set; } = eQueryState.None;
     public QueryState queryState;
-    public List<List<object>> orderedElements {get; private set;}
+    // public List<List<object>> orderedElements {get; private set;}
 
     public List<Dictionary<string, string>> Results { get; set; } 
     public bool IsValid => fromClause.table != null && !selectClause.IsEmpty();

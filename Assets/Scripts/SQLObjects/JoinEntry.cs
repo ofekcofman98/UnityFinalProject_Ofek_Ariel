@@ -2,17 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JoinEntry : MonoBehaviour
+public class JoinEntry
 {
-    // Start is called before the first frame update
-    void Start()
+    public Table TableToJoin;
+    public Column FromColumn;
+    public Column ToColumn;
+
+
+    public JoinEntry(Table table, Column fromCol, Column toCol)
     {
-        
+        TableToJoin = table;
+        FromColumn = fromCol;
+        ToColumn = toCol;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
