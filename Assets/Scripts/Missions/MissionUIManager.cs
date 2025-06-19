@@ -24,7 +24,7 @@ public class MissionUIManager : MonoBehaviour
     private Color k_Color => isQueryCorrect? Color.green : Color.red;
    
     [SerializeField] public GameObject executeButton;
-    [SerializeField] public GameObject continueButton;
+    [SerializeField] public GameObject clearButton;
     
     public void Init(MissionsManager missionsManager)
     {
@@ -56,37 +56,39 @@ public class MissionUIManager : MonoBehaviour
     public void ShowResult(bool i_Result)
     {
         isQueryCorrect = i_Result;
-        
+
         MobileMissionTitle.text = "";
         MobileMissionDescription.text = $"Query is {k_IsCorrectString}";
         MobileMissionDescription.color = k_Color;
-        
+
         PcMissionTitle.text = "";
         PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
         PcMissionDescription.color = k_Color;
 
         executeButton.gameObject.SetActive(!i_Result);
-        continueButton.gameObject.SetActive(i_Result);
-    }
-
-    public void OnContinueButtonClicked()
-    {
-        continueButton.gameObject.SetActive(false);
-        executeButton.gameObject.SetActive(true);
-
-        // Reset the query
-        GameManager.Instance.queryBuilder.ResetQuery();
+        clearButton.gameObject.SetActive(i_Result);        
 
         if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
         {
             string tableName = GameManager.Instance.missionManager.CurrentMission.tableToUnlock;
             showNewTable(tableName);
         }
+
+    }
+
+    public void OnClearButtonClicked()
+    {
+        clearButton.gameObject.SetActive(false);
+        executeButton.gameObject.SetActive(true);
+
+        // Reset the query
+        GameManager.Instance.queryBuilder.ResetQuery();
+
         // Move to next mission
         // GameManager.Instance.missionManager.GoToNextMission();
 
         // Refresh mission UI
-        ShowUI();
+        // ShowUI();
     }
 
     private void showNewTable(string tableName)

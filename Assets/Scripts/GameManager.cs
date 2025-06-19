@@ -126,29 +126,25 @@ public class GameManager : Singleton<GameManager>
 
     public void SetSqlMode()
     {
-        SqlMode = !SqlMode;
+    SqlMode = !SqlMode;
 
-        if (pcGameCanvas != null)
-        {
-            pcGameCanvas.SetActive(!SqlMode);
-        }
+    if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+    if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
+    if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
-        if (pcQueryCanvas != null)
-        {
-            pcQueryCanvas.SetActive(SqlMode);
-        }
+    // Disable/Enable movement
+    PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+    if (playerMovement != null) playerMovement.enabled = !SqlMode;
 
+    // Disable/Enable camera look
+    MouseLook mouseLook = FindObjectOfType<MouseLook>();
+    if (mouseLook != null) mouseLook.enabled = !SqlMode;
 
-        if (mobileCanvas != null)
-        {
-            mobileCanvas.SetActive(SqlMode);
-        }
+    // Optional: CharacterController
+    CharacterController characterController = FindObjectOfType<CharacterController>();
+    if (characterController != null) characterController.enabled = !SqlMode;
 
-        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-        if (playerMovement != null)
-        {
-            playerMovement.enabled = !SqlMode;
-        }
+    Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
     }
 
     public void SaveQuery(Query i_Query)
@@ -238,7 +234,8 @@ public class GameManager : Singleton<GameManager>
             Debug.Log($"🖥 pcCanvas active? {pcQueryCanvas?.activeSelf}");
             Debug.Log($"📊 tableDisplayer is null? {tableDisplayer == null}");
             Debug.Log($"🧪 Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(c => c.Name))}");
-            tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);
+            // tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);//, CurrentQuery.GetTable().Name);
+            tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.selectClause.Columns, CurrentQuery.GetTable().Name);
         }
         else
         {
