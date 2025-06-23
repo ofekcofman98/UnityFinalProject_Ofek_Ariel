@@ -80,25 +80,8 @@ public class GameManager : Singleton<GameManager>
     {
         MissionUIManager.Init(missionManager);
 
-        bool isMobile = Application.isMobilePlatform;
 
-
-// Debug.Log("Device Type: " + SystemInfo.deviceType);
-// Debug.Log("Platform: " + Application.platform);
-// Debug.Log("Is Mobile: " + Application.isMobilePlatform);
-
-//         // Show the correct canvas
-//         if (pcGameCanvas != null)
-//             pcGameCanvas.SetActive(!isMobile);
-
-//         if (pcQueryCanvas != null)
-//             pcQueryCanvas.SetActive(!isMobile);
-
-//         if (mobileCanvas != null)
-//             mobileCanvas.SetActive(isMobile);
-
-        // Platform-specific logic
-        if (!isMobile)
+        if (!Application.isMobilePlatform)
         {
             // PC: Start polling the server for queries
             if (queryReceiver != null)
@@ -116,7 +99,6 @@ public class GameManager : Singleton<GameManager>
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
             GameStateReceiver.Instance.StartListening();
         }
-            // SupabaseManager.Instance.OnSchemeFullyLoaded += () => UnlockInitialTables();
     }
 
 

@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static System.Net.WebRequestMethods;
 public static class ServerData 
 {
     public const string k_pcIP = "python-query-server-591845120560.us-central1.run.app";

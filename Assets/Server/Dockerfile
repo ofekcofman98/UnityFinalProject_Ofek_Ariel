@@ -1,13 +1,17 @@
-FROM node:18-alpine
+FROM python:3.10-slim
 
+# Set working directory inside the container
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
-
+# Copy all files including requirements.txt and server.py
 COPY . .
 
-ENV PORT 8080
+# Install required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Set the expected port for Google Cloud Run
+ENV PORT=8080
 EXPOSE 8080
 
-CMD ["node", "server.js"]
+# Command to start the Flask server
+CMD ["python", "server.py"]
