@@ -105,6 +105,7 @@
     <Compile Include="Assets\Scripts\OperatorStrategies.cs" />
     <Compile Include="Assets\Scripts\Interact\DoorInteract.cs" />
     <Compile Include="Assets\Scripts\Popup\Popup.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\GameStateSender.cs" />
     <Compile Include="Assets\Scripts\Scheme\TableBoxUI.cs" />
     <Compile Include="Assets\Scripts\Supabase\SupaBaseUtility.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Column.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Assets\Scripts\TableDisplayer.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
+    <Compile Include="Assets\Scripts\ServerIntegration\GameStateReceiver.cs" />
     <Compile Include="Assets\Scripts\UnlockingSystem.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\IDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\QueryValidator.cs" />
@@ -162,6 +164,7 @@
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Fonts\LiberationSans - OFL.txt" />
+    <None Include="Assets\Server\requirements.txt" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile.shader" />
     <None Include="Assets\TextMesh Pro\Shaders\TMP_Sprite.shader" />
   </ItemGroup>

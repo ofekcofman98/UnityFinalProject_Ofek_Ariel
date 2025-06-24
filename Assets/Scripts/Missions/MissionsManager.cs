@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.ServerIntegration;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private int currentMissionIndex = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
+    private int m_Lives = 3;
     public event Action<bool> OnMissionValidated;
 
     private void ValidateMission()
@@ -20,12 +22,23 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
+            GameStateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
-        else
+        else 
         {
             Debug.Log("❌ Mission failed.");
+            if (currentMissionIndex == missionSequence.Missions.Count - 1)
+            {
+                Debug.Log("❌ You arrested the wrong suspect !.");
+                m_Lives--;
+                if(m_Lives > 0)
+                    Debug.Log($"You have {m_Lives} lives left .");
+                else
+                    Debug.Log("Game over :/");
+
+            }
             OnMissionValidated?.Invoke(false);
         }
     }
@@ -105,14 +118,16 @@ public class MissionsManager : Singleton<MissionsManager>
         // Wait for player to click Continue
     }
 
-    private IEnumerator DelayedAdvance()
+    public IEnumerator DelayedAdvance()
     {
         Debug.Log("🟡 You unlocked a new table!");
         yield return new WaitForSeconds(2.5f);
-        GoToNextMission();
+        checkUnlocking();
+        GoToNextMission(); 
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
+        GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
-
+        
     }
 
 }

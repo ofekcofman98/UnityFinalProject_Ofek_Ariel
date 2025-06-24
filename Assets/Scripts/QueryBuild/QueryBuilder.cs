@@ -200,7 +200,7 @@ public class QueryBuilder : MonoBehaviour
         
     // }
 
-    private void PopulateTableSelection()
+    public void PopulateTableSelection()
     {
         var unlockedTables = SupabaseManager.Instance.Tables.Where(t => t.IsUnlocked);
 
