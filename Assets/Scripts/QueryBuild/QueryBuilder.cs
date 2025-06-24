@@ -195,7 +195,7 @@ public class QueryBuilder : MonoBehaviour
         PopulateValueSelection();
     }
 
-    private void PopulateTableSelection()
+    public void PopulateTableSelection()
     {
         var unlockedTables = SupabaseManager.Instance.Tables.Where(t => t.IsUnlocked);
 

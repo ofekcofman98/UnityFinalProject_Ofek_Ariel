@@ -54,7 +54,7 @@ public class QueryReceiver : MonoBehaviour
             {
                 Debug.Log("📡 Polling the server for new query...");
 
-                UnityWebRequest request = UnityWebRequest.Get(serverUrl);
+                UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-query");
                 yield return request.SendWebRequest();
 
                 if (request.result == UnityWebRequest.Result.Success)

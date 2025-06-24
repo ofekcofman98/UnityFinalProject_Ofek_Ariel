@@ -122,10 +122,12 @@ public class MissionsManager : Singleton<MissionsManager>
     {
         Debug.Log("🟡 You unlocked a new table!");
         yield return new WaitForSeconds(2.5f);
-        GoToNextMission();
+        checkUnlocking();
+        GoToNextMission(); 
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
+        GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
-
+        
     }
 
 }

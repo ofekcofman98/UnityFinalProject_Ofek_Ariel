@@ -36,7 +36,7 @@ public class QuerySender : MonoBehaviour
         var encoding = new System.Text.UTF8Encoding();
         byte[] bodyRaw = encoding.GetBytes(jsonPayload);
 
-        UnityWebRequest request = new UnityWebRequest(serverUrl, "POST")
+        UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-query", "POST")
         {
             uploadHandler = new UploadHandlerRaw(bodyRaw),
             downloadHandler = new DownloadHandlerBuffer(),
