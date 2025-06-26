@@ -18,11 +18,11 @@ public class QuerySender : MonoBehaviour
 
     public void SendQueryToServer(Query query)
     {
-        if (IsQuerySent)
-        {
-            Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
-            return;
-        }
+        //if (IsQuerySent)
+        //{
+        //    Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
+        //    return;
+        //}
 
         StartCoroutine(SendQuery(query));
     }

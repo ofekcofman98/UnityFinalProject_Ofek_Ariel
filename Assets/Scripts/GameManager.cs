@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Assets.Scripts.ServerIntegration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
@@ -34,7 +36,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
     [SerializeField] public MissionUIManager MissionUIManager;
     [SerializeField] public PlatformUIManager platformUIManager;
-
+    
 
     public event Action<bool> OnQueryIsCorrect;
 
@@ -79,7 +81,7 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         MissionUIManager.Init(missionManager);
-
+        SendResetToPhone();
 
         if (!Application.isMobilePlatform)
         {
@@ -101,6 +103,49 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public void SendResetToPhone()
+    {
+        if (!Application.isMobilePlatform)
+        {
+            Debug.Log("SENDING RESET MESSAGE TO SERVER");
+            // Construct the payload with the correct key and value
+            var payload = new Dictionary<string, bool>
+                 {
+                    { "reset", true }
+                 };
+
+            string jsonPayload = JsonConvert.SerializeObject(payload);
+            Debug.Log($"📤 JSON Payload: {jsonPayload}");
+
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+
+            UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-reset", "POST")
+            {
+                uploadHandler = new UploadHandlerRaw(bodyRaw),
+                downloadHandler = new DownloadHandlerBuffer()
+            };
+
+            request.disposeUploadHandlerOnDispose = true;
+            request.disposeDownloadHandlerOnDispose = true;
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Send request asynchronously
+            UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+
+            operation.completed += _ =>
+            {
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log($"✅ State Sent Successfully! Response: {request.downloadHandler.text}");
+                }
+                else
+                {
+                    Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
+                    Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
+                }
+            };
+        }
+    }
 
     private void startGame()
     {
@@ -161,10 +206,10 @@ public class GameManager : Singleton<GameManager>
         CurrentQuery = i_Query;
         Debug.Log("Query saved in GameManager: " + i_Query.QueryString);
 
-        if (queryReceiver != null)
-        {
-            queryReceiver.StopListening();
-        }
+        //if (queryReceiver != null)
+        //{
+        //    queryReceiver.StopListening();
+        //}
 
     }
 
@@ -274,7 +319,7 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("Teleport!");
     }
 
-    internal void ResetGame()
+    internal IEnumerator ResetGame()
     {
         CurrentQuery = null;
         SqlMode = false;
@@ -295,6 +340,16 @@ public class GameManager : Singleton<GameManager>
             queryBuilder.BuildQuery();
         }
 
-        querySender?.ResetQuerySendFlag(); 
+        querySender?.ResetQuerySendFlag();
+
+        yield return null;
+    }
+
+    internal IEnumerator resetAction()
+    {
+        ResetGame();
+        MissionUIManager.ShowUI();
+
+        yield return null;
     }
 }
