@@ -13,10 +13,17 @@ using Newtonsoft.Json;
 public class QuerySender : MonoBehaviour
 {
     private const string k_pcIP = ServerData.k_pcIP;
-    private string serverUrl = $"https://{k_pcIP}/send-query"; 
+    private string serverUrl = $"https://{k_pcIP}/send-query";
+    public bool IsQuerySent { get; private set; } = false;
 
     public void SendQueryToServer(Query query)
     {
+        if (IsQuerySent)
+        {
+            Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
+            return;
+        }
+
         StartCoroutine(SendQuery(query));
     }
 
@@ -30,6 +37,7 @@ public class QuerySender : MonoBehaviour
 
         query.clauses = null;
         query.availableClauses = null;
+
         string jsonPayload = JsonConvert.SerializeObject(query);
         Debug.Log($"📤 JSON Payload: {jsonPayload}");
 
@@ -52,12 +60,18 @@ public class QuerySender : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             Debug.Log($"✅ Query Sent Successfully! Response: {request.downloadHandler.text}");
+            IsQuerySent = true;
         }
         else
         {
             Debug.LogError($"❌ Failed to send query: {request.responseCode} | {request.error}");
             Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
         }
+    }
+
+    public void ResetQuerySendFlag()
+    {
+        IsQuerySent = false;
     }
 
 

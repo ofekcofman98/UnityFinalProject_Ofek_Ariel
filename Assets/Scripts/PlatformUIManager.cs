@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.ServerIntegration;
 using UnityEngine;
 
 public class PlatformUIManager : MonoBehaviour
@@ -30,13 +31,19 @@ public class PlatformUIManager : MonoBehaviour
             DisableWorldInteraction();
 
             if (worldRoot != null) worldRoot.SetActive(false);
-
+            InitMobile();
         }
         else
         {
             Debug.Log("🖥 Running on PC — activating PC UI");
         }
 
+    }
+
+    private void InitMobile()
+    {
+        GameStateReceiver.Instance.StartListening();
+        GameManager.Instance.ResetGame(); // 💡 You must add ResetGame() in GameManager
     }
 
     private void DisableWorldInteraction()

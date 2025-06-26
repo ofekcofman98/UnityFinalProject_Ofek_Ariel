@@ -97,7 +97,7 @@ public class GameManager : Singleton<GameManager>
         else
         {
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
-            GameStateReceiver.Instance.StartListening();
+            // GameStateReceiver.Instance.StartListening();
         }
     }
 
@@ -110,25 +110,33 @@ public class GameManager : Singleton<GameManager>
 
     public void SetSqlMode()
     {
-    SqlMode = !SqlMode;
+        SqlMode = !SqlMode;
 
-    if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-    if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
-    if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+        if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
+        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
-    // Disable/Enable movement
-    PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-    if (playerMovement != null) playerMovement.enabled = !SqlMode;
+        // Disable/Enable movement
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null) playerMovement.enabled = !SqlMode;
 
-    // Disable/Enable camera look
-    MouseLook mouseLook = FindObjectOfType<MouseLook>();
-    if (mouseLook != null) mouseLook.enabled = !SqlMode;
+        // Disable/Enable camera look
+        MouseLook mouseLook = FindObjectOfType<MouseLook>();
+        if (mouseLook != null) mouseLook.enabled = !SqlMode;
 
-    // Optional: CharacterController
-    CharacterController characterController = FindObjectOfType<CharacterController>();
-    if (characterController != null) characterController.enabled = !SqlMode;
+        // Optional: CharacterController
+        CharacterController characterController = FindObjectOfType<CharacterController>();
+        if (characterController != null) characterController.enabled = !SqlMode;
 
-    Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+        Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+    
+
+        if (Application.isMobilePlatform && SqlMode)
+    {
+        queryBuilder.ResetQuery();
+        queryBuilder.BuildQuery();
+    }
+
     }
 
     public void SaveQuery(Query i_Query)
@@ -264,5 +272,29 @@ public class GameManager : Singleton<GameManager>
     internal void TeleportPlayerTo(Vector3 position)
     {
         Debug.Log("Teleport!");
+    }
+
+    internal void ResetGame()
+    {
+        CurrentQuery = null;
+        SqlMode = false;
+
+        if (missionManager != null)
+        {
+            MissionsManager.Instance.ResetMissions();
+        }
+
+        if (MissionUIManager != null)
+        {
+            MissionUIManager.ShowUI();
+        }
+
+        if (queryBuilder != null)
+        {
+            queryBuilder.ResetQuery();
+            queryBuilder.BuildQuery();
+        }
+
+        querySender?.ResetQuerySendFlag(); 
     }
 }

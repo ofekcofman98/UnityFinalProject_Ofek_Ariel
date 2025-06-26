@@ -126,8 +126,19 @@ public class MissionsManager : Singleton<MissionsManager>
         GoToNextMission(); 
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
         GameManager.Instance.queryBuilder.ResetQuery();
+        GameManager.Instance.queryBuilder.BuildQuery(); // ✅ force rebuild
         GameManager.Instance.MissionUIManager.ShowUI();
-        
     }
 
+    internal void ResetMissions()
+    {
+        currentMissionIndex = 0;
+        m_Lives = 3;
+        foreach (Table table in SupabaseManager.Instance.Tables)
+        {
+            table.LockTable();
+        } 
+
+        GameManager.Instance.MissionUIManager.ShowUI(); //! check if needed
+    }
 }

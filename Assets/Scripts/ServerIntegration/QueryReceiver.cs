@@ -73,7 +73,7 @@ public class QueryReceiver : MonoBehaviour
                             GameManager.Instance.SaveQuery(receivedQuery);
                             GameManager.Instance.ExecuteLocally(receivedQuery);
 
-                            yield break;
+                            // yield break;
                         }
                         else
                         {

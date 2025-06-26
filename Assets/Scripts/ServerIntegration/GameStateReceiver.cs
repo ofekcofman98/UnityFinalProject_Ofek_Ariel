@@ -98,7 +98,7 @@ namespace Assets.Scripts.ServerIntegration
                             }
                         }
 
-                        await Task.Delay(2000, token); // Wait before polling again
+                        await Task.Delay(500, token); // Wait before polling again
                     }
                 }
                 
