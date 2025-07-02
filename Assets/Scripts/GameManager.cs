@@ -324,9 +324,11 @@ public class GameManager : Singleton<GameManager>
         CurrentQuery = null;
         SqlMode = false;
 
+        Debug.Log($"inside ResetGame, missionManager : {missionManager}");
         if (missionManager != null)
         {
-            MissionsManager.Instance.ResetMissions();
+            Debug.Log("Inside condition, before ResetMissions");
+            yield return MissionsManager.Instance.ResetMissions();
         }
 
         if (MissionUIManager != null)
@@ -347,9 +349,10 @@ public class GameManager : Singleton<GameManager>
 
     internal IEnumerator resetAction()
     {
-        ResetGame();
-        MissionUIManager.ShowUI();
+        Debug.Log("Inside ResetAction, before ResetGame");
+        yield return ResetGame();
+        Debug.Log("Inside ResetAction, after ResetGame");
+        //MissionUIManager.ShowUI();
 
-        yield return null;
     }
 }

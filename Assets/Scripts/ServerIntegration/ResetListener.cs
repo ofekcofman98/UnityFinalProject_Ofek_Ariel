@@ -79,7 +79,7 @@ namespace Assets.Scripts.ServerIntegration
                         {
                             await AwaitUnityWebRequest(request);
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result} | Text: {request.downloadHandler.text}");
+                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
                             if ((int)request.responseCode == 200)
                             {
                                 Debug.Log("✅ 200 OK received, about to reset...✅");
@@ -87,7 +87,7 @@ namespace Assets.Scripts.ServerIntegration
                             }
                             else if ((int)request.responseCode == 204)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
+                                Debug.Log("⏳ Server responded with 204 No Content — no reset.");
                             }
                             else
                             {
