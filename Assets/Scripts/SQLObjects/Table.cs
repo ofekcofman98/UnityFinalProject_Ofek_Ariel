@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ public class Table
     public List<Column> Columns { get; set; }
     public List<ForeignKey> ForeignKeys { get; set; }
     public bool IsUnlocked { get; set; }
+    public static event Action<Table> OnTableUnlocked;
 
     public Table(string i_TableName, bool i_IsUnlocked = false)
     {
@@ -41,6 +43,7 @@ public class Table
     public void UnlockTable()
     {
         IsUnlocked = true;
+        OnTableUnlocked?.Invoke(this);
     }
 
     public void LockTable()

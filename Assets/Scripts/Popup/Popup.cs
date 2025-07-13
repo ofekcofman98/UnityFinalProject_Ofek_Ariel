@@ -9,6 +9,7 @@ public class Popup : MonoBehaviour, IPopup
 
     [SerializeField] private GameObject closeButtonPrefab;
     private GameObject closeButtonInstance;
+    public Action OnPopupOpened; 
     public Action OnPopupClosed;
 
     private void OnEnable()
@@ -22,6 +23,7 @@ public class Popup : MonoBehaviour, IPopup
     {
         gameObject.SetActive(true);
         EnsureCloseButton();
+        OnPopupOpened?.Invoke(); 
     }
 
     private void EnsureCloseButton()

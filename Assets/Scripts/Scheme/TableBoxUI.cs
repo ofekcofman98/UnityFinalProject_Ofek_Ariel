@@ -17,6 +17,12 @@ public class TableBoxUI : MonoBehaviour
 
     public void Init(Table i_Table)
     {
+    foreach (Transform child in columnListParent) //TODO 
+    {//TODO
+        Destroy(child.gameObject);//TODO
+    }//TODO
+    columnLabelMap.Clear();//TODO
+
         tableNameText.text = i_Table.Name;
         foreach(Column column in i_Table.Columns)
         {

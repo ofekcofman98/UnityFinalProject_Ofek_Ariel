@@ -22,7 +22,7 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] public QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
-    [SerializeField] private TableDisplayer tableDisplayer;
+    [SerializeField] private DataGridDisplayer tableDisplayer;
     [SerializeField] public SchemeDisplayer schemeDisplayer;
 
 

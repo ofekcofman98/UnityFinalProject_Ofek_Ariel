@@ -15,6 +15,8 @@ public class MissionUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI PcMissionTitle;
     [SerializeField] private TextMeshProUGUI PcMissionDescription;
 
+    [SerializeField] private NewTablePopup newTablePopup;
+
 
 
     private MissionsManager missionManager;
@@ -96,7 +98,8 @@ public class MissionUIManager : MonoBehaviour
         Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
         if (table != null)
         {
-            GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
+            // GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
+            newTablePopup.Open(table);
         }
     }
 }

@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Missions\IMissionValidator.cs" />
+    <Compile Include="Assets\Scripts\DataGridDisplayer.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Table.cs" />
     <Compile Include="Assets\Scripts\QueryBuild\QueryUIRenderer.cs" />
     <Compile Include="Assets\Scripts\QueryExecutor.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Assets\Scripts\CoroutineRunner.cs" />
     <Compile Include="Assets\Scripts\Display\SetTargetDisplay.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\SelectClause.cs" />
+    <Compile Include="Assets\Scripts\AddSuspectButton.cs" />
     <Compile Include="Assets\Scripts\Popup\IPopup.cs" />
     <Compile Include="Assets\Scripts\Missions\SQLMissionData.cs" />
     <Compile Include="Assets\Scripts\QueryState.cs" />
@@ -118,7 +120,6 @@
     <Compile Include="Assets\Scripts\Scheme\SchemeDisplayer.cs" />
     <Compile Include="Assets\Scripts\Structures\StructureFetcherEditor.cs" />
     <Compile Include="Assets\Scripts\Structures\StructureFetcher.cs" />
-    <Compile Include="Assets\Scripts\SuspectsManager.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Structures\ColumnStructure.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\QueryDropZoneStrategy.cs" />
@@ -126,13 +127,15 @@
     <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionData.cs" />
     <Compile Include="Assets\Scripts\Player\MouseLook.cs" />
+    <Compile Include="Assets\Scripts\NewTablePopup.cs" />
     <Compile Include="Assets\Scripts\ServerIntegration\QuerySender.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\IQueryClause.cs" />
     <Compile Include="Assets\Scripts\QueryConstants.cs" />
     <Compile Include="Assets\Scripts\QueryClauses\WhereClause.cs" />
     <Compile Include="Assets\Scripts\Scene\SceneNames.cs" />
+    <Compile Include="Assets\Scripts\Suspects\SuspectGuessUI.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SectionDropZoneStrategy.cs" />
-    <Compile Include="Assets\Scripts\TableDisplayer.cs" />
+    <Compile Include="Assets\Scripts\Suspects\SuspectsManager.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\ClauseDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\SelectionDropZoneStrategy.cs" />
     <Compile Include="Assets\Scripts\ServerIntegration\GameStateReceiver.cs" />

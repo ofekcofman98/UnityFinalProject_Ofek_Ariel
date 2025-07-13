@@ -16,5 +16,5 @@ MonoBehaviour:
   missionTitle: Unlocking CrimeEvidence
   missionDescription: Go to the computer
   unlocksTable: 1
-  tableToUnlock: CrimeEvidence
+  tableToUnlock: Persons
   requiredObjectId: computer01
