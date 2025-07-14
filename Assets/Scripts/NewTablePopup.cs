@@ -20,7 +20,7 @@ public class NewTablePopup : MonoBehaviour
             currentTableBox = null;
         }
 
-        messageText.text = $"New table unlocked: {table.Name}";
+        messageText.text = $"New table unlocked:\n {table.Name}";
         currentTableBox = Instantiate(tableBoxPrefab, tableContainer);
         currentTableBox.Init(table);
 

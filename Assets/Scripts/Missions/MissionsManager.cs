@@ -15,6 +15,11 @@ public class MissionsManager : Singleton<MissionsManager>
     private int m_Lives = 3;
     public event Action<bool> OnMissionValidated;
 
+    private void Start()
+    {
+        SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
+    }
+
     private void ValidateMission()
     {
         bool isValid = CurrentMission.Validate();
@@ -26,14 +31,14 @@ public class MissionsManager : Singleton<MissionsManager>
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
-        else 
+        else
         {
             Debug.Log("❌ Mission failed.");
             if (currentMissionIndex == missionSequence.Missions.Count - 1)
             {
                 Debug.Log("❌ You arrested the wrong suspect !.");
                 m_Lives--;
-                if(m_Lives > 0)
+                if (m_Lives > 0)
                     Debug.Log($"You have {m_Lives} lives left .");
                 else
                     Debug.Log("Game over :/");
@@ -56,8 +61,15 @@ public class MissionsManager : Singleton<MissionsManager>
     {
         if (CurrentMission is InteractableMissionData im)
         {
-            im.SetTriggeredObject(id);
-            ValidateMission();
+            if (im.requiredObjectId == id)
+            {
+                im.SetTriggeredObject(id);
+                ValidateMission();
+            }
+            else
+            {
+                Debug.Log($"❌ Ignored interaction with wrong object: {id} (expected: {im.requiredObjectId})");
+            }
         }
     }
 
@@ -124,6 +136,7 @@ public class MissionsManager : Singleton<MissionsManager>
         yield return new WaitForSeconds(2.5f);
         checkUnlocking();
         GoToNextMission(); 
+GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
         GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.queryBuilder.BuildQuery(); // ✅ force rebuild

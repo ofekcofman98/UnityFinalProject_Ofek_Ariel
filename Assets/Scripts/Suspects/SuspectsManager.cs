@@ -11,10 +11,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
     public int Lives => m_Lives;
     public event Action<int> OnLivesChanged;
     public event Action<bool> OnGuessResult;
-
-
+    public event Action OnSuspectsChanged;
     public List<SuspectData> Suspects = new();
-    public string FinalAnswerSuspectId;
+    public string FinalAnswerSuspectId { get; private set; }
+
 
     public void AddSuspect(SuspectData suspect)
     {
@@ -22,6 +22,7 @@ public class SuspectsManager : Singleton<SuspectsManager>
         {
             Suspects.Add(suspect);
             Debug.Log($"🟢 Suspects count: {Suspects.Count}");
+            OnSuspectsChanged?.Invoke();
         }
         else
         {
@@ -60,13 +61,57 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
     public void RemoveSuspect(SuspectData suspect)
     {
-        Suspects.Remove(suspect);
+        if (Suspects.Remove(suspect))
+        {
+            Debug.Log($"🗑️ Removed suspect: {suspect.FullName}");
+            OnSuspectsChanged?.Invoke();
+        }
     }
 
     public void GuessSuspect(String suspectId)
     {
+        if (string.IsNullOrEmpty(FinalAnswerSuspectId))
+        {
+            Debug.LogWarning("❓ Final criminal not set — guessing is blocked.");
+            return;
+        }
 
+        bool correct = suspectId == FinalAnswerSuspectId;
+
+        if (correct)
+        {
+            Debug.Log("🎉 Correct suspect guessed!");
+            OnGuessResult?.Invoke(true);
+            MissionsManager.Instance.MarkMissionAsCompleted(); // final win
+        }
+        else
+        {
+            m_Lives--;
+            Debug.Log($"❌ Wrong guess. Lives left: {m_Lives}");
+            OnGuessResult?.Invoke(false);
+            OnLivesChanged?.Invoke(m_Lives);
+
+            if (m_Lives <= 0)
+            {
+                Debug.Log("💀 Game Over — no lives remaining.");
+                // TODO: Trigger actual game-over screen / logic here
+            }
+        }
     }
+    
+    public void SetFinalAnswerFromMissionSequence(MissionSequence sequence)
+    {
+        FinalAnswerSuspectId = sequence?.FinalAnswerPersonId;
+        if (!string.IsNullOrEmpty(FinalAnswerSuspectId))
+        {
+            Debug.Log($"🎯 Final answer loaded: {FinalAnswerSuspectId}");
+        }
+        else
+        {
+            Debug.LogWarning("⚠️ FinalAnswerPersonId is empty in MissionSequence!");
+        }
+    }
+
     // public JArray GetSuspectsAsJArray()
     // {
     //     var array = new JArray();

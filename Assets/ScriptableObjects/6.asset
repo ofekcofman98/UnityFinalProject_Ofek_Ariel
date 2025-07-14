@@ -10,16 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 2
+  m_Name: 6
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Introduction to SQL
-  missionDescription: select evidence_ID from CrimeEvidence table
+  missionTitle: Persons
+  missionDescription: Find all id, first name and last name
   unlocksTable: 0
-  tableToUnlock: Witnesses
-  requiredTable: CrimeEvidence
+  tableToUnlock: 
+  requiredTable: Persons
   requiredColumns:
-  - evidence_id
+  - first_name
+  - last_name
+  - person_id
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

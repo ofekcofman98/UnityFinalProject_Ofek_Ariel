@@ -27,6 +27,8 @@ public class GameManager : Singleton<GameManager>
 
 
     [SerializeField] private QuerySender querySender;
+    public QuerySender QuerySender => querySender;
+
     [SerializeField] private QueryReceiver queryReceiver;
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
@@ -34,6 +36,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
     [SerializeField] public MissionUIManager MissionUIManager;
     [SerializeField] public PlatformUIManager platformUIManager;
+[SerializeField] private ResultsUI resultsUI;
 
 
     public event Action<bool> OnQueryIsCorrect;
@@ -221,18 +224,10 @@ public class GameManager : Singleton<GameManager>
         }
         Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
-        if (tableDisplayer != null)
-        {
-            Debug.Log($"🖥 pcCanvas active? {pcQueryCanvas?.activeSelf}");
-            Debug.Log($"📊 tableDisplayer is null? {tableDisplayer == null}");
-            Debug.Log($"🧪 Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(c => c.Name))}");
-            // tableDisplayer.DisplayResults1(jsonResponse, CurrentQuery.selectClause.Columns);//, CurrentQuery.GetTable().Name);
-            tableDisplayer.DisplayResults(jsonResponse, CurrentQuery.selectClause.Columns, CurrentQuery.GetTable().Name);
-        }
-        else
-        {
-            Debug.LogError("❌ TableDisplayer is missing!");
-        }
+        resultsUI.ShowResults(
+            jsonResponse,
+            CurrentQuery.selectClause.Columns,
+            CurrentQuery.GetTable().Name);
     }
 
     // private void UnlockInitialTables()
