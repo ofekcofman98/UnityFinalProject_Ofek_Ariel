@@ -162,7 +162,7 @@ public class GameManager : Singleton<GameManager>
         // }
 
         CurrentQuery = i_Query;
-        Debug.Log("Query saved in GameManager: " + i_Query.QueryString);
+        // Debug.Log("Query saved in GameManager: " + i_Query.QueryString);
 
         if (queryReceiver != null)
         {

@@ -67,8 +67,8 @@ public class MissionUIManager : MonoBehaviour
         PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
         PcMissionDescription.color = k_Color;
 
-        executeButton.gameObject.SetActive(!i_Result);
-        clearButton.gameObject.SetActive(i_Result);        
+        // executeButton.gameObject.SetActive(!i_Result);
+        // clearButton.gameObject.SetActive(i_Result);        
 
         if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
         {
@@ -80,17 +80,17 @@ public class MissionUIManager : MonoBehaviour
 
     public void OnClearButtonClicked()
     {
-        clearButton.gameObject.SetActive(false);
-        executeButton.gameObject.SetActive(true);
+        // clearButton.gameObject.SetActive(false);
+        // executeButton.gameObject.SetActive(true);
 
-        // Reset the query
-        GameManager.Instance.queryBuilder.ResetQuery();
+        // // Reset the query
+        // GameManager.Instance.queryBuilder.ResetQuery();
 
-        // Move to next mission
-        // GameManager.Instance.missionManager.GoToNextMission();
+        // // Move to next mission
+        // // GameManager.Instance.missionManager.GoToNextMission();
 
-        // Refresh mission UI
-        // ShowUI();
+        // // Refresh mission UI
+        // // ShowUI();
     }
 
     private void showNewTable(string tableName)

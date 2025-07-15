@@ -95,7 +95,7 @@ public class Query
             {
                 clause.Deactivate();
             }
-            Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
+            // Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
             
             clause.UpdateString();
             updateQueryString();
@@ -188,8 +188,8 @@ public class Query
 
     private void updateQueryString()
     {
-        Debug.Log($"QUERY STRING IS: {QueryString}");
-        // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
+        // Debug.Log($"QUERY STRING IS: {QueryString}");
+        // // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
         QueryString = string.Join("\n", clauses.Select(c => c.ToSQL()));
     }
 

@@ -64,7 +64,7 @@ public class FromClause : IQueryClause
             {
                 FromPart += " " + table.Name;
             }
-            Debug.Log($"from part is: {FromPart}");
+            // Debug.Log($"from part is: {FromPart}");
         }
         else
         {
