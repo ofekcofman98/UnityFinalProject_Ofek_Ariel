@@ -104,10 +104,18 @@ public class WhereClause : IQueryClause
         return WherePart;
     }
 
-    public string ToSupabase()
-    {
-        return Conditions.Count > 0 ? string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionStringSupaBase)) : "";
-    }
+    // public string ToSupabase()
+    // {
+    //     return Conditions.Count > 0 ? string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionStringSupaBase)) : "";
+    // }
+
+public string ToSupabase()
+{
+    return Conditions.Count > 0 
+        ? string.Join("&", Conditions.Select(cond => cond.ConditionStringSupaBase)) 
+        : "";
+}
+    
 
     public void OnQueryUpdated(Query query)
     {

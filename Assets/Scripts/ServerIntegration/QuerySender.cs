@@ -18,12 +18,13 @@ public class QuerySender : MonoBehaviour
 
     public void SendQueryToServer(Query query)
     {
-        if (IsQuerySent)
-        {
-            Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
-            return;
-        }
+        // if (IsQuerySent)
+        // {
+        //     Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
+        //     return;
+        // }
 
+query.PostDeserialize();
         StartCoroutine(SendQuery(query));
     }
 
@@ -35,10 +36,12 @@ public class QuerySender : MonoBehaviour
             yield break;
         }
 
-        query.clauses = null;
-        query.availableClauses = null;
+        // query.clauses = null;
+        // query.availableClauses = null;
 
-        string jsonPayload = JsonConvert.SerializeObject(query);
+        string jsonPayload = JsonConvert.SerializeObject(query, JsonUtility.Settings);
+
+        // string jsonPayload = JsonConvert.SerializeObject(query);
         Debug.Log($"📤 JSON Payload: {jsonPayload}");
 
         var encoding = new System.Text.UTF8Encoding();
@@ -73,6 +76,12 @@ public class QuerySender : MonoBehaviour
     {
         IsQuerySent = false;
     }
+
+    public void MarkQueryAsSent()
+    {
+        IsQuerySent = true;
+    }
+
 
 
 }

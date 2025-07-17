@@ -89,6 +89,7 @@
     <Compile Include="Assets\Scripts\Popup\IPopup.cs" />
     <Compile Include="Assets\Scripts\Location\Location.cs" />
     <Compile Include="Assets\Scripts\Missions\SQLMissionData.cs" />
+    <Compile Include="Assets\Scripts\JsonUtility.cs" />
     <Compile Include="Assets\Scripts\QueryState.cs" />
     <Compile Include="Assets\Scripts\Interact\PlayerInteraction.cs" />
     <Compile Include="Assets\Scripts\DragDropSystem\DraggableItem.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Assets\Scripts\Supabase\SupaBaseUtility.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\Column.cs" />
     <Compile Include="Assets\Scripts\DataGrid\AddSuspectAction.cs" />
+    <Compile Include="Assets\Scripts\OperatorConverter.cs" />
     <Compile Include="Assets\Scripts\DataGrid\DataGridDisplayer.cs" />
     <Compile Include="Assets\Scripts\SQLObjects\ForeignKey.cs" />
     <Compile Include="Assets\Scripts\Missions\MissionUIManager.cs" />

@@ -63,22 +63,27 @@ public class QueryReceiver : MonoBehaviour
 
                     try
                     {
-                        Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
+                    // Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
 
-                        if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
-                        {
-                            Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
+var settings = new JsonSerializerSettings();
+settings.Converters.Add(new OperatorConverter());
 
-                            receivedQuery.PostDeserialize();
-                            GameManager.Instance.SaveQuery(receivedQuery);
-                            GameManager.Instance.ExecuteLocally(receivedQuery);
+Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson, settings);
 
-                            // yield break;
-                        }
-                        else
-                        {
-                            // Debug.Log("⏳ Received query object is empty or missing QueryString.");
-                        }
+                    if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
+                    {
+                        Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
+
+                        receivedQuery.PostDeserialize();
+                        GameManager.Instance.SaveQuery(receivedQuery);
+                        GameManager.Instance.ExecuteLocally(receivedQuery);
+
+                        // yield break;
+                    }
+                    else
+                    {
+                        // Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                    }
                     }
                     catch (Exception ex)
                     {

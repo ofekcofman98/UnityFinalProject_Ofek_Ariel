@@ -70,7 +70,7 @@ public class ObjectPoolService<T> where T : Button
         var label = obj.GetComponentInChildren<TextMeshProUGUI>();
         if (label != null)
         {
-            Debug.Log($"[RESET] Clearing text on {obj.name}");
+            // Debug.Log($"[RESET] Clearing text on {obj.name}");
             label.text = string.Empty;
         }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public interface IOperatorStrategy
 {
+    string GetOperatorId(); // ✅ Add this
     string GetSQLRepresentation();
     string FormatOperatorForSupaBase(Column i_Column);
     string FormatValueForSupabase(Column i_Column, string i_Value);
@@ -12,6 +13,7 @@ public interface IOperatorStrategy
 
 public class EqualOperator : IOperatorStrategy
 {
+    public string GetOperatorId() => "eq";
     public string GetSQLRepresentation() => "=";
     public string FormatOperatorForSupaBase(Column i_Column)
     {
@@ -26,6 +28,7 @@ public class EqualOperator : IOperatorStrategy
 
 public class GreaterThanOperator : IOperatorStrategy
 {
+    public string GetOperatorId() => "gt";
     public string GetSQLRepresentation() => ">";
     public string FormatOperatorForSupaBase(Column i_Column) => "gt";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -34,6 +37,7 @@ public class GreaterThanOperator : IOperatorStrategy
 
 public class LessThanOperator : IOperatorStrategy
 {
+    public string GetOperatorId() => "lt";
     public string GetSQLRepresentation() => "<";
     public string FormatOperatorForSupaBase(Column i_Column) => "lt";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -43,6 +47,8 @@ public class LessThanOperator : IOperatorStrategy
 
 public class GreaterEqualThanOperator : IOperatorStrategy
 {
+
+        public string GetOperatorId() => "gte";
     public string GetSQLRepresentation() => ">=";
     public string FormatOperatorForSupaBase(Column i_Column) => "gte";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -52,6 +58,8 @@ public class GreaterEqualThanOperator : IOperatorStrategy
 
 public class LessEqualThanOperator : IOperatorStrategy
 {
+        public string GetOperatorId() => "lte";
+
     public string GetSQLRepresentation() => "<=";
     public string FormatOperatorForSupaBase(Column i_Column) => "lte";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -61,6 +69,9 @@ public class LessEqualThanOperator : IOperatorStrategy
 
 public class NotEqualOperator : IOperatorStrategy
 {
+
+        public string GetOperatorId() => "neq";
+
     public string GetSQLRepresentation() => "!=";
     public string FormatOperatorForSupaBase(Column i_Column) => "neq";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -69,6 +80,8 @@ public class NotEqualOperator : IOperatorStrategy
 
 public class LikeOperator : IOperatorStrategy
 {
+            public string GetOperatorId() => "ilike";
+
     public string GetSQLRepresentation() => "LIKE";
     public string FormatOperatorForSupaBase(Column i_Column) => "ilike";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value.Replace("%", "%25");
@@ -76,6 +89,8 @@ public class LikeOperator : IOperatorStrategy
 
 public class BetweenOperator : IOperatorStrategy
 {
+            public string GetOperatorId() => "between";
+
     public string GetSQLRepresentation() => "BETWEEN";
     public string FormatOperatorForSupaBase(Column i_Column) => "between";
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
@@ -132,6 +147,29 @@ public static class OperatorFactory
 
         return operators;
     }
+
+    private static readonly Dictionary<string, IOperatorStrategy> OperatorLookup = new()
+    {
+        { "eq", new EqualOperator() },
+        { "neq", new NotEqualOperator() },
+        { "gt", new GreaterThanOperator() },
+        { "lt", new LessThanOperator() },
+        { "gte", new GreaterEqualThanOperator() },
+        { "lte", new LessEqualThanOperator() },
+        { "ilike", new LikeOperator() },
+        { "between", new BetweenOperator() }
+    };
+
+    public static IOperatorStrategy GetOperatorById(string id)
+    {
+        if (OperatorLookup.TryGetValue(id, out var op))
+            return op;
+
+        Debug.LogWarning($"Unknown operator ID: {id}");
+        return null;
+    }
+
+
 }
 
 

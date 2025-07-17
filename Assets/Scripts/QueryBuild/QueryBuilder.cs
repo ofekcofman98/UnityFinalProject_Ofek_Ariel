@@ -1037,14 +1037,14 @@ foreach (var button in buttonsToRelease)
         RefreshQueryPreview();             
 
 
-        foreach (Transform child in selectSection)
-            Debug.Log("🟡 Leftover in SELECT: " + child.name);
+        // foreach (Transform child in selectSection)
+        //     Debug.Log("🟡 Leftover in SELECT: " + child.name);
 
-        foreach (Transform child in fromSection)
-            Debug.Log("🟡 Leftover in FROM: " + child.name);
+        // foreach (Transform child in fromSection)
+        //     Debug.Log("🟡 Leftover in FROM: " + child.name);
 
-        foreach (Transform child in whereSection)
-            Debug.Log("🟡 Leftover in WHERE: " + child.name);
+        // foreach (Transform child in whereSection)
+        //     Debug.Log("🟡 Leftover in WHERE: " + child.name);
     }
 
 }

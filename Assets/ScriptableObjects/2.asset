@@ -19,7 +19,7 @@ MonoBehaviour:
   tableToUnlock: Witnesses
   requiredTable: CrimeEvidence
   requiredColumns:
-  - evidence_id
+  - witness_id
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

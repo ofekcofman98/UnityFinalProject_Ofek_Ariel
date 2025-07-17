@@ -71,9 +71,13 @@ public class GameManager : Singleton<GameManager>
                     missionManager.ValidateSqlMission(CurrentQuery, result, queryValidator);
                 }
             };
-            missionManager.OnMissionValidated += isCorrect => 
+            missionManager.OnMissionValidated += isCorrect =>
             {
                 OnQueryIsCorrect?.Invoke(isCorrect);
+    if (isCorrect)
+    {
+        QuerySender.MarkQueryAsSent(); // ✅ only mark as sent if the query is correct
+    }
             };
 
         }
@@ -181,6 +185,13 @@ public class GameManager : Singleton<GameManager>
 
         if (querySender != null)
         {
+
+            if (QuerySender.IsQuerySent)
+            {
+                Debug.LogWarning("🚨 Query already accepted. Blocking further sends.");
+                return;
+            }
+
             Debug.Log("📤 Sending query to server: " + CurrentQuery.QueryString);
             querySender.SendQueryToServer(CurrentQuery);
         }
