@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +9,6 @@ public class Popup : MonoBehaviour, IPopup
 
     [SerializeField] private GameObject closeButtonPrefab;
     private GameObject closeButtonInstance;
-    public Action OnPopupOpened; 
     public Action OnPopupClosed;
 
     private void OnEnable()
@@ -24,7 +22,6 @@ public class Popup : MonoBehaviour, IPopup
     {
         gameObject.SetActive(true);
         EnsureCloseButton();
-        OnPopupOpened?.Invoke(); 
     }
 
     private void EnsureCloseButton()

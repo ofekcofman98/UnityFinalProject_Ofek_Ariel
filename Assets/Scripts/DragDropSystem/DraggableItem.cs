@@ -10,7 +10,6 @@ public enum eDraggableType
 {
     ClauseButton,
     SelectionButton,
-    None,
 }
 
 public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
@@ -20,14 +19,14 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public Transform OriginalParent;
     public Action<DraggableItem> OnDropped;
     public Action OnRemoved;
-    [HideInInspector] public Transform AssignedSection;
+    [HideInInspector] public Transform AssignedSection; 
     public IDropZoneStrategy CurrentDropZone { get; private set; }
     private Vector3 originalPosition;
     private Transform canvasTransform;
     private int originalSiblingIndex;
 
 
-    private bool _isDragging = false;   // ✅ Prevents re-entering drag state
+private bool _isDragging = false;   // ✅ Prevents re-entering drag state
 
     private void Awake()
     {
@@ -38,14 +37,14 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void OnBeginDrag(PointerEventData eventData)
     {
 
-        if (_isDragging) return;               // ✅ Prevents duplicate execution
-        _isDragging = true;                    // ✅ Mark that drag started
+if (_isDragging) return;               // ✅ Prevents duplicate execution
+_isDragging = true;                    // ✅ Mark that drag started
 
-        // Debug.Log($"🟡 BEGIN DRAG: {gameObject.name}");
+Debug.Log($"🟡 BEGIN DRAG: {gameObject.name}");
 
         OriginalParent = transform.parent;
         originalPosition = transform.position;
-        originalSiblingIndex = transform.GetSiblingIndex();
+        originalSiblingIndex = transform.GetSiblingIndex(); 
         MoveToTopLayer();
 
         if (image != null) image.raycastTarget = false;
@@ -61,7 +60,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         DropZone dropZone = FindDropZone();
 
-        if (image != null)
+        if (image != null) 
         {
             image.raycastTarget = true;
         }
@@ -80,7 +79,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             if (strategy != null && strategy.IsValidDrop(this))
             {
-                dropZone.OnDrop(eventData);
+                dropZone.OnDrop(eventData); 
                 // OnDropped?.Invoke(this); 
             }
             else
@@ -95,7 +94,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
 
         image.raycastTarget = true;
-        _isDragging = false;  // ✅ Allow drag again after completing one
+_isDragging = false;  // ✅ Allow drag again after completing one
 
     }
 
@@ -115,7 +114,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void SetParentAndPosition(Transform newParent)
     {
         transform.SetParent(newParent, false);
-        transform.localScale = Vector3.one;
+        transform.localScale = Vector3.one;  
     }
 
     private DropZone FindDropZone()
@@ -140,25 +139,6 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     public void ResetEvents()
     {
         OnDropped = null;
-    }
-
-    public void Reset()
-    {
-        // OnDropped = null;
-        // OnRemoved = null;
-        // AssignedSection = null;
-        // draggableType = eDraggableType.SelectionButton;
-        // OriginalParent = null;
-        // image.raycastTarget = true;
-        // _isDragging = false;
-        
-    OriginalParent = null;
-    AssignedSection = null;
-    CurrentDropZone = null;
-    OnDropped = null;
-    OnRemoved = null;
-    draggableType = eDraggableType.None;
-
     }
 
 }

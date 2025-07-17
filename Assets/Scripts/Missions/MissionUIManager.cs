@@ -15,8 +15,6 @@ public class MissionUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI PcMissionTitle;
     [SerializeField] private TextMeshProUGUI PcMissionDescription;
 
-    [SerializeField] private NewTablePopup newTablePopup;
-
 
 
     private MissionsManager missionManager;
@@ -67,8 +65,8 @@ public class MissionUIManager : MonoBehaviour
         PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
         PcMissionDescription.color = k_Color;
 
-        // executeButton.gameObject.SetActive(!i_Result);
-        // clearButton.gameObject.SetActive(i_Result);        
+        executeButton.gameObject.SetActive(!i_Result);
+        clearButton.gameObject.SetActive(i_Result);        
 
         if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
         {
@@ -80,17 +78,17 @@ public class MissionUIManager : MonoBehaviour
 
     public void OnClearButtonClicked()
     {
-        // clearButton.gameObject.SetActive(false);
-        // executeButton.gameObject.SetActive(true);
+        clearButton.gameObject.SetActive(false);
+        executeButton.gameObject.SetActive(true);
 
-        // // Reset the query
-        // GameManager.Instance.queryBuilder.ResetQuery();
+        // Reset the query
+        GameManager.Instance.queryBuilder.ResetQuery();
 
-        // // Move to next mission
-        // // GameManager.Instance.missionManager.GoToNextMission();
+        // Move to next mission
+        // GameManager.Instance.missionManager.GoToNextMission();
 
-        // // Refresh mission UI
-        // // ShowUI();
+        // Refresh mission UI
+        // ShowUI();
     }
 
     private void showNewTable(string tableName)
@@ -98,8 +96,7 @@ public class MissionUIManager : MonoBehaviour
         Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
         if (table != null)
         {
-            // GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
-            newTablePopup.Open(table);
+            GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
         }
     }
 }

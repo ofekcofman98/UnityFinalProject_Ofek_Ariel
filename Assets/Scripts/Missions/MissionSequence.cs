@@ -6,8 +6,4 @@ using UnityEngine;
 public class MissionSequence : ScriptableObject
 {
     public List<MissionData> Missions = new List<MissionData>();
-
-    [Header("Final Suspect")]
-    public string FinalAnswerPersonId;  // 👈 This is the one criminal
-
 }

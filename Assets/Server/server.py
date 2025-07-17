@@ -24,6 +24,7 @@ bucket = storage_client.bucket(BUCKET_NAME)
 # In-memory state
 stored_data = []
 current_state = {'isLevelDone': False}
+current_reset = {'reset': False}
 query_ready = False  # Only serve query once
 
 
@@ -65,6 +66,8 @@ def echo():
     return jsonify({'message': 'echoing back :', 'word': data['message']})
 
 
+# ===== STATE SEND AND RETRIEVE ENDPOINTS =====
+
 @app.route('/send-state', methods=['POST'])
 def send_state():
     data = request.get_json()
@@ -85,7 +88,7 @@ def get_state():
     return '', 204
 
 
-# ===== GCS Query Relay =====
+# ===== QUERY SEND AND RETRIEVE ENDPOINTS =====
 
 @app.route('/send-query', methods=['POST'])
 def send_query():
@@ -128,6 +131,28 @@ def get_query():
     except Exception as e:
         print(f"❌ Failed in get-query: {e}")
         return jsonify({'error': str(e)}), 500
+
+
+# ===== RESET SEND AND RETRIEVE ENDPOINTS =====
+
+@app.route('/send-reset', methods=['POST'])
+def send_reset():
+    data = request.get_json()
+    if not data or 'reset' not in data or not isinstance(data['reset'], bool):
+        return jsonify({'error': 'Expected JSON with boolean "reset" key'}), 400
+
+    current_reset['reset'] = data['reset']
+    logging.info(f"reset updated to: {current_reset['reset']}")
+    return jsonify({'message': 'reset sent successfully', 'reset': current_reset['reset']}), 200
+
+
+@app.route('/get-reset', methods=['GET'])
+def get_reset():
+    if current_reset['reset']:
+        current_reset['reset'] = False
+        logging.info("reset was True, returning 200 and resetting to False")
+        return jsonify({'reset': True}), 200
+    return '', 204
 
 
 # ===== Launch =====

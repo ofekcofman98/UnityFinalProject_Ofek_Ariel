@@ -23,13 +23,13 @@ public class QueryState
         if (!i_Query.fromClause.isClicked)
         {
             CurrentState = eQueryState.None;
-            // Debug.Log($"[QueryState] State updated to: {CurrentState}");
+            Debug.Log($"[QueryState] State updated to: {CurrentState}");
             return;
         }
 
         if (i_Query.fromClause.table == null)
         {
-            // Debug.Log("i_Query.fromClause.table == null");
+            Debug.Log("i_Query.fromClause.table == null");
             CurrentState = eQueryState.SelectingTable;
             return;
         }
@@ -42,7 +42,7 @@ public class QueryState
 
         if (i_Query.selectClause.IsEmpty())
         {
-            // Debug.Log("!i_Query.selectClause.NotEmpty()");
+            Debug.Log("!i_Query.selectClause.NotEmpty()");
 
             // i_Query.whereClause.Reset();
             CurrentState = eQueryState.SelectingColumns;

@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Introduction to SQL
-  missionDescription: select witness_id from CrimeEvidence table
-  unlocksTable: 0
+  missionDescription: select evidence_ID from CrimeEvidence table
+  unlocksTable: 1
   tableToUnlock: Witnesses
   requiredTable: CrimeEvidence
   requiredColumns:
-  - witness_id
+  - evidence_id
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

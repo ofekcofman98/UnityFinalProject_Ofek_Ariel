@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Unlocking CrimeEvidence
-  missionDescription: Go to the crime Scene
+  missionDescription: Go to the computer
   unlocksTable: 1
   tableToUnlock: CrimeEvidence
-  requiredObjectId: CrimeScene01
+  requiredObjectId: computer01

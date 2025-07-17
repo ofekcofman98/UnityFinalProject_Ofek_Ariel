@@ -23,9 +23,7 @@ public class Query
     public SelectClause selectClause; 
     public FromClause fromClause;
     public WhereClause whereClause;
-    // [JsonIgnore] public List<IQueryClause> clauses;
-    [JsonIgnore] public List<IQueryClause> Clauses => new() { selectClause, fromClause, whereClause };
-
+    [JsonIgnore] public List<IQueryClause> clauses;
     [JsonIgnore] public List<IQueryClause> availableClauses;
     public event Action OnAvailableClausesChanged;
     // public eQueryState currentState { get; set; } = eQueryState.None;
@@ -45,7 +43,7 @@ public class Query
         selectClause = new SelectClause();
         fromClause   = new FromClause();
         whereClause  = new WhereClause();
-        // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
+        clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
 
@@ -73,7 +71,8 @@ public class Query
     public void CheckAvailableClause()
     {
         availableClauses.Clear();
-        foreach (IQueryClause clause in Clauses)
+
+        foreach (IQueryClause clause in clauses)
         {
             if (clause.isAvailable)
             {
@@ -96,7 +95,7 @@ public class Query
             {
                 clause.Deactivate();
             }
-            // Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
+            Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
             
             clause.UpdateString();
             updateQueryString();
@@ -189,9 +188,9 @@ public class Query
 
     private void updateQueryString()
     {
-        // Debug.Log($"QUERY STRING IS: {QueryString}");
-        // // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
-        QueryString = string.Join("\n", Clauses.Select(c => c.ToSQL()));
+        Debug.Log($"QUERY STRING IS: {QueryString}");
+        // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
+        QueryString = string.Join("\n", clauses.Select(c => c.ToSQL()));
     }
 
     internal string GetSelectFields()
@@ -209,7 +208,7 @@ public class Query
     {
         List<List<object>> orderedElements = new List<List<object>>();
 
-        foreach (IQueryClause clause in Clauses)
+        foreach (IQueryClause clause in clauses)
         {
             List<object> clauseElements = clause.GetOrderedElements();
 
@@ -224,7 +223,7 @@ public class Query
 
     public void Reset()
     {
-        foreach (IQueryClause clause in Clauses)
+        foreach (IQueryClause clause in clauses)
         {
             clause.Deactivate();
             clause.Reset();
@@ -233,7 +232,7 @@ public class Query
 
     public void NotifyClauses()
     {
-        foreach (IQueryClause clause in Clauses)
+        foreach (IQueryClause clause in clauses)
         {
             // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
             clause.OnQueryUpdated(this);
@@ -243,18 +242,8 @@ public class Query
 
     public void PostDeserialize()
     {
-        // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
+        clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
-    if (whereClause != null && whereClause.Conditions != null)
-    {
-        foreach (var condition in whereClause.Conditions)
-        {
-            condition.Refresh(); // ✅ This MUST be called
-        }
-    }
-
-    updateQueryString(); // Also ensure final string is accurate
-
     }
 
 

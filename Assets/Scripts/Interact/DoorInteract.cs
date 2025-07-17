@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class DoorInteract : InteractableObject
 {
+    public Transform teleportTarget;
+
     public override void Interact()
     {
         base.Interact();
-        LocationManager.Instance.ShowMenu();
+        GameManager.Instance.TeleportPlayerTo(teleportTarget.position);
+        // SupabaseManager.Instance.UnlockTable("CrimeEvidence");
     }
 }

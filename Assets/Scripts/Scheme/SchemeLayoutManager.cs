@@ -17,8 +17,8 @@ public class SchemeLayoutManager : MonoBehaviour
     [SerializeField] private float paddingLeft = 20f;
     [SerializeField] private float paddingTop = 60f;
 
+    
     private Dictionary<string, TableBoxUI> tableBoxMap = new Dictionary<string, TableBoxUI>();
-    // public bool IsTableDrawn(string tableName) => tableBoxMap.ContainsKey(tableName);
 
     public void LayoutTables(List<Table> i_Tables)
     {

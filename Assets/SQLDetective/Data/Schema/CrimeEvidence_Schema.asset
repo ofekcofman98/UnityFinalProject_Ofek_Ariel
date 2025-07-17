@@ -26,5 +26,3 @@ MonoBehaviour:
     DataType: uuid
   - ColumnName: evidence_id
     DataType: integer
-  - ColumnName: crimenumber
-    DataType: integer

@@ -11,121 +11,64 @@ public class SchemeDisplayer : MonoBehaviour
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform lineContainerTransform;
     [SerializeField] private float lineWidth = 20f;
-    // [SerializeField] private NewTablePopup newTablePopup;
-    [SerializeField] private TextMeshProUGUI SchemaText;
-    [SerializeField] private Popup popup;
     
+    [SerializeField] private GameObject newTablePopup;
+    [SerializeField] private TextMeshProUGUI SchemaText;
 
     public SchemeLayoutManager layoutManager;
     private bool isVisible = false;
-    private bool alreadyDrawn = false;
 
-    // [Obsolete("ToggleScheme is obsolete. Use Popup.Open() / Popup.Close() instead.")]
-    //     public void ToggleScheme() //! dont use it!
-    //     {
-    //         isVisible = !isVisible;
-    //         layoutManager.layoutParent.gameObject.SetActive(isVisible);
-    //         lineContainerTransform.gameObject.SetActive(isVisible);
 
-    //         if (isVisible)
-    //         {
-    //             StartCoroutine(RedrawArrowsNextFrame());
-    //         }
-
-    //     }
-
-    public void Awake()
+    public void ToggleScheme()
     {
-        popup.OnPopupOpened += OnPopupOpened;
-        popup.OnPopupClosed += OnPopupClosed;
-        Table.OnTableUnlocked += HandleTableUnlocked;
-    }
-    private void OnDestroy()
-    {
-        Table.OnTableUnlocked -= HandleTableUnlocked;
-    }
+        isVisible = !isVisible;
+        layoutManager.layoutParent.gameObject.SetActive(isVisible);
+        lineContainerTransform.gameObject.SetActive(isVisible);
 
-
-    public void OnPopupOpened()
-    {
-        lineContainerTransform.gameObject.SetActive(true);
-        if (!alreadyDrawn)
+        if (isVisible)
         {
             StartCoroutine(RedrawArrowsNextFrame());
-            alreadyDrawn = true;
         }
-    }
 
-    public void OnPopupClosed()
-    {
-        lineContainerTransform.gameObject.SetActive(false);
     }
-
-    private void HandleTableUnlocked(Table table)
-    {
-        layoutManager.ClearLayout();
-        StartCoroutine(RedrawArrowsNextFrame());
-    }
-
 
     private IEnumerator RedrawArrowsNextFrame()
     {
-        yield return new WaitForEndOfFrame(); // ✅ Better than null for layout stuff
-        Canvas.ForceUpdateCanvases();         // ✅ Ensures layout completes
-        yield return null; 
+        yield return null;
         DisplaySchema();
     }
 
     public void DisplaySchema()
     {
-        layoutManager.LayoutTables(SupabaseManager.Instance.Tables);
-        // Canvas.ForceUpdateCanvases();
-        // HandleForeignKeys();
+        layoutManager.LayoutTables(SupabaseManager.Instance.Tables);        
+        Canvas.ForceUpdateCanvases();
+        HandleForeignKeys();
         SchemaText.text = "Schema";
-        StartCoroutine(WaitThenDrawArrows()); 
 
     }
-    
-    private IEnumerator WaitThenDrawArrows()
-{
-    // Let Unity fully apply layout
-    yield return new WaitForEndOfFrame();
-    Canvas.ForceUpdateCanvases();
-    yield return null; // Give another frame just to be safe
 
-    HandleForeignKeys(); // ✅ now draw lines only when positions are finalized
-}
+    public void ShowSchemaWithNewUnlock(string i_TableName)
+    {
+        layoutManager.layoutParent.gameObject.SetActive(true);
+        lineContainerTransform.gameObject.SetActive(true);
 
-    // public void ShowSchemaWithNewUnlock(string i_TableName)
-    // {
-    //     // layoutManager.layoutParent.gameObject.SetActive(true);
-    //     // lineContainerTransform.gameObject.SetActive(true);
+        DisplaySchema(); // always redraw
 
-    //     // DisplaySchema(); // always redraw
-
-    //     // // newTablePopup.SetActive(true);
-
-    //     newTablePopup.Open(i_TableName);
-    //     // popup.Open();
-    //     SchemaText.text = $"New table unlocked: {i_TableName}";
-    // }
+        // newTablePopup.SetActive(true);
+        SchemaText.text = $"New table unlocked: {i_TableName}";
+    }
 
 
 
     private void HandleForeignKeys()
     {
-        foreach (Transform child in lineContainerTransform)
-        {
-            Destroy(child.gameObject);
-        }
-
         foreach (Table table in SupabaseManager.Instance.Tables)
         {
             foreach (ForeignKey fk in table.ForeignKeys)
             {
                 TableBoxUI fromTableBoxUI = layoutManager.GetBoxForTable(table.Name);
                 TableBoxUI toTableBoxUI = layoutManager.GetBoxForTable(fk.toTable.Name);
-
+              
                 if (fromTableBoxUI == null || toTableBoxUI == null)
                 {
                     Debug.LogWarning($"FK skipped: could not find boxes for {fk.fromColumn.Name} → {fk.toColumn.Name}");
@@ -134,7 +77,7 @@ public class SchemeDisplayer : MonoBehaviour
 
                 RectTransform fromRect = fromTableBoxUI.GetColumnRect(fk.fromColumn.Name);
                 RectTransform toRect = toTableBoxUI.GetColumnRect(fk.toColumn.Name);
-
+                
                 drawUILine(fromRect, toRect);
             }
         }

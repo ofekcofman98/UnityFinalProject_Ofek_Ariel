@@ -52,7 +52,7 @@ public class QueryReceiver : MonoBehaviour
         
             while (true)
             {
-                // Debug.Log("📡 Polling the server for new query...");
+                Debug.Log("📡 Polling the server for new query...");
 
                 UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-query");
                 yield return request.SendWebRequest();
@@ -63,27 +63,22 @@ public class QueryReceiver : MonoBehaviour
 
                     try
                     {
-                    // Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
+                        Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson);
 
-var settings = new JsonSerializerSettings();
-settings.Converters.Add(new OperatorConverter());
+                        if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
+                        {
+                            Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
 
-Query receivedQuery = JsonConvert.DeserializeObject<Query>(receivedJson, settings);
+                            receivedQuery.PostDeserialize();
+                            GameManager.Instance.SaveQuery(receivedQuery);
+                            GameManager.Instance.ExecuteLocally(receivedQuery);
 
-                    if (receivedQuery != null && !string.IsNullOrWhiteSpace(receivedQuery.QueryString))
-                    {
-                        Debug.Log($"✅ Query received and parsed: {receivedQuery.QueryString}");
-
-                        receivedQuery.PostDeserialize();
-                        GameManager.Instance.SaveQuery(receivedQuery);
-                        GameManager.Instance.ExecuteLocally(receivedQuery);
-
-                        // yield break;
-                    }
-                    else
-                    {
-                        // Debug.Log("⏳ Received query object is empty or missing QueryString.");
-                    }
+                            // yield break;
+                        }
+                        else
+                        {
+                            // Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                        }
                     }
                     catch (Exception ex)
                     {
