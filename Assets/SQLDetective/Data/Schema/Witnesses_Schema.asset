@@ -20,3 +20,5 @@ MonoBehaviour:
     DataType: text
   - ColumnName: person_id
     DataType: text
+  - ColumnName: crimenumber
+    DataType: integer

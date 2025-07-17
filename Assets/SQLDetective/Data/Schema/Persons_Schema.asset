@@ -22,3 +22,5 @@ MonoBehaviour:
     DataType: integer
   - ColumnName: person_id
     DataType: text
+  - ColumnName: shirt_color
+    DataType: text

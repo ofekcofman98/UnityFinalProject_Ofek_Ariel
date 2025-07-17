@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Witnesses
-  missionDescription: select the testimony from the Witness table
+  missionDescription: 'select all the testimonies from the Witness table
+
+'
   unlocksTable: 0
   tableToUnlock: Persons
   requiredTable: Witnesses

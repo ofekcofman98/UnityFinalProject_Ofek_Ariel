@@ -879,6 +879,8 @@ public class QueryBuilder : MonoBehaviour
                 ClearSelectionPanel();
                 break;
         }
+
+        // uiRenderer.RefreshPanelButtons(); 
     }
 
     private void PopulateValueSelection()

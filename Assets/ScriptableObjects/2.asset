@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Introduction to SQL
-  missionDescription: select evidence_ID from CrimeEvidence table
+  missionDescription: select witness_id from CrimeEvidence table
   unlocksTable: 0
   tableToUnlock: Witnesses
   requiredTable: CrimeEvidence
