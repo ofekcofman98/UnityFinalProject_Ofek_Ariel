@@ -117,6 +117,8 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("🏁 All missions completed! Game over.");
         }
+        Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
+
     }
 
     public int GetCurrentMissionNumber()
@@ -137,12 +139,25 @@ public class MissionsManager : Singleton<MissionsManager>
         Debug.Log("🟡 You unlocked a new table!");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();  
         yield return new WaitForSeconds(2.5f);
+        Debug.Log("⏳ delay passed");
+
         checkUnlocking();
-        GoToNextMission(); 
-GameManager.Instance.QuerySender?.ResetQuerySendFlag();
+        Debug.Log("✅ checkUnlocking passed");
+
+        GoToNextMission();
+        if (currentMissionIndex >= missionSequence.Missions.Count)
+        {
+            Debug.Log("🏁 Reached end of mission sequence — skipping mission update.");
+            yield break;
+        }
+
+        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
+        Debug.Log("✅ ResetQuerySendFlag passed");
+
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
+
         GameManager.Instance.queryBuilder.ResetQuery();
-        GameManager.Instance.queryBuilder.BuildQuery(); // ✅ force rebuild
+        GameManager.Instance.queryBuilder.BuildQuery(); 
         GameManager.Instance.MissionUIManager.ShowUI();
     }
 

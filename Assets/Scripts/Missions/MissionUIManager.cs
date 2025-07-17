@@ -40,6 +40,7 @@ public class MissionUIManager : MonoBehaviour
             Debug.LogError("MissionManager not set on MissionUIManager.");
             return;
         }
+        Debug.Log("?? Rebuilding query for: " + MissionsManager.Instance.CurrentMission.missionTitle);
 
         MissionData mission = missionManager.CurrentMission;
 
