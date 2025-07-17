@@ -11,17 +11,17 @@ using System.Threading;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    public class GameStateReceiver : Singleton<GameStateReceiver>
+    public class ResetListener : Singleton<ResetListener>
     {
         private const string k_pcIP = ServerData.k_pcIP;
-        private string serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-state";
+        private string serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-reset";
         private bool m_isMobile = Application.isMobilePlatform;
         private bool _isRunning = false;
         private CancellationTokenSource _cts;
 
-        public GameStateReceiver(string i_ServerUrl)
+        public ResetListener(string i_ServerUrl)
         {
-            serverUrl = i_ServerUrl;         
+            serverUrl = i_ServerUrl;
         }
 
         public void StartListening()
@@ -29,12 +29,12 @@ namespace Assets.Scripts.ServerIntegration
             Debug.Log($"📱 m_isMobile = {m_isMobile} | platform = {Application.platform}");
             if (_isRunning) return;
 
-            
+
             Debug.Log("🎧 Starting async polling...");
             _isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); // Fire-and-forget
-            
+
         }
 
         public void StopListening()
@@ -51,7 +51,7 @@ namespace Assets.Scripts.ServerIntegration
             using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/"))
             {
                 AwaitUnityWebRequest(request);
-            
+
             }
 
         }
@@ -69,26 +69,25 @@ namespace Assets.Scripts.ServerIntegration
         {
             try
             {
-                if(Application.isMobilePlatform)
+                if (Application.isMobilePlatform)
                 {
                     while (!token.IsCancellationRequested)
                     {
-                        Debug.Log("⏳ Polling server for new state update...");
+                        Debug.Log("⏳ Polling server for new reset update...");
 
-                        using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-state"))
+                        using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-reset"))
                         {
                             await AwaitUnityWebRequest(request);
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result} | Text: {request.downloadHandler.text}");
+                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
                             if ((int)request.responseCode == 200)
                             {
-                                Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
-                                Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
-                                CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+                                Debug.Log("✅ 200 OK received, about to reset...✅");
+                                CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
                             }
                             else if ((int)request.responseCode == 204)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
+                                Debug.Log("⏳ Server responded with 204 No Content — no reset.");
                             }
                             else
                             {
@@ -100,7 +99,7 @@ namespace Assets.Scripts.ServerIntegration
                         await Task.Delay(500, token); // Wait before polling again
                     }
                 }
-                
+
             }
             catch (TaskCanceledException)
             {

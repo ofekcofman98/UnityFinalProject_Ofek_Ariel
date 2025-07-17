@@ -42,6 +42,7 @@ public class PlatformUIManager : MonoBehaviour
 
     private void InitMobile()
     {
+        ResetListener.Instance.StartListening();
         GameStateReceiver.Instance.StartListening();
         GameManager.Instance.ResetGame(); // 💡 You must add ResetGame() in GameManager
     }
