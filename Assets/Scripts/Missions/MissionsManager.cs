@@ -27,7 +27,7 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
-            GameStateSender.Instance.UpdatePhone();
+            // GameStateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }
@@ -139,6 +139,7 @@ public class MissionsManager : Singleton<MissionsManager>
         yield return new WaitForSeconds(2.5f);
         checkUnlocking();
         GoToNextMission(); 
+        GameStateSender.Instance.UpdatePhone();  
 GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
         GameManager.Instance.queryBuilder.ResetQuery();

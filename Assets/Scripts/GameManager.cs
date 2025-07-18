@@ -106,7 +106,7 @@ public class GameManager : Singleton<GameManager>
         else
         {
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
-            // GameStateReceiver.Instance.StartListening();
+            GameStateReceiver.Instance.StartListening();
         }
     }
 
