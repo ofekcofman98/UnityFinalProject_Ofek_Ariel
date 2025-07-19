@@ -78,17 +78,27 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private void checkUnlocking()
     {
-        if (CurrentMission.unlocksTable && !string.IsNullOrEmpty(CurrentMission.tableToUnlock))
+        Debug.Log("Entered checkUnlocking");
+        try
         {
-            Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
-            t => t.Name == CurrentMission.tableToUnlock);
-
-            if (unlockedTable != null)
+            if (CurrentMission.unlocksTable && !string.IsNullOrEmpty(CurrentMission.tableToUnlock))
             {
-                unlockedTable.UnlockTable();
-                Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+                Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
+                t => t.Name == CurrentMission.tableToUnlock);
+
+                if (unlockedTable != null)
+                {
+                    unlockedTable.UnlockTable();
+                    Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+                }
             }
+
         }
+        catch (Exception ex) 
+        {
+            Debug.Log($"AN EXCEPTION HAS OCCURED : {ex.ToString()}");
+        }
+        
     }
 
     public void ReportInteractableUsed(string id)
@@ -138,8 +148,7 @@ public class MissionsManager : Singleton<MissionsManager>
     {
         Debug.Log("🟡 You unlocked a new table!");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();  
-        yield return new WaitForSeconds(2.5f);
-        Debug.Log("⏳ delay passed");
+        //yield return new WaitForSeconds(2.0f);
 
         checkUnlocking();
         Debug.Log("✅ checkUnlocking passed");
