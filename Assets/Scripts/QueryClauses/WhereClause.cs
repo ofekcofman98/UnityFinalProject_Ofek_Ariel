@@ -180,4 +180,9 @@ public string ToSupabase()
         clearConditions();
     }
 
+    internal bool HasValidConditions()
+    {
+    return Conditions.Any(c => !string.IsNullOrWhiteSpace(c.ConditionString)) ||
+           (newCondition != null && !string.IsNullOrWhiteSpace(newCondition.ConditionString));
+    }
 }

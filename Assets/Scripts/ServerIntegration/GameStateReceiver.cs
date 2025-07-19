@@ -21,7 +21,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public GameStateReceiver(string i_ServerUrl)
         {
-            serverUrl = i_ServerUrl;         
+            serverUrl = i_ServerUrl;
         }
 
         public void StartListening()
@@ -29,12 +29,12 @@ namespace Assets.Scripts.ServerIntegration
             Debug.Log($"📱 m_isMobile = {m_isMobile} | platform = {Application.platform}");
             if (_isRunning) return;
 
-            
+
             Debug.Log("🎧 Starting async polling...");
             _isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); // Fire-and-forget
-            
+
         }
 
         public void StopListening()
@@ -51,7 +51,7 @@ namespace Assets.Scripts.ServerIntegration
             using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/"))
             {
                 AwaitUnityWebRequest(request);
-            
+
             }
 
         }
@@ -69,7 +69,7 @@ namespace Assets.Scripts.ServerIntegration
         {
             try
             {
-                if(Application.isMobilePlatform)
+                if (Application.isMobilePlatform)
                 {
                     while (!token.IsCancellationRequested)
                     {
@@ -80,12 +80,37 @@ namespace Assets.Scripts.ServerIntegration
                             await AwaitUnityWebRequest(request);
 
                             Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result} | Text: {request.downloadHandler.text}");
+                            // if ((int)request.responseCode == 200)
+                            // {
+                            //     Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
+                            //     Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
+                            //     CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+                            // }
+
                             if ((int)request.responseCode == 200)
                             {
-                                Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
-                                Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
-                                CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+                                string json = request.downloadHandler.text;
+                                Debug.Log($"📥 JSON Response: {json}");
+
+                                try
+                                {
+                                    var state = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                                    if (state != null && state.ContainsKey("isLevelDone") && (bool)state["isLevelDone"])
+                                    {
+                                        Debug.Log("✅ 'isLevelDone' is true — entering DelayedAdvance.");
+                                        CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+                                    }
+                                    else
+                                    {
+                                        Debug.Log("⏳ 'isLevelDone' is false or missing — will not proceed.");
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debug.LogError($"❌ Failed to parse JSON from state response: {ex.Message}");
+                                }
                             }
+
                             else if ((int)request.responseCode == 204)
                             {
                                 Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
@@ -100,7 +125,7 @@ namespace Assets.Scripts.ServerIntegration
                         await Task.Delay(500, token); // Wait before polling again
                     }
                 }
-                
+
             }
             catch (TaskCanceledException)
             {
@@ -112,6 +137,23 @@ namespace Assets.Scripts.ServerIntegration
             }
         }
 
+        void OnApplicationPause(bool pauseStatus)
+{
+    if (pauseStatus)
+    {
+        GameStateReceiver.Instance.StopListening();
+    }
+}
+
+void OnApplicationQuit()
+{
+    GameStateReceiver.Instance.StopListening();
+}
+
+
 
     }
+    
+
+    
 }

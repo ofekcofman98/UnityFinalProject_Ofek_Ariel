@@ -25,6 +25,8 @@ namespace Assets.Scripts.ServerIntegration
         {
             if (!m_isMobile)
             {
+                StartCoroutine(CheckStateOnceAfterSend());
+
                 // Construct the payload with the correct key and value
                 var payload = new Dictionary<string, bool>
                  {
@@ -64,6 +66,13 @@ namespace Assets.Scripts.ServerIntegration
             }
         }
 
+private IEnumerator CheckStateOnceAfterSend()
+{
+    yield return new WaitForSeconds(1f); // short delay
+    GameStateReceiver.Instance.StartListening();
+    yield return new WaitForSeconds(2f); // give time to receive
+    GameStateReceiver.Instance.StopListening();
+}
 
     }
 

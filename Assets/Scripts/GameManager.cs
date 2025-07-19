@@ -320,9 +320,19 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    internal void TeleportPlayerTo(Vector3 position)
+    public void ClearCurrentQuery()
     {
-        Debug.Log("Teleport!");
+        if (queryBuilder != null)
+        {
+            queryBuilder.ResetQuery();
+            queryBuilder.BuildQuery();
+            Debug.Log("🧹 Query manually cleared by user.");
+        }
+
+        if (QuerySender != null)
+        {
+            QuerySender.ResetQuerySendFlag(); // Allow re-submission
+        }
     }
 
     internal IEnumerator ResetGame()

@@ -137,8 +137,8 @@ public class MissionsManager : Singleton<MissionsManager>
         Debug.Log("🟡 You unlocked a new table!");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();  
         yield return new WaitForSeconds(2.5f);
-        checkUnlocking();
         GoToNextMission(); 
+        checkUnlocking();
 GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
         GameManager.Instance.queryBuilder.ResetQuery();

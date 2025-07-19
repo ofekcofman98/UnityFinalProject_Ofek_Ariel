@@ -80,17 +80,7 @@ public class MissionUIManager : MonoBehaviour
 
     public void OnClearButtonClicked()
     {
-        // clearButton.gameObject.SetActive(false);
-        // executeButton.gameObject.SetActive(true);
-
-        // // Reset the query
-        // GameManager.Instance.queryBuilder.ResetQuery();
-
-        // // Move to next mission
-        // // GameManager.Instance.missionManager.GoToNextMission();
-
-        // // Refresh mission UI
-        // // ShowUI();
+        GameManager.Instance.ClearCurrentQuery();
     }
 
     private void showNewTable(string tableName)

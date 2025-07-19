@@ -13,6 +13,11 @@ public class MenuManager : MonoBehaviour
 
     private bool isPaused = false;
 
+    void Awake()
+    {
+        menuUI.SetActive(true);
+    }
+    
     private void Start()
     {
         ShowMainMenu();

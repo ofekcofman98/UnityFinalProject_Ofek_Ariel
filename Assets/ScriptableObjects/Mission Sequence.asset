@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: Mission Sequence
   m_EditorClassIdentifier: 
   Missions:
+  - {fileID: 11400000, guid: 2210cc84ce40f11499ccf9e88b66cc37, type: 2}
+  - {fileID: 11400000, guid: 970d1332e8429f04fb78bb584070e95c, type: 2}
   - {fileID: 11400000, guid: 8eb64749dd5260d448308eb7005101cc, type: 2}
   - {fileID: 11400000, guid: 252db3d67dde82648b3bb047d4d1e010, type: 2}
   - {fileID: 11400000, guid: e68046c7415dda4418d559584222007b, type: 2}

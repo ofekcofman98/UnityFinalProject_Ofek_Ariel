@@ -61,7 +61,7 @@ private string m_OperatorId;
             if (m_Column != value)
             {
                 m_Column = value;
-                // updateConditionString();
+                updateConditionString();
             }
         }
     }
@@ -76,7 +76,7 @@ private string m_OperatorId;
                 m_Operator = value;
                 m_OperatorId = value?.GetOperatorId(); // You’ll define this
 
-                // updateConditionString();
+                updateConditionString();
             }
         }
     }
@@ -89,7 +89,7 @@ private string m_OperatorId;
             if (m_Value != value)
             {
                 m_Value = value;
-                // updateConditionString();
+                updateConditionString();
             }
         }
     }
