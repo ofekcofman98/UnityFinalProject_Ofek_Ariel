@@ -49,4 +49,9 @@ public class JoinClause : IQueryClause
     {
         throw new System.NotImplementedException();
     }
+
+    public bool IsValid()
+    {
+        throw new System.NotImplementedException();
+    }
 }

@@ -120,8 +120,10 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         transform.SetParent(OriginalParent, false);
         transform.SetSiblingIndex(originalSiblingIndex);
-        
-    LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)OriginalParent);
+
+        // LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)OriginalParent);
+        LayoutRebuilder.MarkLayoutForRebuild((RectTransform)OriginalParent);
+
 
     // OriginalParent = transform.parent;//!
         // originalSiblingIndex = transform.GetSiblingIndex();//!

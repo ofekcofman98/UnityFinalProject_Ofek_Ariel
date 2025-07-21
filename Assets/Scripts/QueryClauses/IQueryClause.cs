@@ -14,6 +14,7 @@ public interface IQueryClause
     string ToSupabase(); 
     void UpdateString();
     void Reset();
+    bool IsValid();
     void OnQueryUpdated(Query query); 
     List<object> GetOrderedElements();
 }

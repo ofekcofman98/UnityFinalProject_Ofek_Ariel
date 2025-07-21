@@ -151,10 +151,6 @@ public class QueryUIRenderer : MonoBehaviour
                     Debug.LogError($"Missing label on button for: {labelText}");
                 }
 
-                // ✅ Assign click behavior (if needed)
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => i_OnItemDropped(item));
-
                 // ✅ Setup draggable
                 var draggableItem = button.GetComponent<DraggableItem>();
                 if (draggableItem == null)
@@ -290,12 +286,8 @@ public class QueryUIRenderer : MonoBehaviour
                 return;
             }
 
-            // GameManager.Instance.CurrentQuery.SetConditionValue(parsedValue);
 
-FindObjectOfType<QueryBuilder>().SetConditionValue(parsedValue);
-
-            // QueryBuilder builder = FindObjectOfType<QueryBuilder>();
-            // builder.SetConditionValue(parsedValue);  // ❗You’ll need to expose this properly
+            // FindObjectOfType<QueryBuilder>().SetConditionValue(parsedValue);
 
             Destroy(currentInputField);
             Destroy(confirmButtonObject);

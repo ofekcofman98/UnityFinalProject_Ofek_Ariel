@@ -16,24 +16,24 @@ public class WhereClause : IQueryClause
 
     public WhereClause()
     {
-        Conditions = new List<Condition>();     
+        Conditions = new List<Condition>();
     }
 
-//     public void Toggle()
-//     {
-//         isClicked = !isClicked;
+    //     public void Toggle()
+    //     {
+    //         isClicked = !isClicked;
 
-//         if (!isClicked)
-//         {
-//             clearConditions();
-//         }
-// Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
-//         UpdateString();
-//     }
+    //         if (!isClicked)
+    //         {
+    //             clearConditions();
+    //         }
+    // Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
+    //         UpdateString();
+    //     }
 
     public void Activate()
     {
-        isClicked = true;   
+        isClicked = true;
     }
 
     public void Deactivate()
@@ -51,7 +51,7 @@ public class WhereClause : IQueryClause
     public void CreateNewCondition(Column i_Column)
     {
         newCondition = new Condition();
-        newCondition.OnConditionUpdated += UpdateString; 
+        newCondition.OnConditionUpdated += UpdateString;
         newCondition.Column = i_Column;
 
         UpdateString();
@@ -93,7 +93,7 @@ public class WhereClause : IQueryClause
 
             // Debug.Log($"where PArt: {WherePart}");
         }
-        else 
+        else
         {
             WherePart = QueryConstants.Empty;
         }
@@ -109,18 +109,19 @@ public class WhereClause : IQueryClause
     //     return Conditions.Count > 0 ? string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionStringSupaBase)) : "";
     // }
 
-public string ToSupabase()
-{
-    return Conditions.Count > 0 
-        ? string.Join("&", Conditions.Select(cond => cond.ConditionStringSupaBase)) 
-        : "";
-}
-    
+    public string ToSupabase()
+    {
+        return Conditions.Count > 0
+            ? string.Join("&", Conditions.Select(cond => cond.ConditionStringSupaBase))
+            : "";
+    }
+
 
     public void OnQueryUpdated(Query query)
     {
         bool wasAvailable = isAvailable;
-        isAvailable = query.IsValid;
+        isAvailable = query.selectClause.IsValid();
+
         if (wasAvailable != isAvailable)
         {
             query.CheckAvailableClause();
@@ -137,19 +138,10 @@ public string ToSupabase()
 
     }
 
-    public bool NeedsCondition()
+    public bool IsValid()
     {
-        if (!isClicked)
-        {
-            return false; // Clause not active
-        }
-        if (newCondition == null)
-        {
-            return false; // No pending condition
-        }    
-
-        // A condition is "incomplete" if it has no operator or no value
-        return newCondition.Operator == null || newCondition.Value == null;
+        return !isClicked || (Conditions.Count > 0 &&
+                              Conditions.All(c => c.Column != null && c.Operator != null && c.Value != null));
     }
 
     public List<object> GetOrderedElements()
@@ -180,9 +172,4 @@ public string ToSupabase()
         clearConditions();
     }
 
-    internal bool HasValidConditions()
-    {
-    return Conditions.Any(c => !string.IsNullOrWhiteSpace(c.ConditionString)) ||
-           (newCondition != null && !string.IsNullOrWhiteSpace(newCondition.ConditionString));
-    }
 }

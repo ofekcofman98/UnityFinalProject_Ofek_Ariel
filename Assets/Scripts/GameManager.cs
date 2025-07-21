@@ -16,7 +16,7 @@ public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;}
     [SerializeField] private GameObject pcGameCanvas;
-    [SerializeField] private GameObject pcQueryCanvas;
+    // [SerializeField] private GameObject pcQueryCanvas;
     [SerializeField] private GameObject mobileCanvas;
 
 
@@ -37,7 +37,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
     [SerializeField] public MissionUIManager MissionUIManager;
-    [SerializeField] public PlatformUIManager platformUIManager;
+    // [SerializeField] public PlatformUIManager platformUIManager;
 [SerializeField] private ResultsUI resultsUI;
 
 
@@ -165,7 +165,7 @@ public class GameManager : Singleton<GameManager>
         SqlMode = !SqlMode;
 
         if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
+        // if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
         if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
         // Disable/Enable movement

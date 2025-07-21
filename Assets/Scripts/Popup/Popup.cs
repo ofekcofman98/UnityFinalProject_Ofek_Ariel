@@ -22,6 +22,7 @@ public class Popup : MonoBehaviour, IPopup
 
     public void Open()
     {
+        Time.timeScale = 0f;
         gameObject.SetActive(true);
         EnsureCloseButton();
         OnPopupOpened?.Invoke(); 
@@ -44,6 +45,7 @@ public class Popup : MonoBehaviour, IPopup
     }
     public void Close()
     {
+        Time.timeScale = 1f;
         OnPopupClosed?.Invoke();
         gameObject.SetActive(false);
     }

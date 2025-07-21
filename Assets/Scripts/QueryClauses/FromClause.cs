@@ -82,8 +82,13 @@ public class FromClause : IQueryClause
         return table.Name != null ? $"from={table.Name}" : QueryConstants.Empty;
     }
 
+    public bool IsValid()
+    {
+        return table != null;
+    }
+
     public void OnQueryUpdated(Query query)
-    {        
+    {
         // if (table == null)
         // {
         //     // FromPart = QueryConstants.Empty;

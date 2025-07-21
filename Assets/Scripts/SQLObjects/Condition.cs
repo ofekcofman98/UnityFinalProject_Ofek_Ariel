@@ -14,14 +14,7 @@ public class Condition
 
     [JsonConverter(typeof(OperatorConverter))]
     private IOperatorStrategy m_Operator;
-
-
-    [JsonProperty]
-private string m_OperatorId;
-
-
-
-
+    [JsonProperty] private string m_OperatorId;
     private object m_Value;
     public event Action OnConditionUpdated;
 

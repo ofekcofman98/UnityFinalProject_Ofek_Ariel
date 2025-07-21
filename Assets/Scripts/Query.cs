@@ -28,12 +28,9 @@ public class Query
 
     [JsonIgnore] public List<IQueryClause> availableClauses;
     public event Action OnAvailableClausesChanged;
-    // public eQueryState currentState { get; set; } = eQueryState.None;
     public QueryState queryState;
-    // public List<List<object>> orderedElements {get; private set;}
-
-    public List<Dictionary<string, string>> Results { get; set; } 
-    public bool IsValid => fromClause.table != null && !selectClause.IsEmpty();
+    public List<Dictionary<string, string>> Results { get; set; }
+    public bool IsValid => Clauses.All(clause => clause.IsValid());
     public event Action OnQueryUpdated;  
 
 
@@ -45,7 +42,6 @@ public class Query
         selectClause = new SelectClause();
         fromClause   = new FromClause();
         whereClause  = new WhereClause();
-        // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
 
@@ -66,7 +62,6 @@ public class Query
     public void UpdateQueryState()
     {
         queryState.UpdateState(this);
-        // queryState.Update(this);
     }
 
 
@@ -243,18 +238,31 @@ public class Query
 
     public void PostDeserialize()
     {
-        // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
-        availableClauses = new List<IQueryClause> { selectClause, fromClause };
-    if (whereClause != null && whereClause.Conditions != null)
-    {
-        foreach (var condition in whereClause.Conditions)
+        //     // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
+        //     availableClauses = new List<IQueryClause> { selectClause, fromClause };
+        // if (whereClause != null && whereClause.Conditions != null)
+        // {
+        //     foreach (var condition in whereClause.Conditions)
+        //     {
+        //         condition.Refresh(); // ✅ This MUST be called
+        //     }
+        // }
+
+        // updateQueryString(); // Also ensure final string is accurate
+    
+        if (whereClause != null && whereClause.Conditions != null && whereClause.Conditions.Count > 0)
         {
-            condition.Refresh(); // ✅ This MUST be called
+            whereClause.Activate();              // ✅ So it shows in the panel
+            whereClause.isAvailable = true;            // ✅ So it’s added to availableClauses
+            availableClauses.Add(whereClause);         // ✅ Explicitly add it
         }
-    }
 
-    updateQueryString(); // Also ensure final string is accurate
+        foreach (var condition in whereClause?.Conditions ?? new List<Condition>())
+        {
+            condition.Refresh();
+        }
 
+        updateQueryString();
     }
 
 

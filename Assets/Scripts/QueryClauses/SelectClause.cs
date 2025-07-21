@@ -1,128 +1,133 @@
 using Newtonsoft.Json;
 using System.Collections;
-    using System.Collections.Generic;
-    using System.Linq;
-    using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
-    public class SelectClause : IQueryClause
+public class SelectClause : IQueryClause
+{
+    public string DisplayName => QueryConstants.Select;
+    [JsonProperty] public List<Column> Columns { get; set; }
+    [JsonProperty] public string SelectPart { get; set; } = QueryConstants.Empty;
+    [JsonProperty] public bool isClicked { get; set; } = false;
+    [JsonProperty] public bool isAvailable { get; set; } = true;
+
+    public SelectClause()
     {
-        public string DisplayName => QueryConstants.Select;
-        [JsonProperty] public List<Column> Columns { get; set; }
-        [JsonProperty] public string SelectPart { get; set; } = QueryConstants.Empty;
-        [JsonProperty] public bool isClicked { get; set; } = false;
-        [JsonProperty] public bool isAvailable { get; set; } = true;
+        Columns = new List<Column>();
+    }
 
-        public SelectClause()
+    // public void Toggle()
+    // {
+    //     isClicked = !isClicked;
+
+    //     if (!isClicked)
+    //     {
+    //         ClearColumns();
+    //     }
+
+    //     UpdateString();
+    //     // onSelectChanged?.Invoke();
+    // }
+
+    public void Activate()
+    {
+        isClicked = true;
+    }
+
+    public void Deactivate()
+    {
+        if (isClicked)
         {
-            Columns = new List<Column>();
+            Reset();
         }
-        
-        // public void Toggle()
-        // {
-        //     isClicked = !isClicked;
-
-        //     if (!isClicked)
-        //     {
-        //         ClearColumns();
-        //     }
-
-        //     UpdateString();
-        //     // onSelectChanged?.Invoke();
-        // }
-
-        public void Activate()
+        else
         {
-            isClicked = true;
+            isClicked = false;
         }
+    }
 
-        public void Deactivate()
+    public void AddColumn(Column i_ColumnToAdd)
+    {
+        if (!Columns.Contains(i_ColumnToAdd))
         {
-            if (isClicked)
-            {
-                Reset();
-            }
-            else 
-            {
-                isClicked = false;
-            }
-        }
-
-        public void AddColumn(Column i_ColumnToAdd)
-        {
-            if (!Columns.Contains(i_ColumnToAdd))
-            {
-                Columns.Add(i_ColumnToAdd);
-                UpdateString();
-            }
-        }
-        public void RemoveColumn(Column i_ColumnToRemove)
-        {
-            if (Columns.Remove(i_ColumnToRemove))
-            {
-                Columns.Remove(i_ColumnToRemove);
-                UpdateString();
-            }
-        }
-
-        public void ClearColumns()
-        {
-            Columns.Clear();
+            Columns.Add(i_ColumnToAdd);
             UpdateString();
         }
-        
-        public void UpdateString()
+    }
+    public void RemoveColumn(Column i_ColumnToRemove)
+    {
+        if (Columns.Remove(i_ColumnToRemove))
         {
-            if (isClicked)
+            Columns.Remove(i_ColumnToRemove);
+            UpdateString();
+        }
+    }
+
+    public void ClearColumns()
+    {
+        Columns.Clear();
+        UpdateString();
+    }
+
+    public void UpdateString()
+    {
+        if (isClicked)
+        {
+            SelectPart = QueryConstants.Select;
+            if (Columns.Count > 0)
             {
-                SelectPart = QueryConstants.Select;
-                if (Columns.Count > 0)
-                {
-                    SelectPart += " " + string.Join(QueryConstants.Comma, Columns.Select(col => col.Name));
-                }
-            }
-            else
-            {
-                SelectPart = QueryConstants.Empty;
+                SelectPart += " " + string.Join(QueryConstants.Comma, Columns.Select(col => col.Name));
             }
         }
-
-        public string ToSQL()
+        else
         {
-            return SelectPart;
+            SelectPart = QueryConstants.Empty;
+        }
+    }
+
+    public string ToSQL()
+    {
+        return SelectPart;
+    }
+
+    public string ToSupabase()
+    {
+        return Columns.Count > 0 ? string.Join(QueryConstants.Comma, Columns.Select(col => col.Name)) : "*";
+    }
+
+    public bool IsEmpty()
+    {
+        return Columns.Count == 0;
+    }
+
+    public bool IsValid()
+    {
+        return !IsEmpty();
+    }
+
+    public void OnQueryUpdated(Query query)
+    {
+        if (query.fromClause.GetTable() == null)
+        {
+            ClearColumns();
+            UpdateString();
         }
 
-        public string ToSupabase()
+    }
+
+    public List<object> GetOrderedElements()
+    {
+        List<object> elements = new List<object>();
+
+        if (isClicked)
         {
-            return Columns.Count > 0 ? string.Join(QueryConstants.Comma , Columns.Select(col => col.Name)) : "*";
+            elements.Add(this); // SELECT clause first
+            elements.AddRange(Columns); // Then all selected columns
         }
 
-        public bool IsEmpty()
-        {
-            return Columns.Count == 0;
-        }
-
-        public void OnQueryUpdated(Query query)
-        {
-            if (query.fromClause.GetTable() == null)
-            {
-                ClearColumns(); 
-                UpdateString();
-            }
-
-        }
-
-        public List<object> GetOrderedElements()
-        {
-            List<object> elements = new List<object>();
-
-            if (isClicked)
-            {
-                elements.Add(this); // SELECT clause first
-                elements.AddRange(Columns); // Then all selected columns
-            }
-
-            return elements;
-        }
+        return elements;
+    }
 
 
     public void Reset()
