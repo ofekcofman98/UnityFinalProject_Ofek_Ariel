@@ -16,7 +16,6 @@ namespace Assets.Scripts.ServerIntegration
     {
         private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
-
         public StateSender()
         {
             m_communicator = new ServerCommunicator("/send-state");

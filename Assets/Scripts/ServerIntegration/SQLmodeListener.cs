@@ -11,12 +11,12 @@ using System.Threading;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    public class StateListener : Singleton<StateListener>
-    {        
+    public class SQLmodeListener : Singleton<ResetListener>
+    {
         private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
 
-        public StateListener()
+        public SQLmodeListener()
         {
             m_communicator = new ServerCommunicator("/get-state");
         }
@@ -24,16 +24,15 @@ namespace Assets.Scripts.ServerIntegration
         public void StartListening()
         {
             Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
-            Debug.Log("Inside StartListening of StateListener");
 
             if (m_communicator.m_isRunning) return;
 
-            
+
             Debug.Log("🎧 Starting async polling...");
             m_communicator.m_isRunning = true;
             _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); 
-            
+            _ = PollAsync(_cts.Token); // Fire-and-forget
+
         }
 
         public void StopListening()
@@ -44,6 +43,7 @@ namespace Assets.Scripts.ServerIntegration
             m_communicator.m_isRunning = false;
             _cts.Cancel();
         }
+
 
         private Task AwaitUnityWebRequest(UnityWebRequest request)
         {
@@ -59,27 +59,25 @@ namespace Assets.Scripts.ServerIntegration
         {
             try
             {
-                if(Application.isMobilePlatform)
+                if (Application.isMobilePlatform)
                 {
                     while (!token.IsCancellationRequested)
                     {
-                        Debug.Log("⏳ Polling server for new state update...");
-                        Debug.Log($"📡 Before sending the state get request : {m_communicator.ServerUrl}");
+                        Debug.Log("⏳ Polling server for new reset update...");
+
                         using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                         {
                             await AwaitUnityWebRequest(request);
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result} | Text: {request.downloadHandler.text}");
+                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
                             if ((int)request.responseCode == 200)
                             {
-                                Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
-                                Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
+                                Debug.Log("✅ 200 OK received, entering sql mode...✅");
                                 CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.SetSqlMode());
-                                CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
                             }
                             else if ((int)request.responseCode == 204)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
+                                Debug.Log("⏳ Server responded with 204 No Content — screensaver on.");
                             }
                             else
                             {
@@ -88,10 +86,10 @@ namespace Assets.Scripts.ServerIntegration
                             }
                         }
 
-                        await Task.Delay(500, token); 
+                        await Task.Delay(500, token); // Wait before polling again
                     }
                 }
-                
+
             }
             catch (TaskCanceledException)
             {

@@ -16,19 +16,20 @@ namespace Assets.Scripts.ServerIntegration
         private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
 
-        public ResetListener(string i_ServerUrl)
+        public ResetListener()
         {
             m_communicator = new ServerCommunicator("/get-reset");
         }
-
+     
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
-            if (m_communicator._isRunning) return;
+            //Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            
+            if (m_communicator.m_isRunning) return;
 
 
             Debug.Log("🎧 Starting async polling...");
-            m_communicator._isRunning = true;
+            m_communicator.m_isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); // Fire-and-forget
 
@@ -36,10 +37,10 @@ namespace Assets.Scripts.ServerIntegration
 
         public void StopListening()
         {
-            if (!m_communicator.IsRunning) return;
+            if (!m_communicator.m_isRunning) return;
 
             Debug.Log("🛑 Stopping polling...");
-            m_communicator._isRunning = false;
+            m_communicator.m_isRunning = false;
             _cts.Cancel();
         }
 

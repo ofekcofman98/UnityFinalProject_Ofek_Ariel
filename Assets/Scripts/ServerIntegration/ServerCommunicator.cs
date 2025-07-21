@@ -13,7 +13,7 @@ namespace Assets.Scripts.ServerIntegration
         private const string k_pcIP = ServerData.k_pcIP;
         private string serverUrl;
         private bool m_isMobile = Application.isMobilePlatform;
-        private bool _isRunning = false;
+        public bool m_isRunning { get; set; } = false;
         private string m_resource;
 
         public ServerCommunicator(string i_resource)
@@ -24,7 +24,6 @@ namespace Assets.Scripts.ServerIntegration
 
         public string ServerUrl => serverUrl;
         public string Resource => m_resource;
-        public bool IsRunning => _isRunning;
         public bool IsMobile => m_isMobile;
     }
 }

@@ -18,10 +18,14 @@ public class QueryListener : MonoBehaviour
     private Coroutine listeningCoroutine;
     private ServerCommunicator m_communicator;
 
-    public QueryListener()
+    private void Awake()
     {
         m_communicator = new ServerCommunicator("/get-query");
     }
+    //public QueryListener()
+    //{
+    //    m_communicator = new ServerCommunicator("/get-query");
+    //}
   
     public void StartListening()
     {

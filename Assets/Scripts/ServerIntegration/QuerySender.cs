@@ -16,11 +16,14 @@ public class QuerySender : MonoBehaviour
     public bool IsQuerySent { get; private set; } = false;
     private ServerCommunicator m_communicator;
 
-    public QuerySender()
+    private void Awake()
     {
         m_communicator = new ServerCommunicator("/send-query");
-
     }
+    //public QuerySender()
+    //{
+    //    m_communicator = new ServerCommunicator("/send-query");
+    //}
     public void SendQueryToServer(Query query)
     {     
         query.PostDeserialize();
