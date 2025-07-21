@@ -43,9 +43,9 @@ public class PlatformUIManager : MonoBehaviour
     private void InitMobile()
     {
         Debug.Log("🖥 Running on Mobile — inside the InitMobile method");
-        GameStateReceiver.Instance.StartListening();
+        StateListener.Instance.StartListening();
         ResetListener.Instance.StartListening();
-        GameManager.Instance.ResetGame(); // 💡 You must add ResetGame() in GameManager
+        GameManager.Instance.ResetGame(); // 
     }
 
     private void DisableWorldInteraction()

@@ -32,14 +32,14 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QuerySender querySender;
     public QuerySender QuerySender => querySender;
 
-    [SerializeField] private QueryReceiver queryReceiver;
+    [SerializeField] private QueryListener queryReceiver;
     // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     [SerializeField] private QueryValidator queryValidator;
-    [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
+    [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
     [SerializeField] public PlatformUIManager platformUIManager;
-[SerializeField] private ResultsUI resultsUI;
+    [SerializeField] private ResultsUI resultsUI;
 
 
     public event Action<bool> OnQueryIsCorrect;
@@ -89,7 +89,7 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         MissionUIManager.Init(missionManager);
-        SendResetToPhone();
+        ResetSender.Instance.SendResetToPhone();
 
         if (!Application.isMobilePlatform)
         {
@@ -111,49 +111,49 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void SendResetToPhone()
-    {
-        if (!Application.isMobilePlatform)
-        {
-            Debug.Log("SENDING RESET MESSAGE TO SERVER");
-            // Construct the payload with the correct key and value
-            var payload = new Dictionary<string, bool>
-                 {
-                    { "reset", true }
-                 };
+    //public void SendResetToPhone()
+    //{
+    //    if (!Application.isMobilePlatform)
+    //    {
+    //        Debug.Log("SENDING RESET MESSAGE TO SERVER");
+    //        // Construct the payload with the correct key and value
+    //        var payload = new Dictionary<string, bool>
+    //             {
+    //                { "reset", true }
+    //             };
 
-            string jsonPayload = JsonConvert.SerializeObject(payload);
-            Debug.Log($"📤 JSON Payload: {jsonPayload}");
+    //        string jsonPayload = JsonConvert.SerializeObject(payload);
+    //        Debug.Log($"📤 JSON Payload: {jsonPayload}");
 
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+    //        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
 
-            UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-reset", "POST")
-            {
-                uploadHandler = new UploadHandlerRaw(bodyRaw),
-                downloadHandler = new DownloadHandlerBuffer()
-            };
+    //        UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-reset", "POST")
+    //        {
+    //            uploadHandler = new UploadHandlerRaw(bodyRaw),
+    //            downloadHandler = new DownloadHandlerBuffer()
+    //        };
 
-            request.disposeUploadHandlerOnDispose = true;
-            request.disposeDownloadHandlerOnDispose = true;
-            request.SetRequestHeader("Content-Type", "application/json");
+    //        request.disposeUploadHandlerOnDispose = true;
+    //        request.disposeDownloadHandlerOnDispose = true;
+    //        request.SetRequestHeader("Content-Type", "application/json");
 
-            // Send request asynchronously
-            UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+    //        // Send request asynchronously
+    //        UnityWebRequestAsyncOperation operation = request.SendWebRequest();
 
-            operation.completed += _ =>
-            {
-                if (request.result == UnityWebRequest.Result.Success)
-                {
-                    Debug.Log($"✅ State Sent Successfully! Response: {request.downloadHandler.text}");
-                }
-                else
-                {
-                    Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
-                    Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
-                }
-            };
-        }
-    }
+    //        operation.completed += _ =>
+    //        {
+    //            if (request.result == UnityWebRequest.Result.Success)
+    //            {
+    //                Debug.Log($"✅ State Sent Successfully! Response: {request.downloadHandler.text}");
+    //            }
+    //            else
+    //            {
+    //                Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
+    //                Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
+    //            }
+    //        };
+    //    }
+    //}
 
     private void startGame()
     {

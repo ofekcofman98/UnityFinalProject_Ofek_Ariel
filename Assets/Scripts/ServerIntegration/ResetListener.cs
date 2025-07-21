@@ -13,25 +13,22 @@ namespace Assets.Scripts.ServerIntegration
 {
     public class ResetListener : Singleton<ResetListener>
     {
-        private const string k_pcIP = ServerData.k_pcIP;
-        private string serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-reset";
-        private bool m_isMobile = Application.isMobilePlatform;
-        private bool _isRunning = false;
+        private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
 
         public ResetListener(string i_ServerUrl)
         {
-            serverUrl = i_ServerUrl;
+            m_communicator = new ServerCommunicator("/get-reset");
         }
 
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_isMobile} | platform = {Application.platform}");
-            if (_isRunning) return;
+            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            if (m_communicator._isRunning) return;
 
 
             Debug.Log("🎧 Starting async polling...");
-            _isRunning = true;
+            m_communicator._isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); // Fire-and-forget
 
@@ -39,22 +36,14 @@ namespace Assets.Scripts.ServerIntegration
 
         public void StopListening()
         {
-            if (!_isRunning) return;
+            if (!m_communicator.IsRunning) return;
 
             Debug.Log("🛑 Stopping polling...");
-            _isRunning = false;
+            m_communicator._isRunning = false;
             _cts.Cancel();
         }
 
-        private void SendToRootEndpoint()
-        {
-            using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/"))
-            {
-                AwaitUnityWebRequest(request);
-
-            }
-
-        }
+        
         private Task AwaitUnityWebRequest(UnityWebRequest request)
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -75,7 +64,7 @@ namespace Assets.Scripts.ServerIntegration
                     {
                         Debug.Log("⏳ Polling server for new reset update...");
 
-                        using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-reset"))
+                        using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                         {
                             await AwaitUnityWebRequest(request);
 
@@ -92,7 +81,7 @@ namespace Assets.Scripts.ServerIntegration
                             else
                             {
                                 Debug.LogError($"❌ Unexpected server response: {request.responseCode} | {request.error}");
-                                Debug.LogError($"The url is : {serverUrl}");
+                                Debug.LogError($"The url is : {m_communicator.ServerUrl}");
                             }
                         }
 

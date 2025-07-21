@@ -8,53 +8,44 @@ using System.Threading.Tasks;
 using UnityEngine.Networking;
 using UnityEngine;
 using System.Threading;
+using UnityEditor.PackageManager.Requests;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    public class GameStateReceiver : Singleton<GameStateReceiver>
-    {
-        private const string k_pcIP = ServerData.k_pcIP;
-        private string serverUrl; 
-        private bool m_isMobile = Application.isMobilePlatform;
-        private bool _isRunning = false;
+    public class StateListener : Singleton<StateListener>
+    {        
+        private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
 
-        public GameStateReceiver()
+        public StateListener()
         {
-            serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-state";
+            m_communicator = new ServerCommunicator("/get-state");
         }
 
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_isMobile} | platform = {Application.platform}");
-            if (_isRunning) return;
+            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            Debug.Log("Inside StartListening of StateListener");
+
+            if (m_communicator.IsRunning) return;
 
             
             Debug.Log("🎧 Starting async polling...");
-            _isRunning = true;
+            m_communicator._isRunning = true;
             _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
+            _ = PollAsync(_cts.Token); 
             
         }
 
         public void StopListening()
         {
-            if (!_isRunning) return;
+            if (!m_communicator.IsRunning) return;
 
             Debug.Log("🛑 Stopping polling...");
-            _isRunning = false;
+            m_communicator._isRunning = false;
             _cts.Cancel();
         }
 
-        private void SendToRootEndpoint()
-        {
-            using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/"))
-            {
-                AwaitUnityWebRequest(request);
-            
-            }
-
-        }
         private Task AwaitUnityWebRequest(UnityWebRequest request)
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -74,10 +65,8 @@ namespace Assets.Scripts.ServerIntegration
                     while (!token.IsCancellationRequested)
                     {
                         Debug.Log("⏳ Polling server for new state update...");
-
-                        using (UnityWebRequest request = UnityWebRequest.Get(serverUrl))
-
-                        //using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-state"))
+                        Debug.Log($"📡 Before sending the state get request : {m_communicator.ServerUrl}");
+                        using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                         {
                             await AwaitUnityWebRequest(request);
 
@@ -95,11 +84,11 @@ namespace Assets.Scripts.ServerIntegration
                             else
                             {
                                 Debug.LogError($"❌ Unexpected server response: {request.responseCode} | {request.error}");
-                                Debug.LogError($"The url is : {serverUrl}");
+                                Debug.LogError($"The url is : {m_communicator.ServerUrl}");
                             }
                         }
 
-                        await Task.Delay(500, token); // Wait before polling again
+                        await Task.Delay(500, token); 
                     }
                 }
                 

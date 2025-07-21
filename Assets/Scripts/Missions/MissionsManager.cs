@@ -27,7 +27,7 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
-            GameStateSender.Instance.UpdatePhone();
+            StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
         }

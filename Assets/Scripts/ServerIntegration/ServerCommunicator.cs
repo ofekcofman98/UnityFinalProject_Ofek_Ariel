@@ -19,12 +19,12 @@ namespace Assets.Scripts.ServerIntegration
         public ServerCommunicator(string i_resource)
         {
             m_resource = i_resource;
-            serverUrl = k_pcIP + i_resource;
+            serverUrl = "https://" + k_pcIP + i_resource;
         }
 
-        protected string ServerUrl => serverUrl;
-        protected string Resource => m_resource;
-        protected bool IsRunning => _isRunning;
-        protected bool IsMobile => m_isMobile;
+        public string ServerUrl => serverUrl;
+        public string Resource => m_resource;
+        public bool IsRunning => _isRunning;
+        public bool IsMobile => m_isMobile;
     }
 }

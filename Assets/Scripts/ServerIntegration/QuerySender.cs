@@ -8,23 +8,22 @@ using NativeWebSocket;
 using System.Text;
 using System;
 using Newtonsoft.Json;
+using Assets.Scripts.ServerIntegration;
 
 
 public class QuerySender : MonoBehaviour
-{
-    private const string k_pcIP = ServerData.k_pcIP;
-    private string serverUrl = $"https://{k_pcIP}/send-query";
+{  
     public bool IsQuerySent { get; private set; } = false;
+    private ServerCommunicator m_communicator;
 
-    public void SendQueryToServer(Query query)
+    public QuerySender()
     {
-        // if (IsQuerySent)
-        // {
-        //     Debug.LogWarning("🚨 Query already sent this level. Ignoring duplicate.");
-        //     return;
-        // }
+        m_communicator = new ServerCommunicator("/send-query");
 
-query.PostDeserialize();
+    }
+    public void SendQueryToServer(Query query)
+    {     
+        query.PostDeserialize();
         StartCoroutine(SendQuery(query));
     }
 
@@ -36,18 +35,14 @@ query.PostDeserialize();
             yield break;
         }
 
-        // query.clauses = null;
-        // query.availableClauses = null;
-
         string jsonPayload = JsonConvert.SerializeObject(query, JsonUtility.Settings);
 
-        // string jsonPayload = JsonConvert.SerializeObject(query);
         Debug.Log($"📤 JSON Payload: {jsonPayload}");
 
         var encoding = new System.Text.UTF8Encoding();
         byte[] bodyRaw = encoding.GetBytes(jsonPayload);
 
-        UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-query", "POST")
+        UnityWebRequest request = new UnityWebRequest(m_communicator.ServerUrl, "POST")
         {
             uploadHandler = new UploadHandlerRaw(bodyRaw),
             downloadHandler = new DownloadHandlerBuffer(),
