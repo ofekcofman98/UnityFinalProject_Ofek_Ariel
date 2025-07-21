@@ -14,14 +14,14 @@ namespace Assets.Scripts.ServerIntegration
     public class GameStateReceiver : Singleton<GameStateReceiver>
     {
         private const string k_pcIP = ServerData.k_pcIP;
-        private string serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-state";
+        private string serverUrl; 
         private bool m_isMobile = Application.isMobilePlatform;
         private bool _isRunning = false;
         private CancellationTokenSource _cts;
 
-        public GameStateReceiver(string i_ServerUrl)
+        public GameStateReceiver()
         {
-            serverUrl = i_ServerUrl;         
+            serverUrl = "https://python-query-server-591845120560.us-central1.run.app/get-state";
         }
 
         public void StartListening()
@@ -75,7 +75,9 @@ namespace Assets.Scripts.ServerIntegration
                     {
                         Debug.Log("⏳ Polling server for new state update...");
 
-                        using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-state"))
+                        using (UnityWebRequest request = UnityWebRequest.Get(serverUrl))
+
+                        //using (UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-state"))
                         {
                             await AwaitUnityWebRequest(request);
 

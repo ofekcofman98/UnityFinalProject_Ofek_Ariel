@@ -19,6 +19,8 @@ public class QueryReceiver : MonoBehaviour
     private bool m_isMobile = Application.isMobilePlatform;
     private Coroutine listeningCoroutine;
 
+
+  
     public void StartListening()
     {
         Debug.Log("🎧 StartListening() called.");
@@ -52,9 +54,10 @@ public class QueryReceiver : MonoBehaviour
         
             while (true)
             {
-                // Debug.Log("📡 Polling the server for new query...");
+             Debug.Log("📡 Polling the server for new query...");
+            UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-query");
 
-                UnityWebRequest request = UnityWebRequest.Get("https://python-query-server-591845120560.us-central1.run.app/get-query");
+            //UnityWebRequest request = UnityWebRequest.Get(serverUrl);
                 yield return request.SendWebRequest();
 
                 if (request.result == UnityWebRequest.Result.Success)

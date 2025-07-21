@@ -18,6 +18,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject pcQueryCanvas;
     [SerializeField] private GameObject mobileCanvas;
+    [SerializeField] private GameObject mobileScreensaverCanvas;
 
 
     public Query CurrentQuery {get; set;}
@@ -160,13 +161,55 @@ public class GameManager : Singleton<GameManager>
     }
 
 
+    //public void SetSqlMode()
+    //{
+    //    SqlMode = !SqlMode;
+
+    //    if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+    //    if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
+    //    if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+
+    //    // Disable/Enable movement
+    //    PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+    //    if (playerMovement != null) playerMovement.enabled = !SqlMode;
+
+    //    // Disable/Enable camera look
+    //    MouseLook mouseLook = FindObjectOfType<MouseLook>();
+    //    if (mouseLook != null) mouseLook.enabled = !SqlMode;
+
+    //    // Optional: CharacterController
+    //    CharacterController characterController = FindObjectOfType<CharacterController>();
+    //    if (characterController != null) characterController.enabled = !SqlMode;
+
+    //    Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+
+
+    //    if (Application.isMobilePlatform && SqlMode)
+    //{
+    //    queryBuilder.ResetQuery();
+    //    queryBuilder.BuildQuery();
+    //}
+
+    //}
+
     public void SetSqlMode()
     {
         SqlMode = !SqlMode;
 
         if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
         if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
-        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+
+        if (Application.isMobilePlatform)
+        {
+            if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+            if (mobileScreensaverCanvas != null) mobileScreensaverCanvas.SetActive(!SqlMode);
+
+            if (SqlMode && queryBuilder != null)
+            {
+                queryBuilder.ResetQuery();
+                queryBuilder.BuildQuery();
+            }
+        }
 
         // Disable/Enable movement
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
@@ -181,15 +224,8 @@ public class GameManager : Singleton<GameManager>
         if (characterController != null) characterController.enabled = !SqlMode;
 
         Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
-    
-
-        if (Application.isMobilePlatform && SqlMode)
-    {
-        queryBuilder.ResetQuery();
-        queryBuilder.BuildQuery();
     }
 
-    }
 
     public void SaveQuery(Query i_Query)
     {
