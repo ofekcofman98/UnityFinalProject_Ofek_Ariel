@@ -22,6 +22,13 @@ public class DropZone : MonoBehaviour, IDropHandler
             return;
         }
 
+    if (!IsNewDrop(draggable.OriginalParent))
+    {
+        Debug.Log("[DropZone.OnDrop]: Drop is not new — ignoring.");
+        return;
+    }
+
+
         if (strategy.IsValidDrop(draggable))
         {
             strategy.HandleDrop(draggable, this);

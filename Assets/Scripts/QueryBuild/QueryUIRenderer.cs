@@ -144,6 +144,7 @@ public class QueryUIRenderer : MonoBehaviour
                 if (label != null)
                 {
                     label.text = labelText;
+                    SetButtonPreferredSize(button);
                 }
                 else
                 {
@@ -204,38 +205,25 @@ public class QueryUIRenderer : MonoBehaviour
         button.transform.SetSiblingIndex(insertIndex);
     }
 
-    // public void ShowInputField()
-    // {
-    //     GameObject inputFieldObject = Instantiate(inputFieldPrefab, selectionParent);
-    //     inputFieldObject.transform.localScale = Vector3.one;
-    //     TMP_InputField inputField = inputFieldObject.GetComponent<TMP_InputField>();
+//TODO pass to another class 
+    private void SetButtonPreferredSize(Button button, float padding = 20f, float fixedHeight = 60f)
+    {
+        var label = button.GetComponentInChildren<TextMeshProUGUI>();
+        var layout = button.GetComponent<LayoutElement>();
 
-    //     if (inputField == null)
-    //     {
-    //         Debug.LogError("InputFieldPrefab is missing a TMP_InputField component!");
-    //         return;
-    //     }
+        if (label == null || layout == null)
+        {
+            Debug.LogError("Button is missing either TMP label or LayoutElement.");
+            return;
+        }
 
-    //     inputField.text = "";
-    //     inputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter value...";
-    //     inputField.Select();
-    //     inputField.ActivateInputField();
+        // Force update so preferred width is valid
+        LayoutRebuilder.ForceRebuildLayoutImmediate(label.rectTransform);
 
-    //     GameObject confirmButtonObject = Instantiate(confirmButtonPrefab, selectionParent);
-    //     confirmButtonObject.transform.localScale = Vector3.one;
-
-    //     Button confirmButton = confirmButtonObject.GetComponent<Button>();
-    //     if (confirmButton == null)
-    //     {
-    //         Debug.LogError("ConfirmButtonPrefab is missing a Button component!");
-    //         return;
-    //     }
-
-    //     confirmButtonObject.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm";
-
-    //     confirmButton.onClick.RemoveAllListeners();
-    //     confirmButton.onClick.AddListener(() => OnConditionValueEntered(inputField.text));
-    // }
+        float preferredWidth = LayoutUtility.GetPreferredWidth(label.rectTransform);
+        layout.preferredWidth = preferredWidth + padding;
+        layout.preferredHeight = fixedHeight; // Optional: keep button heights aligned
+    }
 
 
     public void ShowInputField(

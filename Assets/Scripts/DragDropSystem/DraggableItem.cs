@@ -74,23 +74,27 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             if (!isNewDrop)
             {
+                Debug.Log("[OnEndDrag]: wasn't dropped in a new place, dropped back to original");
                 dropBackToOriginal();
                 return;
             }
 
             if (strategy != null && strategy.IsValidDrop(this))
             {
+                Debug.Log($"[OnEndDrag]: Valid drop in {dropZone.transform.name}");
                 dropZone.OnDrop(eventData);
                 // OnDropped?.Invoke(this); 
             }
             else
             {
+                Debug.Log($"[OnEndDrag]: NOT valid drop in {dropZone.transform.name}");
                 transform.SetParent(OriginalParent, true);
                 transform.position = originalPosition;
             }
         }
         else
         {
+            Debug.Log("[OnEndDrag]: dropZone is null, dropped back to original");
             dropBackToOriginal();
         }
 
@@ -108,14 +112,30 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     private void dropBackToOriginal()
     {
+        if (OriginalParent == null)
+        {
+            Debug.LogError("OriginalParent is null!");
+            return;
+        } //!
+
         transform.SetParent(OriginalParent, false);
         transform.SetSiblingIndex(originalSiblingIndex);
+        
+    LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)OriginalParent);
+
+    // OriginalParent = transform.parent;//!
+        // originalSiblingIndex = transform.GetSiblingIndex();//!
+
     }
 
     public void SetParentAndPosition(Transform newParent)
     {
         transform.SetParent(newParent, false);
         transform.localScale = Vector3.one;
+
+        // OriginalParent = newParent;//!
+        // originalSiblingIndex = transform.GetSiblingIndex();//!
+
     }
 
     private DropZone FindDropZone()
