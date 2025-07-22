@@ -7674,7 +7674,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8567825}
   m_HandleRect: {fileID: 8567824}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -8742,7 +8742,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1087351236}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -22676,7 +22676,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pcGameCanvas: {fileID: 1758171901}
-  pcQueryCanvas: {fileID: 0}
   mobileCanvas: {fileID: 1214347825}
   queryBuilder: {fileID: 1894173746}
   queryExecutor: {fileID: 1774472696}
@@ -22687,7 +22686,6 @@ MonoBehaviour:
   queryValidator: {fileID: 1249424914}
   missionManager: {fileID: 442066647}
   MissionUIManager: {fileID: 1829252718}
-  platformUIManager: {fileID: 0}
   resultsUI: {fileID: 692684119}
 --- !u!4 &1832505887
 Transform:
