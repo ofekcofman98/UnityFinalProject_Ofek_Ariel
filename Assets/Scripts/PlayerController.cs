@@ -1,3 +1,4 @@
+using Assets.Scripts.ServerIntegration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
             if (GameManager.Instance.SqlMode)
             {
                 GameManager.Instance.SetSqlMode();
+                SQLmodeSender.Instance.SendSQLmodeToPhone();
             }
         }
     }

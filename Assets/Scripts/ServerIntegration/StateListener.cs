@@ -29,7 +29,7 @@ namespace Assets.Scripts.ServerIntegration
             if (m_communicator.m_isRunning) return;
 
             
-            Debug.Log("🎧 Starting async polling...");
+            Debug.Log("🎧 Starting async polling for new state...");
             m_communicator.m_isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); 
@@ -74,7 +74,6 @@ namespace Assets.Scripts.ServerIntegration
                             {
                                 Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
                                 Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
-                                CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.SetSqlMode());
                                 CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
                             }
                             else if ((int)request.responseCode == 204)

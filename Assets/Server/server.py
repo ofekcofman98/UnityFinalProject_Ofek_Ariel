@@ -25,6 +25,7 @@ bucket = storage_client.bucket(BUCKET_NAME)
 stored_data = []
 current_state = {'isLevelDone': False}
 current_reset = {'reset': False}
+current_SQLmode = {'sqlmode': False}
 query_ready = False  # Only serve query once
 
 
@@ -149,13 +150,57 @@ def send_reset():
 @app.route('/get-reset', methods=['GET'])
 def get_reset():
     if current_reset['reset']:
+        current_state['isLevelDone'] = False
+        current_reset['reset'] = False
+        current_SQLmode['sqlmode'] = False
         current_reset['reset'] = False
         logging.info("reset was True, returning 200 and resetting to False")
+
         return jsonify({'reset': True}), 200
     return '', 204
 
 
-# ===== Launch =====
+# ===== SQLMODE SEND AND RETRIEVE ENDPOINTS =====
+@app.route('/send-sqlmode', methods=['POST'])
+def send_sqlmode():
+    data = request.get_json()
+    if not data or 'sqlmode' not in data or not isinstance(data['sqlmode'], bool):
+        return jsonify({'error': 'Expected JSON with boolean "sqlmode" key'}), 400
 
+    current_SQLmode['sqlmode'] = data['sqlmode']
+    logging.info(f"Setting the sqlmode value in server to {current_SQLmode['sqlmode']}")
+    return jsonify(current_SQLmode), 200
+
+
+@app.route('/get-sqlmode', methods=['GET'])
+def get_sqlmode():
+    if current_SQLmode['sqlmode']:
+        logging.info(f"sqlmode is True.")
+        return jsonify({'message': 'sqlmode is TRUE', 'sqlmode': True}), 200
+    else:
+        logging.info(f"sqlmode changes to False.")
+        return jsonify({'message': 'changing SQLmode to False', 'sqlmode': False}), 201
+
+
+# ==== SERVER RESET ====
+@app.route('/server-reset', methods=['POST'])
+def server_reset():
+    data = request.get_json()
+    if not data or 'password' not in data:
+        return jsonify({'error': 'Expected JSON with a string value for password key'}), 400
+
+    password = data['password']
+    if password == 'nuw39miNC83MF94989D3nmomcl9j4mfnnxE83NTS12fvded':
+        logging.info(f"reseting server values and information stored to default")
+        stored_data = []
+        current_state = {'isLevelDone': False}
+        current_reset = {'reset': False}
+        current_SQLmode = {'sqlmode': False}
+        query_ready = False
+        return jsonify({'message': 'server contents have been reset'}), 200
+    return jsonify({'message': 'incorrect password'}), 403
+
+
+# ===== Launch =====
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=PORT)

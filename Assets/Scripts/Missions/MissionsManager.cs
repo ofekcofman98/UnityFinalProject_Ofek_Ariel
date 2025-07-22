@@ -30,6 +30,9 @@ public class MissionsManager : Singleton<MissionsManager>
             StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
+            GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
+            SQLmodeSender.Instance.SendSQLmodeToPhone();
+
         }
         else
         {

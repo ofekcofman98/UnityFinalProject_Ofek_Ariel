@@ -23,12 +23,12 @@ namespace Assets.Scripts.ServerIntegration
      
         public void StartListening()
         {
-            //Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
             
             if (m_communicator.m_isRunning) return;
 
 
-            Debug.Log("🎧 Starting async polling...");
+            Debug.Log("🎧 Starting async polling for new reset...");
             m_communicator.m_isRunning = true;
             _cts = new CancellationTokenSource();
             _ = PollAsync(_cts.Token); // Fire-and-forget

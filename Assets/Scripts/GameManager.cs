@@ -120,22 +120,20 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    public IEnumerator SetSqlMode()
+    public void SwitchMobileCanvas(bool i_sqlMode)
     {
-        bool newMode = !SqlMode; 
-
         if (Application.isMobilePlatform)
         {
             if (mobileCanvas != null)
             {
-                mobileCanvas.SetActive(newMode);
-                Debug.Log($"📱 mobileCanvas set to {newMode}");
+                mobileCanvas.SetActive(i_sqlMode);
+                Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
             }
 
             if (mobileScreensaverCanvas != null)
             {
-                mobileScreensaverCanvas.SetActive(!newMode);
-                Debug.Log($"🌙 mobileScreensaverCanvas set to {!newMode}");
+                mobileScreensaverCanvas.SetActive(!i_sqlMode);
+                Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
             }
 
             if (pcGameCanvas != null)
@@ -143,13 +141,20 @@ public class GameManager : Singleton<GameManager>
                 pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
             }
 
-            if (newMode && queryBuilder != null)
+            if (i_sqlMode && queryBuilder != null)
             {
                 queryBuilder.ResetQuery();
                 queryBuilder.BuildQuery();
             }
         }
-        else 
+
+    }
+    public void SetSqlMode()
+    {
+        bool newMode = !SqlMode;
+
+        SwitchMobileCanvas(newMode);
+        if(!Application.isMobilePlatform)
         {
             // PC: always show pcGameCanvas, hide both mobile canvases
             if (pcGameCanvas != null)
@@ -170,18 +175,17 @@ public class GameManager : Singleton<GameManager>
 
         SqlMode = newMode;
 
-        // Enable/disable movement and camera on both platforms
-        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-        if (playerMovement != null) playerMovement.enabled = !SqlMode;
+        //// Enable/disable movement and camera on both platforms
+        //PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        //if (playerMovement != null) playerMovement.enabled = !SqlMode;
 
-        MouseLook mouseLook = FindObjectOfType<MouseLook>();
-        if (mouseLook != null) mouseLook.enabled = !SqlMode;
+        //MouseLook mouseLook = FindObjectOfType<MouseLook>();
+        //if (mouseLook != null) mouseLook.enabled = !SqlMode;
 
-        CharacterController characterController = FindObjectOfType<CharacterController>();
-        if (characterController != null) characterController.enabled = !SqlMode;
+        //CharacterController characterController = FindObjectOfType<CharacterController>();
+        //if (characterController != null) characterController.enabled = !SqlMode;
 
         Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
-        yield break;
     }
 
 

@@ -47,8 +47,8 @@ public class PlatformUIManager : MonoBehaviour
         Debug.Log("🖥 Running on Mobile — after StateListener listening and before ResetListener listening");
         ResetListener.Instance.StartListening();
         Debug.Log("🖥 Running on Mobile — after ResetListener listening and before SQLModeListener");
-        //SQLmodeListener.Instance.StartListening();
-        //Debug.Log("🖥 Running on Mobile — after SQLmodeListener listening and before ResetGame");
+        SQLmodeListener.Instance.StartListening();
+        Debug.Log("🖥 Running on Mobile — after SQLmodeListener listening and before ResetGame");
         GameManager.Instance.ResetGame(); // 
     }
 
