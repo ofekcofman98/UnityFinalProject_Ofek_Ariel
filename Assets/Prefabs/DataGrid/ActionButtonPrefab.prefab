@@ -147,6 +147,7 @@ GameObject:
   - component: {fileID: 8703708069280327393}
   - component: {fileID: 3364735978704826385}
   - component: {fileID: 8289867609551924814}
+  - component: {fileID: -5072295155433951595}
   m_Layer: 5
   m_Name: ActionButtonPrefab
   m_TagString: Untagged
@@ -273,6 +274,20 @@ MonoBehaviour:
   m_MinHeight: 40
   m_PreferredWidth: -1
   m_PreferredHeight: -1
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 0
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &-5072295155433951595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3346704277574180325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 0

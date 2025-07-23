@@ -262,7 +262,7 @@ public class GameManager : Singleton<GameManager>
 
 
 
-    private void HandleQueryResults(JArray jsonResponse)
+    private async void HandleQueryResults(JArray jsonResponse)
     {
 
         Debug.Log($"📥 GameManager received {jsonResponse.Count} rows!");
@@ -280,27 +280,16 @@ public class GameManager : Singleton<GameManager>
         }
         Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
+    await PersonDataManager.Instance.WaitUntilReady();
+
+        QueryResultDecorator.Enrich(jsonResponse, CurrentQuery.fromClause.table.Name, CurrentQuery.selectClause.Columns);
+
         resultsUI.ShowResults(
             jsonResponse,
             CurrentQuery.selectClause.Columns,
             CurrentQuery.GetTable().Name);
     }
 
-    // private void UnlockInitialTables()
-    // {
-    //     Table crimeEvidence = SupabaseManager.Instance.Tables
-    //         .FirstOrDefault(t => t.Name == "CrimeEvidence");
-    //     Debug.Log($"TABLE first column: {crimeEvidence.Columns[0]}");
-    //     if (crimeEvidence != null)
-    //     {
-    //         crimeEvidence.UnlockTable();
-    //         Debug.Log("🔓 'CrimeEvidence' table unlocked at game start.");
-    //     }
-    //     else
-    //     {
-    //         Debug.LogWarning("⚠️ 'CrimeEvidence' table not found.");
-    //     }
-    // }
 
     internal void ToggleQueryUI()
     {

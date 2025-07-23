@@ -106,6 +106,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
         if (_columnsLoaded == Tables.Count)
         {
             StartCoroutine(FetchForeignKeys());
+            // StartCoroutine(LoadPersonsAfterScheme());
         }
     }
 
@@ -158,6 +159,10 @@ Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
         OnSchemeFullyLoaded?.Invoke();
     }
 
+    // private IEnumerator LoadPersonsAfterScheme()
+    // {
+    //     yield return PersonDataManager.Instance.LoadAllCharacters().AsCoroutine(); // 👈 Helper method
+    // }
 
     private eDataType MapSupabaseType(string supabaseType)
     {

@@ -286,9 +286,6 @@ public class QueryUIRenderer : MonoBehaviour
                 return;
             }
 
-
-            // FindObjectOfType<QueryBuilder>().SetConditionValue(parsedValue);
-
             Destroy(currentInputField);
             Destroy(confirmButtonObject);
 

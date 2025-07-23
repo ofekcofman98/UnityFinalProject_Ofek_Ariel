@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class CharacterData // or PersonData
+public class PersonData // or PersonData
 {
     public string id;
     public string name;

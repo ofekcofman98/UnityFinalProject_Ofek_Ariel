@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -31,15 +32,22 @@ public class QueryExecutor : MonoBehaviour
             yield break;
         }
 
+if (query.fromClause.table.Name.ToLower() == "persons")
+{
+    if (!query.selectClause.Columns.Any(c => c.Name == "person_id"))
+        query.selectClause.Columns.Insert(0, new Column("person_id", eDataType.String));
+}
+
+
         //https://vwudsbcqlhwajpkmcpsz.supabase.co/rest/v1/Persons?select=age&age=eq.40
-        
+
         string url = $"{ServerData.k_SupabaseUrl}/rest/v1/{query.fromClause.table.Name}?select={query.GetSelectFields()}&{query.whereClause.ToSupabase()}";
 
-    // if (!string.IsNullOrEmpty(query.WherePartSupaBase))
-    // {
-    //     url += $"&{query.WherePartSupaBase}";  // Append filters as URL params
-    // }
-    
+        // if (!string.IsNullOrEmpty(query.WherePartSupaBase))
+        // {
+        //     url += $"&{query.WherePartSupaBase}";  // Append filters as URL params
+        // }
+
         UnityWebRequest request = SupabaseUtility.CreateGetRequest(url);
         yield return request.SendWebRequest();
 

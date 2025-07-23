@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 
 public class DataGridDisplayer : MonoBehaviour
@@ -23,7 +24,8 @@ public class DataGridDisplayer : MonoBehaviour
         List<float> columnWidths,
         List<T> data,
         Func<T, List<string>> rowExtractor,
-        List<IDataGridAction<T>> actions = null)
+        List<IDataGridAction<T>> actions = null,
+        bool injectPortraitAndName = false)
     {
         ClearResults();
 
@@ -39,24 +41,43 @@ public class DataGridDisplayer : MonoBehaviour
             return;
         }
 
-        int numCols = columnNames.Count + (actions?.Count ?? 0);
-        float[] maxWidths = new float[numCols];
+int numCols = columnNames.Count + (actions?.Count ?? 0);
+float[] maxWidths = new float[numCols];
 
-        // 🔹 Step 1: Calculate max widths for each column (header + all rows)
-        for (int i = 0; i < columnNames.Count; i++)
+// 🔹 Step 1: Compute max width per column using `columnNames` directly
+for (int i = 0; i < columnNames.Count; i++)
+{
+    string col = columnNames[i];
+if (col == "portrait")
+{
+    maxWidths[i] = 60f; // 🔥 Force match with RawImage
+}
+else
+{
+    maxWidths[i] = GetTextWidth(col);
+}
+
+    foreach (T item in data)
+    {
+        string val = "—";
+        if (col == "portrait")
         {
-            maxWidths[i] = GetTextWidth(columnNames[i]);
+            val = ""; // no text, but reserve space
+        }
+        else if (col == "name")
+        {
+            if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
+                val = nameToken.ToString();
+        }
+        else if (item is JObject jRow && jRow.TryGetValue(col, out var token))
+        {
+            val = token.ToString();
         }
 
-        foreach (T item in data)
-        {
-            var values = rowExtractor(item);
-            for (int i = 0; i < values.Count; i++)
-            {
-                float textWidth = GetTextWidth(values[i]);
-                maxWidths[i] = Mathf.Max(maxWidths[i], textWidth);
-            }
-        }
+        float textWidth = GetTextWidth(val);
+        maxWidths[i] = Mathf.Max(maxWidths[i], textWidth);
+    }
+}
 
         if (actions != null)
         {
@@ -75,16 +96,11 @@ public class DataGridDisplayer : MonoBehaviour
 
         if (actions != null)
         {
-            // foreach (var action in actions)
-            // {
-            //     int index = columnNames.Count + actions.IndexOf(action);
-            //     CreateTextCell(headerRow.transform, action.Label, maxWidths[index]);
-            // }
             for (int i = 0; i < actions.Count; i++)
-{
-    int index = columnNames.Count + i;
-    CreateTextCell(headerRow.transform, actions[i].Label, maxWidths[index]);
-}
+            {
+                int index = columnNames.Count + i;
+                CreateTextCell(headerRow.transform, actions[i].Label, maxWidths[index]);
+            }
 
         }
 
@@ -94,10 +110,48 @@ public class DataGridDisplayer : MonoBehaviour
             GameObject row = Instantiate(rowPrefab, resultsContainer);
             List<string> cellValues = rowExtractor(item);
 
-            for (int i = 0; i < cellValues.Count; i++)
+// Go through columnNames to keep correct visual + data order
+for (int i = 0; i < columnNames.Count; i++)
+{
+    string col = columnNames[i];
+
+    if (col == "portrait")
+    {
+        if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
+        {
+            string personId = personIdToken.ToString();
+            var person = PersonDataManager.Instance.GetById(personId);
+            if (person != null)
             {
-                CreateTextCell(row.transform, cellValues[i], maxWidths[i]);
+                CreatePortraitCell(row.transform, person.portrait, 60f);
+                continue;
             }
+        }
+        CreateTextCell(row.transform, "❌", 60f); // fallback
+    }
+    else if (col == "name")
+    {
+        if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
+        {
+            CreateTextCell(row.transform, nameToken.ToString(), 100f);
+        }
+        else
+        {
+            CreateTextCell(row.transform, "—", 100f);
+        }
+    }
+    else
+    {
+        string val = (item as JObject)?[col]?.ToString() ?? "—";
+        CreateTextCell(row.transform, val, maxWidths[i]);
+    }
+}
+
+
+            // for (int i = 0; i < cellValues.Count; i++)
+            // {
+            //     CreateTextCell(row.transform, cellValues[i], maxWidths[i]);
+            // }
 
             if (actions != null)
             {
@@ -109,9 +163,16 @@ public class DataGridDisplayer : MonoBehaviour
                     LayoutElement layout = buttonGO.GetComponent<LayoutElement>();
                     if (layout != null)
                     {
+                        // layout.preferredWidth = maxWidths[colIndex];
+                        // layout.minWidth = maxWidths[colIndex];
+                        // layout.flexibleWidth = 0f;
+
                         layout.preferredWidth = maxWidths[colIndex];
-                        layout.minWidth = maxWidths[colIndex];
-                        layout.flexibleWidth = 0f;
+layout.minWidth = maxWidths[colIndex];
+layout.flexibleWidth = 0f;
+layout.preferredHeight = 80f; // or portrait height
+layout.minHeight = 80f;
+
                     }
 
                     var button = buttonGO.GetComponent<Button>();
@@ -124,8 +185,9 @@ public class DataGridDisplayer : MonoBehaviour
 
                     label.text = actions[i].Label;
                     label.alignment = TextAlignmentOptions.Center;
-int actionIndex = i;
-button.onClick.AddListener(() => actions[actionIndex].Execute(item));
+
+                    int actionIndex = i;
+                    button.onClick.AddListener(() => actions[actionIndex].Execute(item));
                 }
             }
         }
@@ -169,6 +231,39 @@ button.onClick.AddListener(() => actions[actionIndex].Execute(item));
                 Destroy(child.gameObject);
             }
         }
-
     }
+
+    private void CreatePortraitCell(Transform parent, Texture2D portrait, float width)
+    {
+        GameObject cell = Instantiate(cellPrefab, parent);
+
+        // Disable TextLabel
+        var textObj = cell.transform.Find("TextLabel")?.GetComponent<TextMeshProUGUI>();
+        if (textObj != null) textObj.gameObject.SetActive(false);
+
+        // Enable PortraitImage
+        var imageObj = cell.transform.Find("PortraitImage")?.GetComponent<RawImage>();
+        if (imageObj == null)
+        {
+            Debug.LogError("❌ Cell prefab is missing a child named 'PortraitImage' with a RawImage component.");
+            return;
+        }
+
+        imageObj.gameObject.SetActive(true);
+        imageObj.texture = portrait;
+        imageObj.rectTransform.sizeDelta = new Vector2(width, width);
+
+
+        LayoutElement layout = cell.GetComponent<LayoutElement>();
+        if (layout != null)
+        {
+            layout.preferredWidth = width;
+            layout.minWidth = width;
+            layout.preferredHeight = width + 10f;  // Ensure enough height
+            layout.minHeight = width + 10f;
+        }
+    }
+    
+
+    
 }

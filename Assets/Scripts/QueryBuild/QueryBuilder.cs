@@ -258,15 +258,16 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateColumnSelection(Table i_Table)
     {
-        foreach (var col in i_Table.Columns)
-        {
-            Debug.Log($"🔍 Column found: {col.Name}");
-        }
+        // foreach (var col in i_Table.Columns)
+        // {
+        //     Debug.Log($"🔍 Column found: {col.Name}");
+        // }
+        List<Column> visibleColumns = TableDataFilter.GetVisibleColumns(i_Table.Columns).ToList();
 
         ClearSelectionPanel();
         uiRenderer.populateSelectionButtons
         (
-             i_Items: i_Table.Columns
+              i_Items: visibleColumns
             , i_OnItemDropped: col => query.AddColumn(col)
             , i_GetLabel: column => column.Name
             , i_ParentTransform: selectionParent
