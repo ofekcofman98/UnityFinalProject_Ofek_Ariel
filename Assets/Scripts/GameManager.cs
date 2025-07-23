@@ -40,7 +40,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public PlatformUIManager platformUIManager;
     [SerializeField] private ResultsUI resultsUI;
 
-
     public event Action<bool> OnQueryIsCorrect;
 
 
@@ -87,8 +86,9 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        MissionUIManager.Init(missionManager);
+        MissionUIManager.Init(missionManager);       
         ResetSender.Instance.SendResetToPhone();
+        
 
         if (!Application.isMobilePlatform)
         {
@@ -346,9 +346,10 @@ public class GameManager : Singleton<GameManager>
     internal IEnumerator resetAction()
     {
         Debug.Log("Inside ResetAction, before ResetGame");
+        GameManager.Instance.SqlMode = false;
+        GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
-        //MissionUIManager.ShowUI();
 
     }
 }

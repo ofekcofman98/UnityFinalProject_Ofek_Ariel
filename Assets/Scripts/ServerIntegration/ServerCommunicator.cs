@@ -15,6 +15,8 @@ namespace Assets.Scripts.ServerIntegration
         private bool m_isMobile = Application.isMobilePlatform;
         public bool m_isRunning { get; set; } = false;
         private string m_resource;
+        public int pollRateMilliSeconds { get; } = 500;
+
 
         public ServerCommunicator(string i_resource)
         {

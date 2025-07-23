@@ -106,7 +106,8 @@ public class QueryListener : MonoBehaviour
                     Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
                 }
 
-                yield return new WaitForSeconds(2f);  // Wait before next poll
+
+                yield return new WaitForSeconds(m_communicator.pollRateMilliSeconds / 1000f);  // Wait before next poll
             }    
     }
 }

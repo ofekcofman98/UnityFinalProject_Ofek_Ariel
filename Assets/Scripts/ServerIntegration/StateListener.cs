@@ -87,7 +87,7 @@ namespace Assets.Scripts.ServerIntegration
                             }
                         }
 
-                        await Task.Delay(500, token); 
+                        await Task.Delay(m_communicator.pollRateMilliSeconds, token); 
                     }
                 }
                 
