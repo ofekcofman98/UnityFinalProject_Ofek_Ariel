@@ -9,28 +9,26 @@ using UnityEngine.Networking;
 using UnityEngine;
 using System.Threading;
 
-
 namespace Assets.Scripts.ServerIntegration
 {
-    public class GameStateSender : Singleton<GameStateSender>
+    public class ResetSender : Singleton<ResetSender>
     {
-        private const string k_pcIP = ServerData.k_pcIP;
-        private string serverUrl = "https://python-query-server-591845120560.us-central1.run.app/send-state";
-        private bool m_isMobile = Application.isMobilePlatform;
-        private bool _isRunning = false;
-        private CancellationTokenSource _cts;
+        private ServerCommunicator m_communicator;
 
-
-        public void UpdatePhone()
+        public ResetSender()
         {
-            if (!m_isMobile)
-            {
-                StartCoroutine(CheckStateOnceAfterSend());
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendReset);
+        }
 
+        public void SendResetToPhone()
+        {
+            if (!Application.isMobilePlatform)
+            {
+                Debug.Log("SENDING RESET MESSAGE TO SERVER");
                 // Construct the payload with the correct key and value
                 var payload = new Dictionary<string, bool>
                  {
-                    { "isLevelDone", true }
+                    { "reset", true }
                  };
 
                 string jsonPayload = JsonConvert.SerializeObject(payload);
@@ -38,7 +36,7 @@ namespace Assets.Scripts.ServerIntegration
 
                 byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
 
-                UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-state", "POST")
+                UnityWebRequest request = new UnityWebRequest(m_communicator.ServerUrl, "POST")
                 {
                     uploadHandler = new UploadHandlerRaw(bodyRaw),
                     downloadHandler = new DownloadHandlerBuffer()
@@ -65,16 +63,5 @@ namespace Assets.Scripts.ServerIntegration
                 };
             }
         }
-
-private IEnumerator CheckStateOnceAfterSend()
-{
-    yield return new WaitForSeconds(1f); // short delay
-    GameStateReceiver.Instance.StartListening();
-    yield return new WaitForSeconds(2f); // give time to receive
-    GameStateReceiver.Instance.StopListening();
-}
-
     }
-
 }
-

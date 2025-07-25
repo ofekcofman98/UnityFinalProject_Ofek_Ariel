@@ -27,9 +27,17 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("✅ Mission complete!");
             checkUnlocking();
-            GameStateSender.Instance.UpdatePhone();
+            StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
+            GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
+            SQLmodeSender.Instance.SendSQLmodeToPhone();
+            if (currentMissionIndex == 4)
+            {
+                GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
+                GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
+            }
+
         }
         else
         {
@@ -78,17 +86,27 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private void checkUnlocking()
     {
-        if (CurrentMission.unlocksTable && !string.IsNullOrEmpty(CurrentMission.tableToUnlock))
+        Debug.Log("Entered checkUnlocking");
+        try
         {
-            Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
-            t => t.Name == CurrentMission.tableToUnlock);
-
-            if (unlockedTable != null)
+            if (CurrentMission.unlocksTable && !string.IsNullOrEmpty(CurrentMission.tableToUnlock))
             {
-                unlockedTable.UnlockTable();
-                Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+                Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
+                t => t.Name == CurrentMission.tableToUnlock);
+
+                if (unlockedTable != null)
+                {
+                    unlockedTable.UnlockTable();
+                    Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+                }
             }
+
         }
+        catch (Exception ex) 
+        {
+            Debug.Log($"AN EXCEPTION HAS OCCURED : {ex.ToString()}");
+        }
+        
     }
 
     public void ReportInteractableUsed(string id)
@@ -117,6 +135,8 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("🏁 All missions completed! Game over.");
         }
+        Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
+
     }
 
     public int GetCurrentMissionNumber()
@@ -136,13 +156,25 @@ public class MissionsManager : Singleton<MissionsManager>
     {
         Debug.Log("🟡 You unlocked a new table!");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();  
-        yield return new WaitForSeconds(2.5f);
-        GoToNextMission(); 
+        //yield return new WaitForSeconds(2.0f);
+
         checkUnlocking();
-GameManager.Instance.QuerySender?.ResetQuerySendFlag();
+        Debug.Log("✅ checkUnlocking passed");
+
+        GoToNextMission();
+        if (currentMissionIndex >= missionSequence.Missions.Count)
+        {
+            Debug.Log("🏁 Reached end of mission sequence — skipping mission update.");
+            yield break;
+        }
+
+        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
+        Debug.Log("✅ ResetQuerySendFlag passed");
+
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
+
         GameManager.Instance.queryBuilder.ResetQuery();
-        GameManager.Instance.queryBuilder.BuildQuery(); // ✅ force rebuild
+        GameManager.Instance.queryBuilder.BuildQuery(); 
         GameManager.Instance.MissionUIManager.ShowUI();
     }
 

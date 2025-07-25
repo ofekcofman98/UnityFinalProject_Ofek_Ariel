@@ -14,10 +14,10 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    public bool SqlMode {get; set;}
+    public bool SqlMode {get; set;} 
     [SerializeField] private GameObject pcGameCanvas;
-    // [SerializeField] private GameObject pcQueryCanvas;
     [SerializeField] private GameObject mobileCanvas;
+    [SerializeField] private GameObject mobileScreensaverCanvas;
 
 
     public Query CurrentQuery {get; set;}
@@ -31,11 +31,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QuerySender querySender;
     public QuerySender QuerySender => querySender;
 
-    [SerializeField] private QueryReceiver queryReceiver;
-    // [SerializeField] private CanvasSwitcher canvasSwitcher;
+    [SerializeField] private QueryListener queryReceiver;
 
     [SerializeField] private QueryValidator queryValidator;
-    [SerializeField] public MissionsManager missionManager; //TODO: it's Singleton!!!
+    [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
     // [SerializeField] public PlatformUIManager platformUIManager;
 [SerializeField] private ResultsUI resultsUI;
@@ -76,10 +75,10 @@ public class GameManager : Singleton<GameManager>
             missionManager.OnMissionValidated += isCorrect =>
             {
                 OnQueryIsCorrect?.Invoke(isCorrect);
-    if (isCorrect)
-    {
-        QuerySender.MarkQueryAsSent(); // ✅ only mark as sent if the query is correct
-    }
+                if (isCorrect)
+                {
+                    QuerySender.MarkQueryAsSent(); // ✅ only mark as sent if the query is correct
+                }
             };
 
         }
@@ -87,8 +86,9 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        MissionUIManager.Init(missionManager);
-        SendResetToPhone();
+        MissionUIManager.Init(missionManager);       
+        ResetSender.Instance.SendResetToPhone();
+        
 
         if (!Application.isMobilePlatform)
         {
@@ -108,49 +108,10 @@ public class GameManager : Singleton<GameManager>
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
             // GameStateReceiver.Instance.StartListening();
         }
-    }
 
-    public void SendResetToPhone()
-    {
-        if (!Application.isMobilePlatform)
+        if (!Application.isMobilePlatform && mobileScreensaverCanvas != null)
         {
-            Debug.Log("SENDING RESET MESSAGE TO SERVER");
-            // Construct the payload with the correct key and value
-            var payload = new Dictionary<string, bool>
-                 {
-                    { "reset", true }
-                 };
-
-            string jsonPayload = JsonConvert.SerializeObject(payload);
-            Debug.Log($"📤 JSON Payload: {jsonPayload}");
-
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
-
-            UnityWebRequest request = new UnityWebRequest("https://python-query-server-591845120560.us-central1.run.app/send-reset", "POST")
-            {
-                uploadHandler = new UploadHandlerRaw(bodyRaw),
-                downloadHandler = new DownloadHandlerBuffer()
-            };
-
-            request.disposeUploadHandlerOnDispose = true;
-            request.disposeDownloadHandlerOnDispose = true;
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            // Send request asynchronously
-            UnityWebRequestAsyncOperation operation = request.SendWebRequest();
-
-            operation.completed += _ =>
-            {
-                if (request.result == UnityWebRequest.Result.Success)
-                {
-                    Debug.Log($"✅ State Sent Successfully! Response: {request.downloadHandler.text}");
-                }
-                else
-                {
-                    Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
-                    Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
-                }
-            };
+            mobileScreensaverCanvas.SetActive(false);
         }
     }
 
@@ -159,37 +120,77 @@ public class GameManager : Singleton<GameManager>
 
     }
 
+    public void SwitchMobileCanvas(bool i_sqlMode)
+    {
+        if (Application.isMobilePlatform)
+        {
+            if (mobileCanvas != null)
+            {
+                mobileCanvas.SetActive(i_sqlMode);
+                Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
+            }
 
+            if (mobileScreensaverCanvas != null)
+            {
+                mobileScreensaverCanvas.SetActive(!i_sqlMode);
+                Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
+            }
+
+            if (pcGameCanvas != null)
+            {
+                pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
+            }
+
+            if (i_sqlMode && queryBuilder != null)
+            {
+                queryBuilder.ResetQuery();
+                queryBuilder.BuildQuery();
+            }
+        }
+
+    }
     public void SetSqlMode()
     {
-        SqlMode = !SqlMode;
+        bool newMode = !SqlMode;
 
-        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        // if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
-        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        SwitchMobileCanvas(newMode);
+        if(!Application.isMobilePlatform)
+        {
+            // PC: always show pcGameCanvas, hide both mobile canvases
+            if (pcGameCanvas != null)
+            {
+                pcGameCanvas.SetActive(true);
+            }
 
-        // Disable/Enable movement
-        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-        if (playerMovement != null) playerMovement.enabled = !SqlMode;
+            if (mobileCanvas != null)
+            {
+                mobileCanvas.SetActive(false);
+            }
 
-        // Disable/Enable camera look
-        MouseLook mouseLook = FindObjectOfType<MouseLook>();
-        if (mouseLook != null) mouseLook.enabled = !SqlMode;
+            if (mobileScreensaverCanvas != null)
+            {
+                mobileScreensaverCanvas.SetActive(false);
+            }
+        }
 
-        // Optional: CharacterController
-        CharacterController characterController = FindObjectOfType<CharacterController>();
-        if (characterController != null) characterController.enabled = !SqlMode;
+        SqlMode = newMode;
+
+        //// Enable/disable movement and camera on both platforms
+        //PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        //if (playerMovement != null) playerMovement.enabled = !SqlMode;
+
+        //MouseLook mouseLook = FindObjectOfType<MouseLook>();
+        //if (mouseLook != null) mouseLook.enabled = !SqlMode;
+
+        //CharacterController characterController = FindObjectOfType<CharacterController>();
+        //if (characterController != null) characterController.enabled = !SqlMode;
 
         Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
-    
-
-        if (Application.isMobilePlatform && SqlMode)
-    {
-        queryBuilder.ResetQuery();
-        queryBuilder.BuildQuery();
     }
 
-    }
+
+
+
 
     public void SaveQuery(Query i_Query)
     {
@@ -204,19 +205,8 @@ public class GameManager : Singleton<GameManager>
         {
             i_Query.selectClause.Columns = new List<Column>(CurrentQuery.selectClause.Columns);
         }
-
-        // if (i_Query.SelectedColumns.Count == 0 && CurrentQuery?.SelectedColumns.Count > 0)
-        // {
-        //     i_Query.SelectedColumns = new List<string>(CurrentQuery.SelectedColumns);
-        // }
-
-        CurrentQuery = i_Query;
-        // Debug.Log("Query saved in GameManager: " + i_Query.QueryString);
-
-        //if (queryReceiver != null)
-        //{
-        //    queryReceiver.StopListening();
-        //}
+        
+        CurrentQuery = i_Query;       
 
     }
 
@@ -355,9 +345,10 @@ public class GameManager : Singleton<GameManager>
     internal IEnumerator resetAction()
     {
         Debug.Log("Inside ResetAction, before ResetGame");
+        GameManager.Instance.SqlMode = false;
+        GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
-        //MissionUIManager.ShowUI();
 
     }
 }

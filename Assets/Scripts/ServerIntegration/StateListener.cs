@@ -11,30 +11,29 @@ using System.Threading;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    public class ResetListener : Singleton<ResetListener>
-    {
+    public class StateListener : Singleton<StateListener>
+    {        
         private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
 
-
-
-        public ResetListener()
+        public StateListener()
         {
-            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetReset);
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetState);
         }
-     
+
         public void StartListening()
         {
             Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
-            
+            Debug.Log("Inside StartListening of StateListener");
+
             if (m_communicator.m_isRunning) return;
 
-
-            Debug.Log("🎧 Starting async polling for new reset...");
+            
+            Debug.Log("🎧 Starting async polling for new state...");
             m_communicator.m_isRunning = true;
             _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
-
+            _ = PollAsync(_cts.Token); 
+            
         }
 
         public void StopListening()
@@ -46,7 +45,6 @@ namespace Assets.Scripts.ServerIntegration
             _cts.Cancel();
         }
 
-        
         private Task AwaitUnityWebRequest(UnityWebRequest request)
         {
             var tcs = new TaskCompletionSource<bool>();
@@ -61,25 +59,26 @@ namespace Assets.Scripts.ServerIntegration
         {
             try
             {
-                if (Application.isMobilePlatform)
+                if(Application.isMobilePlatform)
                 {
                     while (!token.IsCancellationRequested)
                     {
-                        Debug.Log("⏳ Polling server for new reset update...");
-
+                        Debug.Log("⏳ Polling server for new state update...");
+                        Debug.Log($"📡 Before sending the state get request : {m_communicator.ServerUrl}");
                         using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                         {
                             await AwaitUnityWebRequest(request);
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
+                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result} | Text: {request.downloadHandler.text}");
                             if ((int)request.responseCode == 200)
                             {
-                                Debug.Log("✅ 200 OK received, about to reset...✅");
-                                CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
+                                Debug.Log("✅ 200 OK received, about to enter DelayedAdvance...");
+                                Debug.Log("✅ found an Update ! entering DelyaedAdvance ✅");
+                                CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
                             }
                             else if ((int)request.responseCode == 204)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no reset.");
+                                Debug.Log("⏳ Server responded with 204 No Content — no new state update.");
                             }
                             else
                             {
@@ -88,10 +87,10 @@ namespace Assets.Scripts.ServerIntegration
                             }
                         }
 
-                        await Task.Delay(m_communicator.pollRateMilliSeconds, token); // Wait before polling again
+                        await Task.Delay(m_communicator.pollRateMilliSeconds, token); 
                     }
                 }
-
+                
             }
             catch (TaskCanceledException)
             {
