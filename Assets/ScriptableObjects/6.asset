@@ -14,14 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Persons
-  missionDescription: Find all id, first name and last name
+  missionDescription: Find all persons that mentioned in the testimonies
   unlocksTable: 0
   tableToUnlock: 
   requiredTable: Persons
   requiredColumns:
-  - first_name
-  - last_name
-  - person_id
+  - age
+  - shirt_color
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

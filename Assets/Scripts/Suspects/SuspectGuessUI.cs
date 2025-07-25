@@ -40,27 +40,30 @@ public class SuspectGuessUI : MonoBehaviour
         popup.Close();
     }
 
-    private void PopulateSuspects()
-    {
-        List<SuspectData> suspects = SuspectsManager.Instance.Suspects;
+private void PopulateSuspects()
+{
+    List<SuspectData> suspects = SuspectsManager.Instance.Suspects;
 
-        dataGridDisplayer.DisplayGrid<SuspectData>(
-            new List<string> { "ID", "Full Name" },
-            new List<float> { 60f, 150f },
-            suspects,
-            s => new List<string>
-            {
-                    s.Id,
-                    s.FullName,
-                // string.IsNullOrEmpty(s.Description) ? "—" : s.Description
-            },
-            new List<IDataGridAction<SuspectData>>
-            {
-                    new GuessSuspectAction(),
-                    new RemoveSuspectAction()
-            }
-        );
-    }
+    List<string> columnNames = new() { "person_id", "portrait", "name" };
+    List<float> columnWidths = new() { 100f, 60f, 100f };
+
+    dataGridDisplayer.DisplayGrid<SuspectData>(
+        columnNames,
+        columnWidths,
+        suspects,
+        s =>
+        {
+            // "portrait" and "name" are handled separately in DataGridDisplayer
+            return new List<string> { s.Id };
+        },
+        new List<IDataGridAction<SuspectData>>
+        {
+            new GuessSuspectAction(),
+            new RemoveSuspectAction()
+        },
+        injectPortraitAndName: true // 💡 tells the displayer to render them like ResultsUI
+    );
+}
 
     private void HandleGuessResult(bool correct)
     {

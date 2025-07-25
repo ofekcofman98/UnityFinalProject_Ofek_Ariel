@@ -110,42 +110,91 @@ else
             GameObject row = Instantiate(rowPrefab, resultsContainer);
             List<string> cellValues = rowExtractor(item);
 
-// Go through columnNames to keep correct visual + data order
-for (int i = 0; i < columnNames.Count; i++)
-{
-    string col = columnNames[i];
-
-    if (col == "portrait")
-    {
-        if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
-        {
-            string personId = personIdToken.ToString();
-            var person = PersonDataManager.Instance.GetById(personId);
-            if (person != null)
+            // Go through columnNames to keep correct visual + data order
+            for (int i = 0; i < columnNames.Count; i++)
             {
-                CreatePortraitCell(row.transform, person.portrait, 60f);
-                continue;
-            }
-        }
-        CreateTextCell(row.transform, "❌", 60f); // fallback
-    }
-    else if (col == "name")
+                string col = columnNames[i];
+
+                // if (col == "portrait")
+                // {
+                //     if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
+                //     {
+                //         string personId = personIdToken.ToString();
+                //         var person = PersonDataManager.Instance.GetById(personId);
+                //         if (person != null)
+                //         {
+                //             CreatePortraitCell(row.transform, person.portrait, 60f);
+                //             continue;
+                //         }
+                //     }
+                //     CreateTextCell(row.transform, "❌", 60f); // fallback
+                // }
+                // else if (col == "name")
+                // {
+                //     if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
+                //     {
+                //         CreateTextCell(row.transform, nameToken.ToString(), 100f);
+                //     }
+                //     else
+                //     {
+                //         CreateTextCell(row.transform, "—", 100f);
+                //     }
+                // }
+if (col == "portrait" && injectPortraitAndName)
+{
+    string personId = null;
+
+    if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
+        personId = personIdToken.ToString();
+    else if (item is SuspectData suspect)
+        personId = suspect.Id;
+
+    if (!string.IsNullOrEmpty(personId))
     {
-        if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
+        var person = PersonDataManager.Instance.GetById(personId);
+        if (person != null)
         {
-            CreateTextCell(row.transform, nameToken.ToString(), 100f);
-        }
-        else
-        {
-            CreateTextCell(row.transform, "—", 100f);
+            CreatePortraitCell(row.transform, person.portrait, 60f);
+            continue;
         }
     }
-    else
-    {
-        string val = (item as JObject)?[col]?.ToString() ?? "—";
-        CreateTextCell(row.transform, val, maxWidths[i]);
-    }
+
+    CreateTextCell(row.transform, "❌", 60f);
 }
+else if (col == "name" && injectPortraitAndName)
+{
+    string name = null;
+
+    if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
+    {
+        name = nameToken.ToString();
+    }
+    else if (item is SuspectData suspect)
+    {
+        // 🔥 FIX: Get actual name from PersonDataManager!
+        var person = PersonDataManager.Instance.GetById(suspect.Id);
+        name = person?.name;
+    }
+
+    CreateTextCell(row.transform, string.IsNullOrEmpty(name) ? "—" : name, 100f);
+}
+else
+{
+    string val = "—";
+
+    if (item is JObject jRow && jRow.TryGetValue(col, out var token))
+        val = token.ToString();
+    else if (item is SuspectData suspect)
+    {
+        if (col == "person_id") val = suspect.Id;
+        else if (col == "first_name") val = suspect.FirstName;
+        else if (col == "last_name") val = suspect.LastName;
+        else if (col == "description") val = suspect.Description;
+    }
+
+    CreateTextCell(row.transform, val, maxWidths[i]);
+}
+            }
 
 
             // for (int i = 0; i < cellValues.Count; i++)
