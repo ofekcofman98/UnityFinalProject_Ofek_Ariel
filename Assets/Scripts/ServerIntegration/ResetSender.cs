@@ -15,13 +15,9 @@ namespace Assets.Scripts.ServerIntegration
     {
         private ServerCommunicator m_communicator;
 
-        //private void Awake()
-        //{
-        //    m_communicator = new ServerCommunicator("/send-reset");
-        //}
         public ResetSender()
         {
-            m_communicator = new ServerCommunicator("/send-reset");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendReset);
         }
 
         public void SendResetToPhone()

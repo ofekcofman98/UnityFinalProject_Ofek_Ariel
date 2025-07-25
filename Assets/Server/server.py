@@ -182,6 +182,44 @@ def get_sqlmode():
         return jsonify({'message': 'changing SQLmode to False', 'sqlmode': False}), 201
 
 
+@app.route('/send-gameprogress', methods=['POST'])
+def store_object():
+    data = request.get_json()
+    if not data or 'key' not in data or 'game' not in data:
+        return jsonify({'error': 'Expected JSON with "key" and "game"'}), 400
+
+    key = data['key']
+    game = data['game']
+    filename = f"saved games/{key}.json"
+
+    try:
+        blob = bucket.blob(filename)
+        blob.upload_from_string(json.dumps(game), content_type='application/json')
+        return jsonify({'message': f"Game stored with key: {key}"}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/get-gameprogress', methods=['POST'])
+def get_object_post():
+    data = request.get_json()
+    if not data or 'key' not in data:
+        return jsonify({'error': 'Expected JSON with "key"'}), 400
+
+    key = data['key']
+    filename = f"saved games/{key}.json"
+
+    try:
+        blob = bucket.blob(filename)
+        if not blob.exists():
+            return jsonify({'error': f"No saved game object found for key: {key}"}), 404
+
+        content = blob.download_as_text()
+        obj = json.loads(content)
+        return jsonify({'key': key, 'game': obj}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # ==== SERVER RESET ====
 @app.route('/server-reset', methods=['POST'])
 def server_reset():

@@ -32,6 +32,11 @@ public class MissionsManager : Singleton<MissionsManager>
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
             GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
             SQLmodeSender.Instance.SendSQLmodeToPhone();
+            if (currentMissionIndex == 4)
+            {
+                GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
+                GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
+            }
 
         }
         else

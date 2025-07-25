@@ -18,7 +18,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public ResetListener()
         {
-            m_communicator = new ServerCommunicator("/get-reset");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetReset);
         }
      
         public void StartListening()

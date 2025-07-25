@@ -18,7 +18,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public SQLmodeListener()
         {
-            m_communicator = new ServerCommunicator("/get-sqlmode");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetSQLMode);
         }
 
         public void StartListening()

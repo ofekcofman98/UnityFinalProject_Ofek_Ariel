@@ -18,7 +18,7 @@ namespace Assets.Scripts.ServerIntegration
         private CancellationTokenSource _cts;
         public StateSender()
         {
-            m_communicator = new ServerCommunicator("/send-state");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendState);
         }
 
         public void UpdatePhone()

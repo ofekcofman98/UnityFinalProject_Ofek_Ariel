@@ -18,7 +18,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public StateListener()
         {
-            m_communicator = new ServerCommunicator("/get-state");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetState);
         }
 
         public void StartListening()

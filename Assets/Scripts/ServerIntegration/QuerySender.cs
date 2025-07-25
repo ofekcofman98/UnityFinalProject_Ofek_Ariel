@@ -18,7 +18,7 @@ public class QuerySender : MonoBehaviour
 
     private void Awake()
     {
-        m_communicator = new ServerCommunicator("/send-query");
+        m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendQuery);
     }
     //public QuerySender()
     //{

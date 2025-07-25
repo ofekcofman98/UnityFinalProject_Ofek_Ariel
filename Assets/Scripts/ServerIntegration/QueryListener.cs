@@ -20,7 +20,7 @@ public class QueryListener : MonoBehaviour
 
     private void Awake()
     {
-        m_communicator = new ServerCommunicator("/get-query");
+        m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetQuery);
     }
     //public QueryListener()
     //{

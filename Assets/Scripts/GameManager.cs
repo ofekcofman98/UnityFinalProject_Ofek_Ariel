@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
-    public bool SqlMode {get; set;}
+    public bool SqlMode {get; set;} 
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject mobileCanvas;
     [SerializeField] private GameObject mobileScreensaverCanvas;
@@ -32,7 +32,6 @@ public class GameManager : Singleton<GameManager>
     public QuerySender QuerySender => querySender;
 
     [SerializeField] private QueryListener queryReceiver;
-    // [SerializeField] private CanvasSwitcher canvasSwitcher;
 
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionsManager missionManager; 
@@ -75,10 +74,10 @@ public class GameManager : Singleton<GameManager>
             missionManager.OnMissionValidated += isCorrect =>
             {
                 OnQueryIsCorrect?.Invoke(isCorrect);
-    if (isCorrect)
-    {
-        QuerySender.MarkQueryAsSent(); // ✅ only mark as sent if the query is correct
-    }
+                if (isCorrect)
+                {
+                    QuerySender.MarkQueryAsSent(); // ✅ only mark as sent if the query is correct
+                }
             };
 
         }

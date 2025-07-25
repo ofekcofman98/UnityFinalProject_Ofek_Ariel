@@ -17,7 +17,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public SQLmodeSender()
         {
-            m_communicator = new ServerCommunicator("/send-sqlmode");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendSQLMode);
         }
 
         public void SendSQLmodeToPhone()
@@ -58,6 +58,7 @@ namespace Assets.Scripts.ServerIntegration
                     else
                     {
                         Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
+                        Debug.LogError($"❌ url : {m_communicator.ServerUrl}");
                         Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
                     }
                 };
