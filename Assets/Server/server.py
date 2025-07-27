@@ -216,7 +216,7 @@ def get_object_post():
 
         content = blob.download_as_text()
         obj = json.loads(content)
-        return jsonify({'key': key, 'game': obj}), 200
+        return jsonify({'game': obj}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

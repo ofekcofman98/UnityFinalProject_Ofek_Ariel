@@ -48,8 +48,9 @@ public class PlatformUIManager : MonoBehaviour
         ResetListener.Instance.StartListening();
         Debug.Log("🖥 Running on Mobile — after ResetListener listening and before SQLModeListener");
         SQLmodeListener.Instance.StartListening();
+        DeviceKeyManager.GetOrCreateDeviceKey();
         Debug.Log("🖥 Running on Mobile — after SQLmodeListener listening and before ResetGame");
-        GameManager.Instance.ResetGame(); // 
+        GameManager.Instance.ResetGame();
     }
 
     private void DisableWorldInteraction()

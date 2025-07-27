@@ -22,6 +22,7 @@ namespace Assets.Scripts.ServerIntegration
         public GameProgressSender()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendGameProgress);
+            m_gameKey = DeviceKeyManager.GetOrCreateDeviceKey();
         }
 
 
@@ -66,5 +67,74 @@ namespace Assets.Scripts.ServerIntegration
                 Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
             }
         }
+
+        public GameProgressContainer GetSavedGameFromServer()
+        {
+
+            GameProgressContainer result = new GameProgressContainer(GameManager.Instance.SqlMode, GameManager.Instance.missionManager);
+            var payload = new Dictionary<string, string>
+                 {
+                    { "key" , m_gameKey }
+                 };
+
+            string jsonPayload = JsonConvert.SerializeObject(payload);
+            Debug.Log($"📤 JSON Payload: {jsonPayload}");
+
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetGameProgress);
+            var encoding = new System.Text.UTF8Encoding();
+            byte[] bodyRaw = encoding.GetBytes(jsonPayload);
+
+            UnityWebRequest request = new UnityWebRequest(m_communicator.ServerUrl, "POST")
+            {
+                uploadHandler = new UploadHandlerRaw(bodyRaw),
+                downloadHandler = new DownloadHandlerBuffer(),
+                method = UnityWebRequest.kHttpVerbPOST
+            };
+
+            request.disposeUploadHandlerOnDispose = true;
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Content-Length", bodyRaw.Length.ToString());
+
+            request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                string receivedJson = request.downloadHandler.text;
+
+                try
+                {
+                    var settings = new JsonSerializerSettings();
+                    settings.Converters.Add(new OperatorConverter());
+
+                    result = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
+
+                    if (result != null && !string.IsNullOrWhiteSpace(result.ToString()))
+                    {
+                        Debug.Log($"✅ Game Object received : {result.ToString()}");
+
+                        //receivedContainer.PostDeserialize();
+                        //GameManager.Instance.SaveQuery(receivedContainer);
+                        //GameManager.Instance.ExecuteLocally(receivedContainer);
+
+                    }
+                    else
+                    {
+                        Debug.Log("⏳ Received container object is empty.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ an error has occured : {ex.Message}");
+                }
+            }
+            else
+            {
+                Debug.Log("⏳ Received container object is empty.");
+            }
+
+
+            return result;
+        }
+
     }
 }

@@ -37,8 +37,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
     // [SerializeField] public PlatformUIManager platformUIManager;
-[SerializeField] private ResultsUI resultsUI;
-
+    [SerializeField] private ResultsUI resultsUI;
+    public string UniqueMobileKey { get; private set; }
 
     public event Action<bool> OnQueryIsCorrect;
 
@@ -86,6 +86,8 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
+        Application.targetFrameRate = 60;
+        UniqueMobileKey = DeviceKeyManager.GetOrCreateDeviceKey();
         MissionUIManager.Init(missionManager);       
         ResetSender.Instance.SendResetToPhone();
         
