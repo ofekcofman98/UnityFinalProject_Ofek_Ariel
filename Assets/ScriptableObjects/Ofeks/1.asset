@@ -17,4 +17,5 @@ MonoBehaviour:
   missionDescription: 
   unlocksTable: 1
   tableToUnlock: Persons
+  isTutorial: 1
   requiredObjectId: computer01

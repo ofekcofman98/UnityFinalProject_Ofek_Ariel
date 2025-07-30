@@ -13,16 +13,17 @@ MonoBehaviour:
   m_Name: 3
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Persons
-  missionDescription: ndsjksfdn
+  missionTitle: Click on SQL mode
+  missionDescription: 'Drag the buttons to
+
+    the upper panel'
   unlocksTable: 0
   tableToUnlock: Persons
+  isTutorial: 1
   requiredTable: Persons
   requiredColumns:
   - first_name
   - last_name
-  - age
-  - shirt_color
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

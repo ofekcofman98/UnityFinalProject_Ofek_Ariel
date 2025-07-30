@@ -17,5 +17,6 @@ MonoBehaviour:
   missionDescription: Hello player, and welcome to SQLDetective!
   unlocksTable: 0
   tableToUnlock: 
+  isTutorial: 1
   popupText: 
   popupImage: {fileID: 0}

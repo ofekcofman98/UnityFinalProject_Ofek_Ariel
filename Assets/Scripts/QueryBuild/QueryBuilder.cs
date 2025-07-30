@@ -547,5 +547,4 @@ uiRenderer.ClearClauseSections(new[] { selectSection, fromSection, whereSection 
         // foreach (Transform child in whereSection)
         //     Debug.Log("🟡 Leftover in WHERE: " + child.name);
     }
-
 }

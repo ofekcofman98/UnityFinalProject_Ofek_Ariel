@@ -17,4 +17,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3701c9337b3af1843b29d1c1b05bcdce, type: 2}
   - {fileID: 11400000, guid: b9cb34d8dc20eb24a848e40087915f06, type: 2}
   - {fileID: 11400000, guid: a8fb5ff83c26a7a479b1eff4b5eb4140, type: 2}
+  - {fileID: 11400000, guid: 06d2ce8d9c560e84d8d90c8ea5821a7b, type: 2}
+  - {fileID: 11400000, guid: 7e66a293dff09bd49842bb9ff02c16f3, type: 2}
   FinalAnswerPersonId: 008

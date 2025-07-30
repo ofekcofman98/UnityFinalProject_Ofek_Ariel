@@ -17,5 +17,6 @@ MonoBehaviour:
   missionDescription: you unlocked the computer!!!
   unlocksTable: 0
   tableToUnlock: 
+  isTutorial: 1
   popupText: 
   popupImage: {fileID: 0}

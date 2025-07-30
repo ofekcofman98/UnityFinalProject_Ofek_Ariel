@@ -175,7 +175,7 @@ public class MissionsManager : Singleton<MissionsManager>
     public IEnumerator DelayedAdvance()
     {
         Debug.Log("🟡 You unlocked a new table!");
-        GameManager.Instance.QuerySender?.ResetQuerySendFlag();  
+        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         //yield return new WaitForSeconds(2.0f);
 
         checkUnlocking();
@@ -196,6 +196,7 @@ public class MissionsManager : Singleton<MissionsManager>
         GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.queryBuilder.BuildQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
+        HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
 
     public IEnumerator ResetMissions()

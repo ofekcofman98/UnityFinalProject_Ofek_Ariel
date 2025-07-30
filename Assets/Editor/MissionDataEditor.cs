@@ -42,6 +42,7 @@ public class MissionDataEditor : Editor
         // Shared fields
         baseMission.missionTitle = EditorGUILayout.TextField("Mission Title", baseMission.missionTitle);
         baseMission.missionDescription = EditorGUILayout.TextArea(baseMission.missionDescription, GUILayout.MinHeight(60));
+        baseMission.isTutorial = EditorGUILayout.Toggle("Is Tutorial?", baseMission.isTutorial);
 
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("Table Unlock Settings", EditorStyles.boldLabel);

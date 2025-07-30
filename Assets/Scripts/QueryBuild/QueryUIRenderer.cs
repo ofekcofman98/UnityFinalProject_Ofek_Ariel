@@ -151,6 +151,8 @@ public class QueryUIRenderer : MonoBehaviour
                     Debug.LogError($"Missing label on button for: {labelText}");
                 }
 
+        CheckForHighlight(item, button);
+
                 // ✅ Setup draggable
                 var draggableItem = button.GetComponent<DraggableItem>();
                 if (draggableItem == null)
@@ -396,6 +398,40 @@ public class QueryUIRenderer : MonoBehaviour
         }
     }
 
+    private void CheckForHighlight<T>(T item, Button button)
+    {
+        SQLMissionData currentMission = GameManager.Instance.missionManager.CurrentMission as SQLMissionData;
+        if (currentMission == null || !currentMission.isTutorial)
+        {
+            return;
+        }
+        Debug.Log("[CheckForHighlight] currentMission != null && currentMission.isTutorial");
+
+        if (typeof(T) == typeof(Column))
+        {
+            Column col = item as Column;
+            if (col != null && currentMission.requiredColumns.Contains(col.Name))
+            {
+                Debug.Log("[CheckForHighlight] its col!");
+                if (button.TryGetComponent<UIHighlightable>(out var hl))
+                {
+                    HighlightManager.Instance.RegisterHighlight(hl);
+                }
+            }
+        }
+        else if (typeof(T) == typeof(Table))
+        {
+            Table table = item as Table;
+            if (table != null && table.Name == currentMission.requiredTable)
+            {
+                Debug.Log("[CheckForHighlight] its table!");
+                if (button.TryGetComponent<UIHighlightable>(out var hl))
+                {
+                    HighlightManager.Instance?.RegisterHighlight(hl);
+                }
+            }
+        }
+    }
 
     private void ExecuteQuery()
     {
