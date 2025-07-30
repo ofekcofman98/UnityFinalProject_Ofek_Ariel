@@ -73,13 +73,13 @@ namespace Assets.Scripts.ServerIntegration
                             {
                                 Debug.Log("✅ 200 OK received, entering sql mode...✅");
                                 GameManager.Instance.SqlMode = true;
-                                GameManager.Instance.SwitchMobileCanvas(true);
+                                // GameManager.Instance.SwitchMobileCanvas(true);
                             }
                             else if((int)request.responseCode == 201 && GameManager.Instance.SqlMode) // Go out of sql mode
                             {
                                 Debug.Log("✅ 201 OK received, leaving sql mode...✅");
                                 GameManager.Instance.SqlMode = false;
-                                GameManager.Instance.SwitchMobileCanvas(false);
+                                // GameManager.Instance.SwitchMobileCanvas(false);
                             }                          
                             else if((int)request.responseCode != 200 && (int)request.responseCode != 201)
                             {

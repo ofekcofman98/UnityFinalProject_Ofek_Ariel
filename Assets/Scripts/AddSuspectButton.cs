@@ -15,7 +15,7 @@ public class AddSuspectButton : MonoBehaviour
 
         button.onClick.AddListener(() =>
         {
-            var suspect = new SuspectData { Id = id, Name = name };
+            var suspect = new PersonData { id = id, first_name = name };
             SuspectsManager.Instance.AddSuspect(suspect);
             Debug.Log($"🕵️ Added suspect: {name} ({id})");
         });

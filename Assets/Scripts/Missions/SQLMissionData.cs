@@ -29,5 +29,9 @@ public class SQLMissionData : MissionData
         return _validator.ValidateQuery(_query, _result, this);
     }
 
+    public override void ShowUI(MissionUIManager uiManager)
+    {
+        uiManager.DisplayStandardMission(this);
+    }
 
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuManager : MonoBehaviour
+public class MenuManager : Singleton<MenuManager>
 {
     [SerializeField] private GameObject menuUI;
     // [SerializeField] private GameObject gameUI;
@@ -12,17 +12,7 @@ public class MenuManager : MonoBehaviour
     // [SerializeField] private GameObject losePanelUI;
 
     private bool isPaused = false;
-
-    void Awake()
-    {
-        menuUI.SetActive(true);
-    }
     
-    private void Start()
-    {
-        ShowMainMenu();
-    }
-
     private void Update()
     {
         // Handle pause input (optional)
@@ -37,19 +27,21 @@ public class MenuManager : MonoBehaviour
 
     public void ShowMainMenu()
     {
-        Time.timeScale = 0f;
         menuUI.SetActive(true);
         // gameUI.SetActive(false);
         pauseMenuUI.SetActive(false);
         // winPanelUI.SetActive(false);
         // losePanelUI.SetActive(false);
     }
-
-    public void StartGame()
+    
+    public void HideMainMenu()
     {
-        Time.timeScale = 1f;
         menuUI.SetActive(false);
-        // gameUI.SetActive(true);
+    }
+
+    public void OnStartButtonClicked()
+    {
+        GameManager.Instance.StartGameFromMenu(); // ✅ Delegate to GameManager
     }
 
     public void PauseGame()

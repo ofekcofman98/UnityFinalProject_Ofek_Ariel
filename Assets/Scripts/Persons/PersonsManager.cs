@@ -40,7 +40,8 @@ public class PersonDataManager : Singleton<PersonDataManager>
             PersonData person = new PersonData
             {
     id = obj["person_id"]?.ToString(),
-    name = obj["first_name"]?.ToString(), // 🟢 Constructed full name
+    first_name = obj["first_name"]?.ToString(),
+    last_name = obj["last_name"]?.ToString(),
     photo_url = obj["photo_url"]?.ToString(),
     prefab_id = obj["prefab_id"]?.ToString()
             };

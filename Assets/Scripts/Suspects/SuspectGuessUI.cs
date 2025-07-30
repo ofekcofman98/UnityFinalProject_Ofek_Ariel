@@ -42,27 +42,23 @@ public class SuspectGuessUI : MonoBehaviour
 
 private void PopulateSuspects()
 {
-    List<SuspectData> suspects = SuspectsManager.Instance.Suspects;
+    List<PersonData> suspects = SuspectsManager.Instance.Suspects;
 
     List<string> columnNames = new() { "person_id", "portrait", "name" };
     List<float> columnWidths = new() { 100f, 60f, 100f };
 
-    dataGridDisplayer.DisplayGrid<SuspectData>(
-        columnNames,
-        columnWidths,
-        suspects,
-        s =>
-        {
-            // "portrait" and "name" are handled separately in DataGridDisplayer
-            return new List<string> { s.Id };
-        },
-        new List<IDataGridAction<SuspectData>>
-        {
-            new GuessSuspectAction(),
-            new RemoveSuspectAction()
-        },
-        injectPortraitAndName: true // 💡 tells the displayer to render them like ResultsUI
-    );
+    dataGridDisplayer.DisplayGrid<PersonData>(
+    columnNames,
+    columnWidths,
+    suspects,
+    new PersonRowAdapter(),
+    new List<IDataGridAction<PersonData>>
+    {
+        new GuessSuspectAction(),
+        new RemoveSuspectAction()
+    }
+);
+
 }
 
     private void HandleGuessResult(bool correct)

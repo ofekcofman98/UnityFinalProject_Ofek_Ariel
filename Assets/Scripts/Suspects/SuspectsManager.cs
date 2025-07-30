@@ -12,11 +12,12 @@ public class SuspectsManager : Singleton<SuspectsManager>
     public event Action<int> OnLivesChanged;
     public event Action<bool> OnGuessResult;
     public event Action OnSuspectsChanged;
-    public List<SuspectData> Suspects = new();
+    // public List<SuspectData> Suspects = new();
+    public List<PersonData> Suspects = new();
     public string FinalAnswerSuspectId { get; private set; }
 
 
-    public void AddSuspect(SuspectData suspect)
+    public void AddSuspect(PersonData suspect)
     {
         if (!Suspects.Contains(suspect))
         {
@@ -30,6 +31,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
         }
     }
 
+//TODO AddSuspectFromRow(JObject row) → creates a PersonData and reuses PersonDataManager.GetById() if already loaded
+
+//TODO 💡 OR remove AddSuspectFromRow(JObject) altogether and use PersonDataManager.GetById() directly!
+
     public void AddSuspectFromRow(JObject row)
     {
         if (!row.TryGetValue("person_id", out var idToken)) return;
@@ -38,20 +43,20 @@ public class SuspectsManager : Singleton<SuspectsManager>
         if (string.IsNullOrEmpty(id)) return;
 
         // Check if already added
-        if (Suspects.Any(s => s.Id == id)) return;
+        if (Suspects.Any(s => s.id == id)) return;
 
         var firstName = row.TryGetValue("first_name", out var f) ? f?.ToString() : "";
         var lastName = row.TryGetValue("last_name", out var l) ? l?.ToString() : "";
         var pictureUrl = row.TryGetValue("profile_picture_url", out var p) ? p?.ToString() : null;
         var description = row.TryGetValue("description", out var d) ? d?.ToString() : null;
 
-        var suspect = new SuspectData
+        var suspect = new PersonData
         {
-            Id = id,
-            FirstName = firstName,
-            LastName = lastName,
+            id = id,
+            first_name = firstName,
+            last_name = lastName,
             // ProfilePictureUrl = pictureUrl,
-            Description = description
+            description = description
         };
 
         Suspects.Add(suspect);
@@ -59,11 +64,11 @@ public class SuspectsManager : Singleton<SuspectsManager>
     }
 
 
-    public void RemoveSuspect(SuspectData suspect)
+    public void RemoveSuspect(PersonData suspect)
     {
         if (Suspects.Remove(suspect))
         {
-            Debug.Log($"🗑️ Removed suspect: {suspect.FullName}");
+            Debug.Log($"🗑️ Removed suspect: {suspect.name}");
             OnSuspectsChanged?.Invoke();
         }
     }
@@ -135,14 +140,14 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
 }
 
-public class SuspectData
-{
-    public string Id;
-    public string FirstName;
-    public string LastName;
-    public string Name;
-    public string Description;
-    public string FullName => $"{FirstName} {LastName}".Trim();
+// public class SuspectData
+// {
+//     public string Id;
+//     public string FirstName;
+//     public string LastName;
+//     public string Name;
+//     public string Description;
+//     public string FullName => $"{FirstName} {LastName}".Trim();
 
-}
+// }
 

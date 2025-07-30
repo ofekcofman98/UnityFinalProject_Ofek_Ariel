@@ -13,6 +13,7 @@ namespace Assets.Scripts.ServerIntegration
     public class GameProgressContainer
     {
         [SerializeField] public bool SqlMode { get; set; }
+        [JsonIgnore] // ⛔️ prevents infinite loop during serialization
         [SerializeField] public MissionsManager missionManager;
 
         public GameProgressContainer(bool sqlMode, MissionsManager missionManager)

@@ -30,13 +30,13 @@ public class MissionsManager : Singleton<MissionsManager>
             StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
-            GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
-            SQLmodeSender.Instance.SendSQLmodeToPhone();
-            if (currentMissionIndex == 4)
-            {
-                GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
-                GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
-            }
+            // SQLmodeSender.Instance.SendSQLmodeToPhone();
+            // if (currentMissionIndex == 4)
+            // {
+            //     GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
+            //     GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
+            // }
+            
 
         }
         else
@@ -127,6 +127,9 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public void GoToNextMission()
     {
+        // if (CheckForTutorialMission())
+        //     return;
+
         if (currentMissionIndex < missionSequence.Missions.Count - 1)
         {
             currentMissionIndex++;
@@ -136,7 +139,24 @@ public class MissionsManager : Singleton<MissionsManager>
             Debug.Log("🏁 All missions completed! Game over.");
         }
         Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
+    }
 
+    private bool CheckForTutorialMission()
+    {
+        bool res = false;
+        if (CurrentMission is TutorialPopupMissionData tutorialMission)
+        {
+            GameManager.Instance.MissionUIManager.ShowTutorialPopup(
+                tutorialMission.popupText,
+                () =>
+                {
+                    MarkMissionAsCompleted();
+                    CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
+                });
+            res = true;
+        }
+
+        return res;
     }
 
     public int GetCurrentMissionNumber()
@@ -174,7 +194,7 @@ public class MissionsManager : Singleton<MissionsManager>
         Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
 
         GameManager.Instance.queryBuilder.ResetQuery();
-        GameManager.Instance.queryBuilder.BuildQuery(); 
+        GameManager.Instance.queryBuilder.BuildQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
     }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MissionUIManager : MonoBehaviour
@@ -16,18 +17,19 @@ public class MissionUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI PcMissionDescription;
 
     [SerializeField] private NewTablePopup newTablePopup;
+    [SerializeField] private TutorialPopupUI tutorialPopupUI;
 
 
 
-    private MissionsManager missionManager;
+    private MissionsManager missionManager; //TODO: missionManager is singleton !!! 
 
     private bool isQueryCorrect;
-    private string k_IsCorrectString => isQueryCorrect? "correct" : "incorrect";
-    private Color k_Color => isQueryCorrect? Color.green : Color.red;
-   
+    private string k_IsCorrectString => isQueryCorrect ? "correct" : "incorrect";
+    private Color k_Color => isQueryCorrect ? Color.green : Color.red;
+
     [SerializeField] public GameObject executeButton;
     [SerializeField] public GameObject clearButton;
-    
+
     public void Init(MissionsManager missionsManager)
     {
         this.missionManager = missionsManager;
@@ -44,6 +46,11 @@ public class MissionUIManager : MonoBehaviour
 
         MissionData mission = missionManager.CurrentMission;
 
+        missionManager.CurrentMission.ShowUI(this);
+    }
+
+    public void DisplayStandardMission(MissionData mission)
+    {
         MobileMissionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
         MobileMissionTitle.text = mission.missionTitle;
         MobileMissionDescription.text = mission.missionDescription;
@@ -93,4 +100,10 @@ public class MissionUIManager : MonoBehaviour
             newTablePopup.Open(table);
         }
     }
+    
+    public void ShowTutorialPopup(string message, Action onContinue)
+    {
+        tutorialPopupUI.Show(message, onContinue);
+    }
+        
 }

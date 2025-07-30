@@ -86,9 +86,9 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        MissionUIManager.Init(missionManager);       
+        MissionUIManager.Init(missionManager);    
         ResetSender.Instance.SendResetToPhone();
-        
+        ShowMainMenu();
 
         if (!Application.isMobilePlatform)
         {
@@ -115,80 +115,88 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void startGame()
+    public void StartGame()
     {
-
+        ShowMainMenu();
     }
 
-    public void SwitchMobileCanvas(bool i_sqlMode)
+    public void ShowMainMenu()
     {
-        if (Application.isMobilePlatform)
-        {
-            if (mobileCanvas != null)
-            {
-                mobileCanvas.SetActive(i_sqlMode);
-                Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
-            }
-
-            if (mobileScreensaverCanvas != null)
-            {
-                mobileScreensaverCanvas.SetActive(!i_sqlMode);
-                Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
-            }
-
-            if (pcGameCanvas != null)
-            {
-                pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
-            }
-
-            if (i_sqlMode && queryBuilder != null)
-            {
-                queryBuilder.ResetQuery();
-                queryBuilder.BuildQuery();
-            }
-        }
-
+        Time.timeScale = 0f;
+        MenuManager.Instance.ShowMainMenu();
     }
+
+    public void StartGameFromMenu()
+    {
+        Time.timeScale = 1f;
+        MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        StartMissions();
+    }
+
+    public void StartMissions()
+    {
+        MissionUIManager.ShowUI(); // This will handle popup or normal mission
+    }
+
+    // public void SwitchMobileCanvas(bool i_sqlMode)
+    // {
+    //     if (Application.isMobilePlatform)
+    //     {
+    //         if (mobileCanvas != null)
+    //         {
+    //             mobileCanvas.SetActive(i_sqlMode);
+    //             Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
+    //         }
+
+    //         if (mobileScreensaverCanvas != null)
+    //         {
+    //             mobileScreensaverCanvas.SetActive(!i_sqlMode);
+    //             Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
+    //         }
+
+    //         if (pcGameCanvas != null)
+    //         {
+    //             pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
+    //         }
+
+    //         if (i_sqlMode && queryBuilder != null)
+    //         {
+    //             queryBuilder.ResetQuery();
+    //             queryBuilder.BuildQuery();
+    //         }
+    //     }
+
+    // }
     public void SetSqlMode()
     {
-        bool newMode = !SqlMode;
+        SqlMode = !SqlMode;
 
-        SwitchMobileCanvas(newMode);
-        if(!Application.isMobilePlatform)
-        {
-            // PC: always show pcGameCanvas, hide both mobile canvases
-            if (pcGameCanvas != null)
-            {
-                pcGameCanvas.SetActive(true);
-            }
+        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+        // if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
+        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
-            if (mobileCanvas != null)
-            {
-                mobileCanvas.SetActive(false);
-            }
+        // Disable/Enable movement
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+        if (playerMovement != null) playerMovement.enabled = !SqlMode;
 
-            if (mobileScreensaverCanvas != null)
-            {
-                mobileScreensaverCanvas.SetActive(false);
-            }
-        }
+        // Disable/Enable camera look
+        MouseLook mouseLook = FindObjectOfType<MouseLook>();
+        if (mouseLook != null) mouseLook.enabled = !SqlMode;
 
-        SqlMode = newMode;
-
-        //// Enable/disable movement and camera on both platforms
-        //PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-        //if (playerMovement != null) playerMovement.enabled = !SqlMode;
-
-        //MouseLook mouseLook = FindObjectOfType<MouseLook>();
-        //if (mouseLook != null) mouseLook.enabled = !SqlMode;
-
-        //CharacterController characterController = FindObjectOfType<CharacterController>();
-        //if (characterController != null) characterController.enabled = !SqlMode;
+        // Optional: CharacterController
+        CharacterController characterController = FindObjectOfType<CharacterController>();
+        if (characterController != null) characterController.enabled = !SqlMode;
 
         Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+
+
+        if (Application.isMobilePlatform && SqlMode)
+        {
+            queryBuilder.ResetQuery();
+            queryBuilder.BuildQuery();
+        }
+
     }
-
-
 
 
 
@@ -346,7 +354,7 @@ public class GameManager : Singleton<GameManager>
     {
         Debug.Log("Inside ResetAction, before ResetGame");
         GameManager.Instance.SqlMode = false;
-        GameManager.Instance.SwitchMobileCanvas(SqlMode);
+        // GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
 

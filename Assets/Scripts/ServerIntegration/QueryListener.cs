@@ -61,7 +61,7 @@ public class QueryListener : MonoBehaviour
             while (true)
             {
 
-                Debug.Log("📡 Polling the server for new query...");
+                // Debug.Log("📡 Polling the server for new query...");
                 UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl);
 
                 yield return request.SendWebRequest();
@@ -89,7 +89,7 @@ public class QueryListener : MonoBehaviour
                         }
                         else
                         {
-                            Debug.Log("⏳ Received query object is empty or missing QueryString.");
+                            // Debug.Log("⏳ Received query object is empty or missing QueryString.");
                         }
                     }
                     catch (Exception ex)

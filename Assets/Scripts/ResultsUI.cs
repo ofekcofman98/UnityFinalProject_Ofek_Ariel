@@ -49,18 +49,8 @@ public void ShowResults(JArray rows, List<Column> columns, string tableName)
         columnNames,
         columnWidths,
         rowObjects,
-        row =>
-        {
-            var values = new List<string>();
-            foreach (string col in columnNames)
-            {
-                if (col == "portrait" || col == "name") continue; // handled visually
-                values.Add(row[col]?.ToString() ?? "—");
-            }
-            return values;
-        },
-        isPersonsTable ? new List<IDataGridAction<JObject>> { new AddSuspectAction() } : null,
-        isPersonsTable
+        new JObjectRowAdapter(columnNames),
+        isPersonsTable ? new List<IDataGridAction<JObject>> { new AddSuspectAction() } : null
     );
 
     Open();

@@ -19,4 +19,9 @@ public class InteractableMissionData : MissionData
         return _lastTriggeredId == requiredObjectId;
     }
 
+    public override void ShowUI(MissionUIManager uiManager)
+    {
+        uiManager.DisplayStandardMission(this);
+    }
+
 }

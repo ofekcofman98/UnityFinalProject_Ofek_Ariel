@@ -23,75 +23,60 @@ public class DataGridDisplayer : MonoBehaviour
         List<string> columnNames,
         List<float> columnWidths,
         List<T> data,
-        Func<T, List<string>> rowExtractor,
-        List<IDataGridAction<T>> actions = null,
-        bool injectPortraitAndName = false)
+        IDataGridRowAdapter<T> adapter,
+        List<IDataGridAction<T>> actions = null)
     {
         ClearResults();
 
-        if (data == null || data.Count == 0)
-        {
-            Debug.LogWarning("No data to display.");
+        if (!ValidateInputs(columnNames, columnWidths, data))
             return;
-        }
+        
+        float[] maxWidths = CalculateMaxWidths(columnNames, data, adapter, actions);
 
-        if (columnNames.Count != columnWidths.Count)
+        BuildHeaderRow(columnNames, maxWidths, actions);
+
+        foreach (T item in data)
         {
-            Debug.LogError("Column names and widths count mismatch.");
-            return;
+            BuildDataRow(item, columnNames, maxWidths, adapter, actions);
         }
-
-int numCols = columnNames.Count + (actions?.Count ?? 0);
-float[] maxWidths = new float[numCols];
-
-// 🔹 Step 1: Compute max width per column using `columnNames` directly
-for (int i = 0; i < columnNames.Count; i++)
-{
-    string col = columnNames[i];
-if (col == "portrait")
-{
-    maxWidths[i] = 60f; // 🔥 Force match with RawImage
-}
-else
-{
-    maxWidths[i] = GetTextWidth(col);
-}
-
-    foreach (T item in data)
-    {
-        string val = "—";
-        if (col == "portrait")
-        {
-            val = ""; // no text, but reserve space
-        }
-        else if (col == "name")
-        {
-            if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
-                val = nameToken.ToString();
-        }
-        else if (item is JObject jRow && jRow.TryGetValue(col, out var token))
-        {
-            val = token.ToString();
-        }
-
-        float textWidth = GetTextWidth(val);
-        maxWidths[i] = Mathf.Max(maxWidths[i], textWidth);
     }
-}
 
-        if (actions != null)
-        {
-            for (int i = 0; i < actions.Count; i++)
-            {
-                maxWidths[columnNames.Count + i] = Mathf.Max(100f, GetTextWidth(actions[i].Label));
-            }
-        }
+    private float[] CalculateMaxWidths<T>(
+        List<string> columnNames,
+        List<T> data,
+        IDataGridRowAdapter<T> adapter,
+        List<IDataGridAction<T>> actions)
+    {
+        int numCols = columnNames.Count + (actions?.Count ?? 0);
+        float[] maxWidths = new float[numCols];
 
-        // 🔷 Step 2: Header Row
-        GameObject headerRow = Instantiate(rowPrefab, resultsContainer);
         for (int i = 0; i < columnNames.Count; i++)
         {
-            CreateTextCell(headerRow.transform, columnNames[i], maxWidths[i]);
+            string col = columnNames[i];
+            if (col == "portrait")
+            {
+                maxWidths[i] = 60f;
+            }
+            else
+            {
+                maxWidths[i] = GetTextWidth(col);
+            }
+
+            foreach (T item in data)
+            {
+                string val = "—";
+
+                if (col == "portrait") val = "";
+                else if (col == "name") val = adapter.GetDisplayName(item);
+                else
+                {
+                    var values = adapter.GetColumnValues(item);
+                    if (i < values.Count) val = values[i];
+                }
+
+                float textWidth = GetTextWidth(val);
+                maxWidths[i] = Mathf.Max(maxWidths[i], textWidth);
+            }
         }
 
         if (actions != null)
@@ -99,163 +84,114 @@ else
             for (int i = 0; i < actions.Count; i++)
             {
                 int index = columnNames.Count + i;
-                CreateTextCell(headerRow.transform, actions[i].Label, maxWidths[index]);
+                maxWidths[index] = Mathf.Max(100f, GetTextWidth(actions[i].Label));
             }
-
         }
 
-        // 🔷 Step 3: Data Rows
-        foreach (T item in data)
+        return maxWidths;
+    }
+
+    private void BuildHeaderRow<T>(
+        List<string> columnNames,
+        float[] maxWidths,
+        List<IDataGridAction<T>> actions) // Generic constraint workaround
+    {
+        GameObject headerRow = Instantiate(rowPrefab, resultsContainer);
+
+        for (int i = 0; i < columnNames.Count; i++)
         {
-            GameObject row = Instantiate(rowPrefab, resultsContainer);
-            List<string> cellValues = rowExtractor(item);
+            new TextCell(columnNames[i], cellPrefab).Create(headerRow.transform, maxWidths[i]);
+        }
 
-            // Go through columnNames to keep correct visual + data order
-            for (int i = 0; i < columnNames.Count; i++)
-            {
-                string col = columnNames[i];
-
-                // if (col == "portrait")
-                // {
-                //     if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
-                //     {
-                //         string personId = personIdToken.ToString();
-                //         var person = PersonDataManager.Instance.GetById(personId);
-                //         if (person != null)
-                //         {
-                //             CreatePortraitCell(row.transform, person.portrait, 60f);
-                //             continue;
-                //         }
-                //     }
-                //     CreateTextCell(row.transform, "❌", 60f); // fallback
-                // }
-                // else if (col == "name")
-                // {
-                //     if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
-                //     {
-                //         CreateTextCell(row.transform, nameToken.ToString(), 100f);
-                //     }
-                //     else
-                //     {
-                //         CreateTextCell(row.transform, "—", 100f);
-                //     }
-                // }
-if (col == "portrait" && injectPortraitAndName)
-{
-    string personId = null;
-
-    if (item is JObject jRow && jRow.TryGetValue("__personId", out var personIdToken))
-        personId = personIdToken.ToString();
-    else if (item is SuspectData suspect)
-        personId = suspect.Id;
-
-    if (!string.IsNullOrEmpty(personId))
-    {
-        var person = PersonDataManager.Instance.GetById(personId);
-        if (person != null)
+        if (actions != null)
         {
-            CreatePortraitCell(row.transform, person.portrait, 60f);
-            continue;
-        }
-    }
-
-    CreateTextCell(row.transform, "❌", 60f);
-}
-else if (col == "name" && injectPortraitAndName)
-{
-    string name = null;
-
-    if (item is JObject jRow && jRow.TryGetValue("__name", out var nameToken))
-    {
-        name = nameToken.ToString();
-    }
-    else if (item is SuspectData suspect)
-    {
-        // 🔥 FIX: Get actual name from PersonDataManager!
-        var person = PersonDataManager.Instance.GetById(suspect.Id);
-        name = person?.name;
-    }
-
-    CreateTextCell(row.transform, string.IsNullOrEmpty(name) ? "—" : name, 100f);
-}
-else
-{
-    string val = "—";
-
-    if (item is JObject jRow && jRow.TryGetValue(col, out var token))
-        val = token.ToString();
-    else if (item is SuspectData suspect)
-    {
-        if (col == "person_id") val = suspect.Id;
-        else if (col == "first_name") val = suspect.FirstName;
-        else if (col == "last_name") val = suspect.LastName;
-        else if (col == "description") val = suspect.Description;
-    }
-
-    CreateTextCell(row.transform, val, maxWidths[i]);
-}
-            }
-
-
-            // for (int i = 0; i < cellValues.Count; i++)
-            // {
-            //     CreateTextCell(row.transform, cellValues[i], maxWidths[i]);
-            // }
-
-            if (actions != null)
+            for (int i = 0; i < actions.Count; i++)
             {
-                for (int i = 0; i < actions.Count; i++)
-                {
-                    int colIndex = columnNames.Count + i;
-                    GameObject buttonGO = Instantiate(actionButtonPrefab, row.transform);
-
-                    LayoutElement layout = buttonGO.GetComponent<LayoutElement>();
-                    if (layout != null)
-                    {
-                        // layout.preferredWidth = maxWidths[colIndex];
-                        // layout.minWidth = maxWidths[colIndex];
-                        // layout.flexibleWidth = 0f;
-
-                        layout.preferredWidth = maxWidths[colIndex];
-layout.minWidth = maxWidths[colIndex];
-layout.flexibleWidth = 0f;
-layout.preferredHeight = 80f; // or portrait height
-layout.minHeight = 80f;
-
-                    }
-
-                    var button = buttonGO.GetComponent<Button>();
-                    var label = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
-                    if (button == null || label == null)
-                    {
-                        Debug.LogError("🚨 Button or label missing on actionButtonPrefab.");
-                        continue;
-                    }
-
-                    label.text = actions[i].Label;
-                    label.alignment = TextAlignmentOptions.Center;
-
-                    int actionIndex = i;
-                    button.onClick.AddListener(() => actions[actionIndex].Execute(item));
-                }
+                int index = columnNames.Count + i;
+                new TextCell(actions[i].Label, cellPrefab).Create(headerRow.transform, maxWidths[index]);
             }
         }
-
-        Debug.Log($"✅ Displayed {data.Count} rows.");
     }
 
-    private void CreateTextCell(Transform parent, string text, float width)
+    private bool ValidateInputs<T>(List<string> columnNames, List<float> columnWidths, List<T> data)
     {
-        GameObject cell = Instantiate(cellPrefab, parent);
-        TextMeshProUGUI tmp = cell.GetComponentInChildren<TextMeshProUGUI>();
-        tmp.text = text;
-        tmp.alignment = TextAlignmentOptions.Center;
+        bool res = true;
+        if (data == null || data.Count == 0)
+        {
+            Debug.LogWarning("No data to display.");
+            res = false;
+        }
 
-        LayoutElement layout = cell.GetComponent<LayoutElement>();
-        layout.preferredWidth = width;
-        layout.minWidth = width;
-        layout.flexibleWidth = 0f;
+        if (columnNames.Count != columnWidths.Count)
+        {
+            Debug.LogError("Column names and widths count mismatch.");
+            res = false;
+        }
 
+        return res;
+    }
+
+    private void BuildDataRow<T>(
+        T item,
+        List<string> columnNames,
+        float[] maxWidths,
+        IDataGridRowAdapter<T> adapter,
+        List<IDataGridAction<T>> actions)
+    {
+        GameObject row = Instantiate(rowPrefab, resultsContainer);
+        List<string> cellValues = adapter.GetColumnValues(item);
+
+        for (int i = 0; i < columnNames.Count; i++)
+        {
+            string col = columnNames[i];
+            string value = "—";
+
+            if (col == "name")
+            {
+                value = adapter.GetDisplayName(item);
+            }
+            else if (col != "portrait")
+            {
+                var values = adapter.GetColumnValues(item);
+                if (i < values.Count)
+                    value = values[i];
+            }
+
+            Texture2D portrait = (col == "portrait") ? adapter.GetPortrait(item) : null;
+
+            IDataGridCell cell = CreateCell(col, value, portrait);
+            cell.Create(row.transform, maxWidths[i]);
+        }
+
+        if (actions != null)
+        {
+            for (int i = 0; i < actions.Count; i++)
+            {
+                int colIndex = columnNames.Count + i;
+                GameObject buttonGO = Instantiate(actionButtonPrefab, row.transform);
+                LayoutElement layout = buttonGO.GetComponent<LayoutElement>();
+                layout.preferredWidth = maxWidths[colIndex];
+                layout.minWidth = maxWidths[colIndex];
+                layout.flexibleWidth = 0f;
+
+                var button = buttonGO.GetComponent<Button>();
+                var label = buttonGO.GetComponentInChildren<TextMeshProUGUI>();
+                label.text = actions[i].Label;
+                label.alignment = TextAlignmentOptions.Center;
+
+                int actionIndex = i;
+                button.onClick.AddListener(() => actions[actionIndex].Execute(item));
+            }
+        }
+    }
+
+
+    private IDataGridCell CreateCell(string col, string value, Texture2D portrait)
+    {
+        if (col == "portrait")
+            return new PortraitCell(portrait, cellPrefab);
+
+        return new TextCell(value, cellPrefab);
     }
 
     private float GetTextWidth(string text)
@@ -281,38 +217,4 @@ layout.minHeight = 80f;
             }
         }
     }
-
-    private void CreatePortraitCell(Transform parent, Texture2D portrait, float width)
-    {
-        GameObject cell = Instantiate(cellPrefab, parent);
-
-        // Disable TextLabel
-        var textObj = cell.transform.Find("TextLabel")?.GetComponent<TextMeshProUGUI>();
-        if (textObj != null) textObj.gameObject.SetActive(false);
-
-        // Enable PortraitImage
-        var imageObj = cell.transform.Find("PortraitImage")?.GetComponent<RawImage>();
-        if (imageObj == null)
-        {
-            Debug.LogError("❌ Cell prefab is missing a child named 'PortraitImage' with a RawImage component.");
-            return;
-        }
-
-        imageObj.gameObject.SetActive(true);
-        imageObj.texture = portrait;
-        imageObj.rectTransform.sizeDelta = new Vector2(width, width);
-
-
-        LayoutElement layout = cell.GetComponent<LayoutElement>();
-        if (layout != null)
-        {
-            layout.preferredWidth = width;
-            layout.minWidth = width;
-            layout.preferredHeight = width + 10f;  // Ensure enough height
-            layout.minHeight = width + 10f;
-        }
-    }
-    
-
-    
 }

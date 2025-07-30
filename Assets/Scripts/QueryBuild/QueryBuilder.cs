@@ -73,7 +73,8 @@ public class QueryBuilder : MonoBehaviour
             SupabaseManager.Instance.OnTableNamesFetched += PopulateTableSelection;
         }
 
-        missionUIManager.ShowUI();
+        // Debug.Log("im called from BuildQuery!!!");
+        //! missionUIManager.ShowUI();
         // GameManager.Instance.OnQueryIsCorrect += queryUIManager.ShowResult;
     }
 
