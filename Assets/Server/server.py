@@ -44,27 +44,27 @@ def home():
 @app.route('/store', methods=['POST'])
 def store_data():
     data = request.get_json()
-    if not data or 'word' not in data:
-        return jsonify({'error': 'Expected JSON with "word" key'}), 400
+    if not data or 'data' not in data:
+        return jsonify({'error': 'Expected JSON with "data" key'}), 400
 
-    word = data['word']
+    word = data['data']
     if word in stored_data:
-        return jsonify({'message': f"The word {word} is already stored.", 'word': word})
+        return jsonify({'message': f"The data piece {word} is already stored.", 'data': word})
     stored_data.append(word)
-    return jsonify({'message': 'Word stored successfully!', 'word': word})
+    return jsonify({'message': 'Data stored successfully!', 'data': word})
 
 
 @app.route('/retrieve', methods=['GET'])
 def retrieve_data():
-    return jsonify({'stored_words': stored_data})
+    return jsonify({'stored_data': stored_data})
 
 
 @app.route('/echo', methods=['POST'])
 def echo():
     data = request.get_json()
-    if not data or 'message' not in data:
-        return jsonify({'error': 'Expected JSON with "message" key'}), 400
-    return jsonify({'message': 'echoing back :', 'word': data['message']})
+    if not data or 'data' not in data:
+        return jsonify({'error': 'Expected JSON with "data" key'}), 400
+    return jsonify({'message': 'echoing back :', 'data': data['data']})
 
 
 # ===== STATE SEND AND RETRIEVE ENDPOINTS =====
@@ -216,7 +216,7 @@ def get_object_post():
 
         content = blob.download_as_text()
         obj = json.loads(content)
-        return jsonify({'game': obj}), 200
+        return jsonify(obj), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

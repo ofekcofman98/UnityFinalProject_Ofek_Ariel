@@ -22,6 +22,9 @@ namespace Assets.Scripts.ServerIntegration
             SendSQLMode,
             SendGameProgress,
             GetGameProgress,
+            Retrieve,
+            Store,
+            Echo,
         }
 
 
@@ -58,6 +61,9 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.SendSQLMode => "/send-sqlmode",      
                 Endpoint.SendGameProgress => "/send-gameprogress",
                 Endpoint.GetGameProgress => "/get-gameprogress",
+                Endpoint.Retrieve => "/retrieve",
+                Endpoint.Store => "/store",
+                Endpoint.Echo => "/echo",
                 _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }

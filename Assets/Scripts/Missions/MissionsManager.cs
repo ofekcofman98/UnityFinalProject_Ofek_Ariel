@@ -10,16 +10,62 @@ public class MissionsManager : Singleton<MissionsManager>
 {
     [SerializeField] private MissionSequence missionSequence;
 
-    private int currentMissionIndex = 0;
+    public int currentMissionIndex { get; private set; } = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
-    private int m_Lives = 3;
+
+    public int m_Lives { get; private set; } = 3;
     public event Action<bool> OnMissionValidated;
 
     private void Start()
     {
+        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer((gpc) =>
+        {
+            if (gpc != null)
+            {
+                Debug.Log($"the gpc values are : lives {gpc.Lives}, currentMissionindex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
+                m_Lives = gpc.Lives;
+
+                //SuspectsManager.Instance.Lives = 1;
+                //m_Lives = gpc.Lives;
+                currentMissionIndex = gpc.currentMissionIndex;
+                GameManager.Instance.SqlMode = gpc.SqlMode;
+                UnlockTablesForSavedGame();
+            }
+            else
+            {
+                Debug.LogWarning("⚠️ Could not load saved game from server.");
+            }
+        }));
+
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
     }
 
+    private void UnlockTablesForSavedGame()
+    {
+        for(int i = 0; i < missionSequence.Missions.Count && i <= currentMissionIndex; i++)
+        {
+            MissionData mission = missionSequence.Missions[i];
+            try
+            {
+                if (mission.unlocksTable && !string.IsNullOrEmpty(mission.tableToUnlock))
+                {
+                    Table unlockedTable = SupabaseManager.Instance.Tables.FirstOrDefault(
+                    t => t.Name == mission.tableToUnlock);
+
+                    if (unlockedTable != null)
+                    {
+                        unlockedTable.UnlockTable();
+                        Debug.Log($"🔓 Table '{unlockedTable.Name}' has been unlocked after mission success!");
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Log($"AN EXCEPTION HAS OCCURED : {ex.ToString()}");
+            }
+        }
+    }
     private void ValidateMission()
     {
         bool isValid = CurrentMission.Validate();
@@ -30,13 +76,15 @@ public class MissionsManager : Singleton<MissionsManager>
             StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
-            GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
-            SQLmodeSender.Instance.SendSQLmodeToPhone();
-            if (currentMissionIndex == 4)
-            {
-                GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
-                GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
-            }
+            //GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
+            //SQLmodeSender.Instance.SendSQLmodeToPhone();
+            //if (currentMissionIndex == 3)
+            //{
+            //    GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, GameManager.Instance.missionManager.currentMissionIndex, GameManager.Instance.missionManager.m_Lives);
+            //    GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
+            //    Debug.Log("✅✅✅ container sent to server !!");
+
+            //}
 
         }
         else

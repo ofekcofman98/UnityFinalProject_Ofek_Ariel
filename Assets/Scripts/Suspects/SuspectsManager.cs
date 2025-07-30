@@ -8,7 +8,7 @@ using UnityEngine;
 public class SuspectsManager : Singleton<SuspectsManager>
 {
     private int m_Lives = 3;
-    public int Lives => m_Lives;
+    public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
     public event Action<bool> OnGuessResult;
     public event Action OnSuspectsChanged;

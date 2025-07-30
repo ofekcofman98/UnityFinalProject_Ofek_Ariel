@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
             if (GameManager.Instance.SqlMode)
             {
                 GameManager.Instance.SetSqlMode();
-                SQLmodeSender.Instance.SendSQLmodeToPhone();
+                //SQLmodeSender.Instance.SendSQLmodeToPhone();
             }
         }
     }
