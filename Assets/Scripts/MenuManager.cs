@@ -12,11 +12,11 @@ public class MenuManager : Singleton<MenuManager>
     // [SerializeField] private GameObject losePanelUI;
 
     private bool isPaused = false;
-    
+
     private void Update()
     {
         // Handle pause input (optional)
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !menuUI.activeSelf)
         {
             if (!pauseMenuUI.activeSelf)
                 PauseGame();
@@ -33,16 +33,23 @@ public class MenuManager : Singleton<MenuManager>
         // winPanelUI.SetActive(false);
         // losePanelUI.SetActive(false);
     }
-    
+
     public void HideMainMenu()
     {
         menuUI.SetActive(false);
     }
 
+
     public void OnStartButtonClicked()
     {
-        GameManager.Instance.StartGameFromMenu(); // ✅ Delegate to GameManager
+        GameManager.Instance.StartGameFromMenu();
     }
+
+    public void OnTutorialsButtonClicked()
+    {
+        GameManager.Instance.StartTutorial();
+    }
+
 
     public void PauseGame()
     {
@@ -57,6 +64,15 @@ public class MenuManager : Singleton<MenuManager>
         pauseMenuUI.SetActive(false);
         // gameUI.SetActive(true);
     }
+    
+    public void OnQuitToMainMenuClicked()
+    {
+        Time.timeScale = 1f;
+        pauseMenuUI.SetActive(false);
+        StartCoroutine(GameManager.Instance.resetAction()); // properly resets everything
+        ShowMainMenu(); // finally show the main menu
+    }
+
 
     // public void ShowWinPanel()
     // {

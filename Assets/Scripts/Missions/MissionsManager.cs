@@ -8,7 +8,8 @@ using UnityEngine;
 
 public class MissionsManager : Singleton<MissionsManager>
 {
-    [SerializeField] private MissionSequence missionSequence;
+    private MissionSequence missionSequence;
+    public MissionSequence MissionSequence => missionSequence;
 
     private int currentMissionIndex = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
@@ -18,6 +19,23 @@ public class MissionsManager : Singleton<MissionsManager>
     private void Start()
     {
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
+    }
+
+    public void LoadMissionSequence(MissionSequence sequence)
+    {
+        missionSequence = sequence;
+        currentMissionIndex = 0;
+        m_Lives = 3;
+
+        if (missionSequence == null || missionSequence.Missions.Count == 0)
+        {
+            Debug.LogError("Mission sequence is null or empty.");
+            return;
+        }
+
+        SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
+        GameManager.Instance.MissionUIManager.ShowUI();
+        HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
 
     private void ValidateMission()
@@ -30,14 +48,6 @@ public class MissionsManager : Singleton<MissionsManager>
             StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
-            // SQLmodeSender.Instance.SendSQLmodeToPhone();
-            // if (currentMissionIndex == 4)
-            // {
-            //     GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, this);
-            //     GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
-            // }
-            
-
         }
         else
         {
@@ -147,6 +157,7 @@ public class MissionsManager : Singleton<MissionsManager>
         if (CurrentMission is TutorialPopupMissionData tutorialMission)
         {
             GameManager.Instance.MissionUIManager.ShowTutorialPopup(
+                tutorialMission.missionTitle,
                 tutorialMission.popupText,
                 () =>
                 {
@@ -191,13 +202,22 @@ public class MissionsManager : Singleton<MissionsManager>
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         Debug.Log("✅ ResetQuerySendFlag passed");
 
-        Debug.Log("🆕 New mission started: " + CurrentMission.missionTitle);
+        Debug.Log($"🆕 mission number {GetCurrentMissionNumber()} started: " + CurrentMission.missionTitle);
 
         GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.queryBuilder.BuildQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
         HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
+    public void ReportTutorialStep(string stepId)
+    {
+        if (CurrentMission is CustomTutorialMissionData custom && custom.requiredStepId == stepId)
+        {
+            custom.MarkAsCompleted();
+            ValidateMission();
+        }
+    }
+
 
     public IEnumerator ResetMissions()
     {
@@ -207,9 +227,9 @@ public class MissionsManager : Singleton<MissionsManager>
         foreach (Table table in SupabaseManager.Instance.Tables)
         {
             table.LockTable();
-        } 
+        }
 
-        GameManager.Instance.MissionUIManager.ShowUI(); //! check if needed
+        // GameManager.Instance.MissionUIManager.ShowUI(); //! check if needed
 
         yield return null;
     }

@@ -36,8 +36,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
-    // [SerializeField] public PlatformUIManager platformUIManager;
-[SerializeField] private ResultsUI resultsUI;
+    [SerializeField] private MissionSequence mainGameSequence;
+    [SerializeField] private MissionSequence tutorialSequence;
+
+    [SerializeField] private ResultsUI resultsUI;
 
 
     public event Action<bool> OnQueryIsCorrect;
@@ -115,6 +117,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+
     public void StartGame()
     {
         ShowMainMenu();
@@ -130,6 +133,15 @@ public class GameManager : Singleton<GameManager>
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        MissionsManager.Instance.LoadMissionSequence(mainGameSequence); // dynamically chosen
+        StartMissions();
+    }
+
+    public void StartTutorial()
+    {
+        Time.timeScale = 1f;
+        MenuManager.Instance.HideMainMenu();
+        MissionsManager.Instance.LoadMissionSequence(tutorialSequence); // dynamically chosen
         StartMissions();
     }
 
@@ -334,15 +346,9 @@ public class GameManager : Singleton<GameManager>
             yield return MissionsManager.Instance.ResetMissions();
         }
 
-        if (MissionUIManager != null)
-        {
-            MissionUIManager.ShowUI();
-        }
-
         if (queryBuilder != null)
         {
             queryBuilder.ResetQuery();
-            queryBuilder.BuildQuery();
         }
 
         querySender?.ResetQuerySendFlag();
@@ -357,6 +363,6 @@ public class GameManager : Singleton<GameManager>
         // GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
-
+        ShowMainMenu();
     }
 }

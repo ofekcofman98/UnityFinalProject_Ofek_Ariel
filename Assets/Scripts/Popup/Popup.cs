@@ -10,6 +10,7 @@ public class Popup : MonoBehaviour, IPopup
 
     [SerializeField] private GameObject closeButtonPrefab;
     private GameObject closeButtonInstance;
+    public string tutorialStepIdOnClose; 
     public Action OnPopupOpened; 
     public Action OnPopupClosed;
 
@@ -48,5 +49,12 @@ public class Popup : MonoBehaviour, IPopup
         Time.timeScale = 1f;
         OnPopupClosed?.Invoke();
         gameObject.SetActive(false);
+
+        if (!string.IsNullOrEmpty(tutorialStepIdOnClose))
+        {
+            Debug.Log($"📘 Popup closed: reporting tutorial step '{tutorialStepIdOnClose}'");
+            MissionsManager.Instance.ReportTutorialStep(tutorialStepIdOnClose);
+        }
+
     }
 }

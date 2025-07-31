@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Mission Sequence", menuName = "SQL Detective/Mission Sequence")]
 public class MissionSequence : ScriptableObject
 {
+    public bool isTutorial = false;
     public List<MissionData> Missions = new List<MissionData>();
 
     [Header("Final Suspect")]

@@ -51,12 +51,16 @@ public class MissionUIManager : MonoBehaviour
 
     public void DisplayStandardMission(MissionData mission)
     {
-        MobileMissionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
+        bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
+
+        string missionNumberText = isTutorial ? "Tutorial" : missionManager.GetCurrentMissionNumber().ToString();
+
+        MobileMissionNumber.text = missionNumberText;
         MobileMissionTitle.text = mission.missionTitle;
         MobileMissionDescription.text = mission.missionDescription;
         MobileMissionDescription.color = Color.white;
 
-        PcMissionNumber.text = missionManager.GetCurrentMissionNumber().ToString();
+        PcMissionNumber.text = missionNumberText;
         PcMissionTitle.text = mission.missionTitle;
         PcMissionDescription.text = mission.missionDescription;
         PcMissionDescription.color = Color.white;
@@ -81,7 +85,12 @@ public class MissionUIManager : MonoBehaviour
         if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
         {
             string tableName = GameManager.Instance.missionManager.CurrentMission.tableToUnlock;
-            showNewTable(tableName);
+    Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
+            if (table != null)
+            {
+                table.UnlockTable(); // ✅ Do it here so Init sees the unlocked state
+                showNewTable(tableName);
+            }
         }
 
     }
@@ -96,14 +105,26 @@ public class MissionUIManager : MonoBehaviour
         Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
         if (table != null)
         {
-            // GameManager.Instance.schemeDisplayer.ShowSchemaWithNewUnlock(tableName);
             newTablePopup.Open(table);
+
+            // if (MissionsManager.Instance.MissionSequence.isTutorial)
+            // {
+            //     newTablePopup.onCloseCallback = () => {
+            //         CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+            //     };
+            // }
         }
     }
-    
-    public void ShowTutorialPopup(string message, Action onContinue)
+
+    public void ShowTutorialPopup(string title, string message, Action onContinue)
     {
-        tutorialPopupUI.Show(message, onContinue);
+        tutorialPopupUI.Show(title, message, onContinue);
     }
+    
+    public bool IsPopupOpen()
+    {
+        return newTablePopup.IsOpen || tutorialPopupUI.IsOpen;
+    }
+
         
 }

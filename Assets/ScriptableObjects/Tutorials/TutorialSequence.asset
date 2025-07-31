@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f9bd0c18431b824ea0e61e824014f39, type: 3}
+  m_Name: TutorialSequence
+  m_EditorClassIdentifier: 
+  isTutorial: 1
+  Missions:
+  - {fileID: 11400000, guid: fa35450468582bb4ab57b90313f4d488, type: 2}
+  - {fileID: 11400000, guid: 88595cbbb8e20ae41b0082a077fa424f, type: 2}
+  - {fileID: 11400000, guid: 4f9d56d875401fa439fdbef448accbe0, type: 2}
+  - {fileID: 11400000, guid: 42afe7822e24fd945890686f9c59882e, type: 2}
+  - {fileID: 11400000, guid: b4cdc8d6700402e48aad3104f8e5b9bf, type: 2}
+  - {fileID: 11400000, guid: 02ebe6e4c7588294788555a96fb25ba5, type: 2}
+  - {fileID: 11400000, guid: 3701c9337b3af1843b29d1c1b05bcdce, type: 2}
+  - {fileID: 11400000, guid: 0070c22541582e54ca0fb6e279dfb4d1, type: 2}
+  - {fileID: 11400000, guid: e2215b5ca586c2b41a36cd00699c9796, type: 2}
+  - {fileID: 11400000, guid: a7e1b0287f734124494faa747e3a322d, type: 2}
+  - {fileID: 11400000, guid: d7dbfa0011532a145a754f3d52bf2577, type: 2}
+  - {fileID: 11400000, guid: 664009a8d4a25b84fae6cbec41f8af81, type: 2}
+  - {fileID: 11400000, guid: 16916460ea33f074fb4a35c38e738760, type: 2}
+  - {fileID: 11400000, guid: 16f56774f5077914e8cb23a9b7188bca, type: 2}
+  - {fileID: 11400000, guid: c368350cfec736f4b9e80f9815d5962a, type: 2}
+  - {fileID: 11400000, guid: 5f73991b4837bb34bb6ceb8083f35a0c, type: 2}
+  - {fileID: 11400000, guid: 2cfe83b347773ab498ac2e0f678520fd, type: 2}
+  - {fileID: 11400000, guid: 041925aa3713dc143a50afa0a8f78dc5, type: 2}
+  - {fileID: 11400000, guid: ebbd7c2600ec0fb4e83d2a643aca0f22, type: 2}
+  - {fileID: 11400000, guid: 0115d4e38c7163d4480dcdfa903244db, type: 2}
+  - {fileID: 11400000, guid: fb7899bd5876d5147af231e04de4ece6, type: 2}
+  - {fileID: 11400000, guid: 04fe229a07a89ff479089e6e12cdffe8, type: 2}
+  - {fileID: 11400000, guid: e49e0663b5d66b440b9b6d481978a812, type: 2}
+  FinalAnswerPersonId: 008

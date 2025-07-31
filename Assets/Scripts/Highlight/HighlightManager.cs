@@ -20,12 +20,21 @@ public class HighlightManager : Singleton<HighlightManager>
 
             IHighlightable highlightable = interactableObject?.GetComponent<IHighlightable>();
             RegisterHighlight(highlightable);
-            
+
             if (highlightable is Highlightable concrete)
             {
                 concrete.SetMarkerLabel(interactableObject.name);
             }
+        }
+        else if (mission is CustomTutorialMissionData custom)
+        {
+            string targetStep = custom.requiredStepId;
 
+            TutorialHighlightTarget uiTarget = GameObject.FindObjectsOfType<TutorialHighlightTarget>()
+                .FirstOrDefault(t => t.stepId == targetStep);
+
+            IHighlightable uiHighlight = uiTarget?.GetComponent<IHighlightable>();
+            RegisterHighlight(uiHighlight);
         }
     }
 

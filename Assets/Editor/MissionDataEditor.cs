@@ -64,6 +64,11 @@ public class MissionDataEditor : Editor
         {
             DrawInteractableSection(interactable);
         }
+        else if (baseMission is CustomTutorialMissionData custom)
+        {
+            DrawCustomTutorialStepSection(custom);
+        }
+
 
         if (GUI.changed)
             EditorUtility.SetDirty(baseMission);
@@ -160,7 +165,7 @@ public class MissionDataEditor : Editor
             Debug.LogError($"❌ Failed to fetch data from Supabase: {request.error}");
         }
     }
-    
+
     private void DrawRowSelection(SQLMissionData sqlMission)
     {
         if (GUILayout.Button("Fetch Sample Rows"))
@@ -198,6 +203,14 @@ public class MissionDataEditor : Editor
             }
         }
     }
+    
+    private void DrawCustomTutorialStepSection(CustomTutorialMissionData mission)
+    {
+        EditorGUILayout.LabelField("Custom Step", EditorStyles.boldLabel);
+        EditorGUILayout.HelpBox("Define a unique ID for the tutorial step the player must trigger (e.g. ClickMap, OpenSQL, etc.)", MessageType.Info);
+        mission.requiredStepId = EditorGUILayout.TextField("Required Step ID", mission.requiredStepId);
+    }
+
 
 
 }

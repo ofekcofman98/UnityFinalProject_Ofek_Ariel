@@ -15,7 +15,7 @@ public class TutorialPopupMissionData : MissionData
 
     public override void ShowUI(MissionUIManager uiManager)
     {
-        uiManager.ShowTutorialPopup(missionDescription, () =>
+        uiManager.ShowTutorialPopup(missionTitle, missionDescription, () =>
         {
             GameManager.Instance.missionManager.MarkMissionAsCompleted();
             CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.missionManager.DelayedAdvance());
