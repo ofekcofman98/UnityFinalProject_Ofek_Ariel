@@ -468,21 +468,21 @@ public class QueryBuilder : MonoBehaviour
             return;
         }
 
-List<Button> buttonsToRelease = new List<Button>();
-foreach (Transform child in selectionParent)
-{
-    if (child.TryGetComponent<Button>(out var button))
-    {
-        buttonsToRelease.Add(button);
-    }
-}
+        List<Button> buttonsToRelease = new List<Button>();
+        foreach (Transform child in selectionParent)
+        {
+        if (child.TryGetComponent<Button>(out var button))
+        {
+            buttonsToRelease.Add(button);
+        }
+        }
 
-// ✅ Now release safely
-foreach (var button in buttonsToRelease)
-{
-    uiRenderer.selectionButtonPool.Release(button);
-}
-    }
+        // ✅ Now release safely
+        foreach (var button in buttonsToRelease)
+        {
+        uiRenderer.selectionButtonPool.Release(button);
+        }
+        }
 
 
 public void SetConditionValue(object i_Value)

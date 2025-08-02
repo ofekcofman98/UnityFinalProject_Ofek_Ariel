@@ -61,7 +61,8 @@ public class QueryListener : MonoBehaviour
             while (true)
             {
 
-                Debug.Log("📡 Polling the server for new query...");
+            //Debug.Log($"missionManager : {MissionsManager.Instance.m_Lives}, Suspectmanager : {SuspectsManager.Instance.Lives}");
+            Debug.Log("📡 Polling the server for new query...");
                 UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl);
 
                 yield return request.SendWebRequest();

@@ -18,25 +18,27 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private void Start()
     {
-        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer((gpc) =>
-        {
-            if (gpc != null)
-            {
-                Debug.Log($"the gpc values are : lives {gpc.Lives}, currentMissionindex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
-                m_Lives = gpc.Lives;
 
-                //SuspectsManager.Instance.Lives = 1;
-                //m_Lives = gpc.Lives;
-                currentMissionIndex = gpc.currentMissionIndex;
-                GameManager.Instance.SqlMode = gpc.SqlMode;
-                UnlockTablesForSavedGame();
-            }
-            else
-            {
-                Debug.LogWarning("⚠️ Could not load saved game from server.");
-            }
-        }));
+        //StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer((gpc) =>
+        //{
+        //    if (gpc != null)
+        //    {
+        //        Debug.Log($"the gpc values are : lives {gpc.Lives}, currentMissionindex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
+        //        //m_Lives = gpc.Lives;
+        //        m_Lives = 2;
+        //        currentMissionIndex = gpc.currentMissionIndex;
+        //        GameManager.Instance.SqlMode = gpc.SqlMode;
+        //        SuspectsManager.Instance.initLivesFromMissiomsManager();
+        //        UnlockTablesForSavedGame();
+        //    }
+        //    else
+        //    {
+        //        Debug.LogWarning("⚠️ Could not load saved game from server.");
+        //    }
+        //}));
 
+        SuspectsManager.Instance.Lives = m_Lives;
+        SuspectsManager.Instance.invokeLivesChanged();
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
     }
 
