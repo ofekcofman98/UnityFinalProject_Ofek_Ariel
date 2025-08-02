@@ -150,35 +150,35 @@ public class GameManager : Singleton<GameManager>
         MissionUIManager.ShowUI(); // This will handle popup or normal mission
     }
 
-    // public void SwitchMobileCanvas(bool i_sqlMode)
-    // {
-    //     if (Application.isMobilePlatform)
-    //     {
-    //         if (mobileCanvas != null)
-    //         {
-    //             mobileCanvas.SetActive(i_sqlMode);
-    //             Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
-    //         }
+    public void SwitchMobileCanvas(bool i_sqlMode)
+    {
+        if (Application.isMobilePlatform)
+        {
+            if (mobileCanvas != null)
+            {
+                mobileCanvas.SetActive(i_sqlMode);
+                Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
+            }
 
-    //         if (mobileScreensaverCanvas != null)
-    //         {
-    //             mobileScreensaverCanvas.SetActive(!i_sqlMode);
-    //             Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
-    //         }
+            if (mobileScreensaverCanvas != null)
+            {
+                mobileScreensaverCanvas.SetActive(!i_sqlMode);
+                Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
+            }
 
-    //         if (pcGameCanvas != null)
-    //         {
-    //             pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
-    //         }
+            if (pcGameCanvas != null)
+            {
+                pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
+            }
 
-    //         if (i_sqlMode && queryBuilder != null)
-    //         {
-    //             queryBuilder.ResetQuery();
-    //             queryBuilder.BuildQuery();
-    //         }
-    //     }
+            if (i_sqlMode && queryBuilder != null)
+            {
+                queryBuilder.ResetQuery();
+                queryBuilder.BuildQuery();
+            }
+        }
 
-    // }
+    }
     public void SetSqlMode()
     {
         SqlMode = !SqlMode;

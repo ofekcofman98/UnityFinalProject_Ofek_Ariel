@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +30,17 @@ public class LocationsMenu : MonoBehaviour
             // Attach event handler
             card.OnClicked += (clickedCard) =>
             {
+                Location location = locations.FirstOrDefault(loc => loc.SpawnPoint == clickedCard.GetTarget());
+                
+                // Teleport as usual
                 LocationManager.Instance.TeleportTo(clickedCard.GetTarget());
+
+                // Handle PrivateHome
+                if (location is PrivateHomeLocation privateHome)
+                {
+                    PrivateHomeManager.Instance.EnterPrivateHome(privateHome.person);
+                }
+
                 Hide();
             };
         }

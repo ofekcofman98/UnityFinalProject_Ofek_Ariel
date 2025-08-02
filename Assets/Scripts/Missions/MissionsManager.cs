@@ -221,7 +221,6 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator ResetMissions()
     {
-        Debug.Log("Hit the reset button !!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         currentMissionIndex = 0;
         m_Lives = 3;
         foreach (Table table in SupabaseManager.Instance.Tables)
