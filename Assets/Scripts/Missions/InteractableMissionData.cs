@@ -8,6 +8,8 @@ public class InteractableMissionData : MissionData
 {
     public string requiredObjectId;
     private string _lastTriggeredId;
+    public List<PersonDialogueTrigger> dialogueTriggers;
+
 
     public void SetTriggeredObject(string id)
     {
@@ -25,3 +27,14 @@ public class InteractableMissionData : MissionData
     }
 
 }
+
+[System.Serializable]
+public class PersonDialogueTrigger
+{
+    public string personId;               // e.g., "P002"
+    [TextArea(2, 5)]
+    public string dialogueText;           // what they say during this mission
+    public bool givesClue;
+    public string clueId;
+}
+

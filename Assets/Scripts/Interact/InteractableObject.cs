@@ -16,7 +16,11 @@ public class InteractableObject : MonoBehaviour
     public string objectName;
     public eInteractableType interactableType;
     [SerializeField] private string interactableId;
-    public string InteractableId => interactableId;
+    public string InteractableId
+    {
+        get => interactableId;
+        set => interactableId = value;
+    }
 
 
     public virtual void Interact()

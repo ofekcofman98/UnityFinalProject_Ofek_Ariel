@@ -13,7 +13,7 @@ public abstract class MissionData : ScriptableObject
     public bool unlocksTable;
     public string tableToUnlock;
     public bool isTutorial = false;
-    private void OnEnable() => Debug.Log("MissionData loaded");
+    // private void OnEnable() => Debug.Log("MissionData loaded");
     public abstract bool Validate();
     public abstract void ShowUI(MissionUIManager uiManager);
 

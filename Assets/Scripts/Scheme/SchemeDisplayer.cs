@@ -17,7 +17,7 @@ public class SchemeDisplayer : MonoBehaviour
     
 
     public SchemeLayoutManager layoutManager;
-    private bool isVisible = false;
+    // private bool isVisible = false;
     private bool alreadyDrawn = false;
 
     // [Obsolete("ToggleScheme is obsolete. Use Popup.Open() / Popup.Close() instead.")]

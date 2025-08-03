@@ -39,15 +39,15 @@ public class PersonDataManager : Singleton<PersonDataManager>
         {
             PersonData person = new PersonData
             {
-    id = obj["person_id"]?.ToString(),
-    first_name = obj["first_name"]?.ToString(),
-    last_name = obj["last_name"]?.ToString(),
-    photo_url = obj["photo_url"]?.ToString(),
-    prefab_id = obj["prefab_id"]?.ToString()
+                id = obj["person_id"]?.ToString(),
+                first_name = obj["first_name"]?.ToString(),
+                last_name = obj["last_name"]?.ToString(),
+                photo_url = obj["photo_url"]?.ToString(),
+                prefab_id = obj["prefab_id"]?.ToString()
             };
 
             // Load prefab and portrait
-            person.characterPrefab = Resources.Load<GameObject>($"Characters/{person.prefab_id}");
+            person.characterPrefab = Resources.Load<GameObject>($"Characters/{person.first_name}");
             if (!string.IsNullOrEmpty(person.photo_url))
                 StartCoroutine(LoadImageCoroutine(person.photo_url, tex => person.portrait = tex)); // ✅ coroutine
 

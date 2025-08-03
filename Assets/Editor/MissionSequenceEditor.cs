@@ -17,9 +17,14 @@ public class MissionSequenceEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        DrawDefaultInspector();
+        serializedObject.Update();
 
         MissionSequence sequence = (MissionSequence)target;
+
+        // Draw everything manually
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("isTutorial"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("Missions"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("FinalAnswerPersonId"));
 
         EditorGUILayout.Space(10);
         EditorGUILayout.LabelField("🎯 Final Suspect Selection", EditorStyles.boldLabel);
@@ -31,8 +36,8 @@ public class MissionSequenceEditor : Editor
 
         if (fetchedRows != null && suspectNames != null)
         {
-selectedIndex = Mathf.Max(0, Enumerable.Range(0, fetchedRows.Count)
-    .FirstOrDefault(i => fetchedRows[i]["person_id"]?.ToString() == sequence.FinalAnswerPersonId));
+            selectedIndex = Mathf.Max(0, Enumerable.Range(0, fetchedRows.Count)
+                .FirstOrDefault(i => fetchedRows[i]["person_id"]?.ToString() == sequence.FinalAnswerPersonId));
 
             selectedIndex = EditorGUILayout.Popup("Choose Final Suspect", selectedIndex, suspectNames);
 
@@ -44,6 +49,34 @@ selectedIndex = Mathf.Max(0, Enumerable.Range(0, fetchedRows.Count)
                 EditorUtility.SetDirty(sequence);
             }
         }
+
+        EditorGUILayout.Space(20);
+        EditorGUILayout.LabelField("💬 Person Dialogue Sets", EditorStyles.boldLabel);
+
+        SerializedProperty dialogueList = serializedObject.FindProperty("PersonDialogues");
+        EditorGUILayout.PropertyField(dialogueList, new GUIContent("Dialogue Sets"), true);
+
+        if (GUILayout.Button("Auto-Fill from Project"))
+        {
+            var allDialogueSets = AssetDatabase.FindAssets("t:PersonDialogueSet")
+                .Select(guid => AssetDatabase.LoadAssetAtPath<PersonDialogueSet>(AssetDatabase.GUIDToAssetPath(guid)))
+                .Where(ds => ds != null)
+                .ToList();
+
+            foreach (var set in allDialogueSets)
+            {
+                if (!sequence.PersonDialogues.Contains(set))
+                {
+                    sequence.PersonDialogues.Add(set);
+                    EditorUtility.SetDirty(sequence);
+                }
+            }
+
+            Debug.Log($"✅ Added {allDialogueSets.Count} PersonDialogueSets to this MissionSequence.");
+        }
+
+        serializedObject.ApplyModifiedProperties();
+
     }
 
     private IEnumerator FetchSuspectData()

@@ -10,39 +10,61 @@ public class LocationsMenu : MonoBehaviour
     [SerializeField] private GameObject cardPrefab; // LocationCard prefab
     [SerializeField] private Transform contentParent; // Horizontal layout group
 
+
+    private void Awake()
+    {
+        Table.OnTableUnlocked += HandleTableUnlocked;
+    }
+
+    private void OnDestroy()
+    {
+        Table.OnTableUnlocked -= HandleTableUnlocked;
+    }
+
+    private void HandleTableUnlocked(Table unlockedTable)
+    {
+        if (unlockedTable.Name == "Persons")
+        {
+            if (gameObject.activeSelf)
+            {
+                LocationManager.Instance.ShowMenu(); // or ShowCombinedMenu()
+            }
+        }
+    }
+
     public void Show(List<Location> locations)
     {
         Time.timeScale = 0f;
 
-        // Clear existing cards
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
         }
 
-        // Create new cards
         foreach (Location location in locations)
         {
             GameObject cardObj = Instantiate(cardPrefab, contentParent);
             LocationCard card = cardObj.GetComponent<LocationCard>();
             card.Init(location);
 
-            // Attach event handler
-            card.OnClicked += (clickedCard) =>
+            bool isPersonsUnlocked = SupabaseManager.Instance.IsTableUnlocked("Persons");
+            bool isLocked = (location is PrivateHomeLocation) && !isPersonsUnlocked;
+            card.SetLocked(isLocked);
+
+            if (!isLocked)
             {
-                Location location = locations.FirstOrDefault(loc => loc.SpawnPoint == clickedCard.GetTarget());
-                
-                // Teleport as usual
-                LocationManager.Instance.TeleportTo(clickedCard.GetTarget());
-
-                // Handle PrivateHome
-                if (location is PrivateHomeLocation privateHome)
+                card.OnClicked += (clickedCard) =>
                 {
-                    PrivateHomeManager.Instance.EnterPrivateHome(privateHome.person);
-                }
+                    LocationManager.Instance.TeleportTo(location.SpawnPoint);
 
-                Hide();
-            };
+                    if (location is PrivateHomeLocation privateHome)
+                    {
+                        PrivateHomeManager.Instance.EnterPrivateHome(privateHome.person);
+                    }
+
+                    Hide();
+                };
+            }
         }
 
         gameObject.SetActive(true);

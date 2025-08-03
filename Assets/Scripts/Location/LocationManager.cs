@@ -15,9 +15,16 @@ public class LocationManager : Singleton<LocationManager>
     private List<PrivateHomeLocation> privateHomes = new();
 
 
-    private void Start()
+    // private void Start()
+    // {
+    //     StartCoroutine(InitializePrivateHomes());
+    // }
+
+    private IEnumerator Start()
     {
-        StartCoroutine(InitializePrivateHomes());
+        yield return PersonDataManager.Instance.WaitUntilReady(); // wait here early
+
+        yield return InitializePrivateHomes(); // proceed after ready
     }
 
     private IEnumerator InitializePrivateHomes()
@@ -27,21 +34,23 @@ public class LocationManager : Singleton<LocationManager>
         foreach (PersonData person in PersonDataManager.Instance.AllCharacters)
         {
             privateHomes.Add(new PrivateHomeLocation(person, privateHomeSpawnPoint, defaultHomePreview));
+            // Debug.Log($"🏠 Added private home for: {person.name}");
         }
+
+        // Debug.Log($"✅ Found {PersonDataManager.Instance.AllCharacters.Count} characters");
     }
 
     public void ShowMenu()
     {
-        locationsMenu.Show(allLocations); // that's it
+        ShowCombinedMenu();
+        // locationsMenu.Show(allLocations); // that's it
     }
 
-    public void ShowPrivateHomes()
-    {
-        locationsMenu.Show(privateHomes.Cast<Location>().ToList());
-    }
 
     public void ShowCombinedMenu()
     {
+            Debug.Log($"🟢 Showing combined menu. allLocations: {allLocations.Count}, privateHomes: {privateHomes.Count}");
+
         var combined = new List<Location>();
         combined.AddRange(allLocations);
         combined.AddRange(privateHomes);

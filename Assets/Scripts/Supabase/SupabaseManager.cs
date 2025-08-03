@@ -159,10 +159,11 @@ Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
         OnSchemeFullyLoaded?.Invoke();
     }
 
-    // private IEnumerator LoadPersonsAfterScheme()
-    // {
-    //     yield return PersonDataManager.Instance.LoadAllCharacters().AsCoroutine(); // 👈 Helper method
-    // }
+    public bool IsTableUnlocked(string tableName)
+    {
+        Table table = Tables.FirstOrDefault(t => t.Name == tableName);
+        return table != null && table.IsUnlocked;
+    }
 
     private eDataType MapSupabaseType(string supabaseType)
     {
