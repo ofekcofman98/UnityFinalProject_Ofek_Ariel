@@ -27,40 +27,39 @@ namespace Assets.Scripts.ServerIntegration
             OnIdleTimeoutReached += ActivateScreensaver;
             lastTouchTime = Time.realtimeSinceStartup;
 
-            //StartIdleCountdown();
         }
 
-        //void Update()
-        //{
-        //    if (Input.touchCount > 0)
-        //    {
-        //        Touch touch = Input.GetTouch(0);
-        //        if (touch.phase == TouchPhase.Began)
-        //        {
-        //            Debug.Log("👆 TouchPhase.Began detected — broadcasting OnUserInteraction");
-        //            OnUserInteraction?.Invoke();
-        //        }
-        //    }
-        //}
         void Update()
         {
             float now = Time.realtimeSinceStartup;
 
-            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-            {
-                lastTouchTime = now;
-                Debug.Log($"📍 Touch — lastTouchTime = {lastTouchTime}");
-            }
+            #if UNITY_EDITOR || UNITY_STANDALONE
+                        if (Input.GetMouseButtonDown(0) || Input.anyKeyDown)
+                        {
+                            lastTouchTime = now;
+                            Debug.Log($"🖱 PC input detected — lastTouchTime = {lastTouchTime}");
+                            OnUserInteraction?.Invoke();
+                        }
+            #else
+                // Mobile input support
+                if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+                {
+                    lastTouchTime = now;
+                    Debug.Log($"📍 Touch — lastTouchTime = {lastTouchTime}");
+                    OnUserInteraction?.Invoke();
+                }
+            #endif
 
             float idleDuration = now - lastTouchTime;
             Debug.Log($"🕐 Idle duration (real-time): {idleDuration}");
 
-            if (idleDuration >= 10f)
+            if (idleDuration >= idleTimeToActivate && !screensaverActive)
             {
                 Debug.Log("🔒 Real-time idle triggered.");
                 OnIdleTimeoutReached?.Invoke();
             }
         }
+
 
         private void HandleUserInteraction()
         {
@@ -103,7 +102,6 @@ namespace Assets.Scripts.ServerIntegration
 
             if (mobileCanvas != null) mobileCanvas.SetActive(false);
             if (screensaverCanvas != null) screensaverCanvas.SetActive(true);
-            //GameManager.Instance.SwitchMobileCanvas(false);
 
             screensaverActive = true;
             Debug.Log("🌙 Screensaver Activated (mobile)");
@@ -116,7 +114,6 @@ namespace Assets.Scripts.ServerIntegration
 
             if (mobileCanvas != null) mobileCanvas.SetActive(true);
             if (screensaverCanvas != null) screensaverCanvas.SetActive(false);
-            //GameManager.Instance.SwitchMobileCanvas(true);
 
             screensaverActive = false;
             Debug.Log("📱 Main Canvas Reactivated (mobile)");
