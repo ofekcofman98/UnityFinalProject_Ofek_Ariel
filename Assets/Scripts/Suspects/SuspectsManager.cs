@@ -7,8 +7,8 @@ using UnityEngine;
 
 public class SuspectsManager : Singleton<SuspectsManager>
 {
-    private int m_Lives = 3;
-    public int Lives => m_Lives;
+    private int m_Lives;
+    public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
     public event Action<bool> OnGuessResult;
     public event Action OnSuspectsChanged;
@@ -16,7 +16,11 @@ public class SuspectsManager : Singleton<SuspectsManager>
     public List<PersonData> Suspects = new();
     public string FinalAnswerSuspectId { get; private set; }
 
-
+    public void initLivesFromMissiomsManager()
+    {
+        m_Lives = MissionsManager.Instance.m_Lives;
+        OnLivesChanged?.Invoke(m_Lives);
+    }
     public void AddSuspect(PersonData suspect)
     {
         if (!Suspects.Contains(suspect))
@@ -35,6 +39,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
 //TODO 💡 OR remove AddSuspectFromRow(JObject) altogether and use PersonDataManager.GetById() directly!
 
+    public void invokeLivesChanged()
+    {
+        OnLivesChanged.Invoke(MissionsManager.Instance.m_Lives);
+    }
     public void AddSuspectFromRow(JObject row)
     {
         if (!row.TryGetValue("person_id", out var idToken)) return;
@@ -83,25 +91,29 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
         bool correct = suspectId == FinalAnswerSuspectId;
 
-        if (correct)
+        if(m_Lives > 0)
         {
-            Debug.Log("🎉 Correct suspect guessed!");
-            OnGuessResult?.Invoke(true);
-            MissionsManager.Instance.MarkMissionAsCompleted(); // final win
-        }
-        else
-        {
-            m_Lives--;
-            Debug.Log($"❌ Wrong guess. Lives left: {m_Lives}");
-            OnGuessResult?.Invoke(false);
-            OnLivesChanged?.Invoke(m_Lives);
-
-            if (m_Lives <= 0)
+            if (correct)
             {
-                Debug.Log("💀 Game Over — no lives remaining.");
-                // TODO: Trigger actual game-over screen / logic here
+                Debug.Log("🎉 Correct suspect guessed!");
+                OnGuessResult?.Invoke(true);
+                MissionsManager.Instance.MarkMissionAsCompleted(); // final win
             }
-        }
+            else
+            {
+                m_Lives--;
+                Debug.Log($"❌ Wrong guess");
+                OnGuessResult?.Invoke(false);
+                OnLivesChanged?.Invoke(m_Lives);
+            }
+        }    
+        else 
+        {
+            Debug.Log("💀 Game Over — no lives remaining.");
+            // TODO: Trigger actual game-over screen / logic here
+        }     
+       
+        
     }
     
     public void SetFinalAnswerFromMissionSequence(MissionSequence sequence)

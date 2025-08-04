@@ -12,14 +12,15 @@ namespace Assets.Scripts.ServerIntegration
 {
     public class GameProgressContainer
     {
-        [SerializeField] public bool SqlMode { get; set; }
-        [JsonIgnore] // ⛔️ prevents infinite loop during serialization
-        [SerializeField] public MissionsManager missionManager;
+        public bool SqlMode { get; set; }
+        public int currentMissionIndex { get; set; }
 
-        public GameProgressContainer(bool sqlMode, MissionsManager missionManager)
+        public int Lives { get; set; }
+        public GameProgressContainer(bool i_sqlMode, int i_currentMissionIndex, int i_Lives)
         {
-            SqlMode = sqlMode;
-            this.missionManager = missionManager;
+            SqlMode = i_sqlMode;
+            currentMissionIndex = i_currentMissionIndex;
+            Lives = i_Lives;
         }
 
     }

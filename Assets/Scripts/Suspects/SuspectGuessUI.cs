@@ -69,8 +69,8 @@ private void PopulateSuspects()
         }
         else
         {
-            int livesLeft = SuspectsManager.Instance.Lives;
-            messagePopup.ShowMessage($"Wrong guess!\nLives remaining: {livesLeft}");
+            //int livesLeft = SuspectsManager.Instance.Lives;
+            messagePopup.ShowMessage($"Wrong guess!");
         }
     }
 

@@ -40,7 +40,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private MissionSequence tutorialSequence;
 
     [SerializeField] private ResultsUI resultsUI;
-
+    public string UniqueMobileKey { get; private set; }
 
     public event Action<bool> OnQueryIsCorrect;
 
@@ -89,6 +89,8 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         MissionUIManager.Init(missionManager);    
+        Application.targetFrameRate = 60;
+        UniqueMobileKey = DeviceKeyManager.GetOrCreateDeviceKey();
         ResetSender.Instance.SendResetToPhone();
         ShowMainMenu();
 
@@ -179,6 +181,45 @@ public class GameManager : Singleton<GameManager>
         }
 
     }
+    //public void SetSqlMode()
+    //{
+    //    bool newMode = !SqlMode;
+
+    //    SwitchMobileCanvas(newMode);
+    //    if(!Application.isMobilePlatform)
+    //    {
+    //        // PC: always show pcGameCanvas, hide both mobile canvases
+    //        if (pcGameCanvas != null)
+    //        {
+    //            pcGameCanvas.SetActive(true);
+    //        }
+
+    //        if (mobileCanvas != null)
+    //        {
+    //            mobileCanvas.SetActive(false);
+    //        }
+
+    //        if (mobileScreensaverCanvas != null)
+    //        {
+    //            mobileScreensaverCanvas.SetActive(false);
+    //        }
+    //    }
+
+    //    SqlMode = newMode;
+
+    //    //// Enable/disable movement and camera on both platforms
+    //    //PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+    //    //if (playerMovement != null) playerMovement.enabled = !SqlMode;
+
+    //    //MouseLook mouseLook = FindObjectOfType<MouseLook>();
+    //    //if (mouseLook != null) mouseLook.enabled = !SqlMode;
+
+    //    //CharacterController characterController = FindObjectOfType<CharacterController>();
+    //    //if (characterController != null) characterController.enabled = !SqlMode;
+
+    //    Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+    //}
+
     public void SetSqlMode()
     {
         SqlMode = !SqlMode;
@@ -361,6 +402,7 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("Inside ResetAction, before ResetGame");
         GameManager.Instance.SqlMode = false;
         // GameManager.Instance.SwitchMobileCanvas(SqlMode);
+        //GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
         ShowMainMenu();
