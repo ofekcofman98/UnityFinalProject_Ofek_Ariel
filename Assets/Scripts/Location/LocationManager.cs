@@ -15,29 +15,43 @@ public class LocationManager : Singleton<LocationManager>
     private List<PrivateHomeLocation> privateHomes = new();
 
 
-    // private void Start()
-    // {
-    //     StartCoroutine(InitializePrivateHomes());
-    // }
-
     private IEnumerator Start()
     {
-        yield return PersonDataManager.Instance.WaitUntilReady(); // wait here early
+        yield return new WaitUntil(() => MissionsManager.Instance != null && MissionsManager.Instance.MissionSequence != null);
 
-        yield return InitializePrivateHomes(); // proceed after ready
+        yield return PersonDataManager.Instance.WaitUntilReady();
+
+        string caseId = MissionsManager.Instance.MissionSequence.case_id;
+
+        var loadCaseTask = CaseManager.Instance.LoadCaseData(caseId);
+        while (!loadCaseTask.IsCompleted)
+            yield return null;
+
+        if (loadCaseTask.IsFaulted)
+        {
+            Debug.LogError("Failed to load case data.");
+            yield break;
+        }
+
+        yield return InitializePrivateHomes();
     }
 
     private IEnumerator InitializePrivateHomes()
     {
         yield return PersonDataManager.Instance.WaitUntilReady();
 
+        string victimId = CaseManager.Instance.VictimId;
+
         foreach (PersonData person in PersonDataManager.Instance.AllCharacters)
         {
-            privateHomes.Add(new PrivateHomeLocation(person, privateHomeSpawnPoint, defaultHomePreview));
-            // Debug.Log($"🏠 Added private home for: {person.name}");
-        }
+            if (person.id == victimId)
+            {
+                Debug.Log($"🛑 Skipping victim: {person.name}");
+                continue;
+            }
 
-        // Debug.Log($"✅ Found {PersonDataManager.Instance.AllCharacters.Count} characters");
+            privateHomes.Add(new PrivateHomeLocation(person, privateHomeSpawnPoint, defaultHomePreview));
+        }
     }
 
     public void ShowMenu()

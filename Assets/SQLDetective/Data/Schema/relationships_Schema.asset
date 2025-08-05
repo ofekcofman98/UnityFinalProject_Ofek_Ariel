@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 52d6af3ea1753e341982995e129363d5, type: 3}
-  m_Name: Witnesses_Schema
+  m_Name: relationships_Schema
   m_EditorClassIdentifier: 
-  TableName: Witnesses
+  TableName: relationships
   Columns:
-  - ColumnName: witness_id
-    DataType: uuid
-  - ColumnName: testimony
-    DataType: text
-  - ColumnName: person_id
-    DataType: text
-  - ColumnName: case_id
+  - ColumnName: id
     DataType: integer
+  - ColumnName: person_id1
+    DataType: text
+  - ColumnName: person_id2
+    DataType: text
+  - ColumnName: relationship_type
+    DataType: text

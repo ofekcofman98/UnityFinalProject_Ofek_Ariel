@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Assets.Scripts.ServerIntegration;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -55,14 +56,35 @@ public class MissionsManager : Singleton<MissionsManager>
             return;
         }
 
+        CoroutineRunner.Instance.StartCoroutine(LoadCaseMetadata());
+
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
         GameManager.Instance.MissionUIManager.ShowUI();
         HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
 
+    private IEnumerator LoadCaseMetadata()
+    {
+        string caseId = missionSequence.case_id;
+        if (string.IsNullOrEmpty(caseId))
+        {
+            Debug.LogWarning("❌ No case_id in MissionSequence");
+            yield break;
+        }
+
+        // ✅ Call the async method and wait for completion manually
+        Task task = CaseManager.Instance.LoadCaseData(caseId);
+        while (!task.IsCompleted)
+            yield return null;
+
+        if (task.IsFaulted)
+            Debug.LogError(task.Exception);
+    }
+
+
     private void UnlockTablesForSavedGame()
     {
-        for(int i = 0; i < missionSequence.Missions.Count && i <= currentMissionIndex; i++)
+        for (int i = 0; i < missionSequence.Missions.Count && i <= currentMissionIndex; i++)
         {
             MissionData mission = missionSequence.Missions[i];
             try

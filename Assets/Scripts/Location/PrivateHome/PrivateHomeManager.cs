@@ -24,6 +24,12 @@ public class PrivateHomeManager : Singleton<PrivateHomeManager>
             Destroy(currentCharacter);
         }
 
+        if (person.id == CaseManager.Instance.VictimId)
+        {
+            Debug.LogWarning("🚫 Cannot enter victims home.");
+            return;
+        }
+
 
         currentCharacter = Instantiate(person.characterPrefab, spawnPoint.position, spawnPoint.rotation);
         currentCharacter.name = person.name;

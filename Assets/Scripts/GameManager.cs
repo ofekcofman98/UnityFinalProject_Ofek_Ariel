@@ -38,6 +38,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public MissionUIManager MissionUIManager;
     [SerializeField] private MissionSequence mainGameSequence;
     [SerializeField] private MissionSequence tutorialSequence;
+    public bool isMainSequence;
+
 
     [SerializeField] private ResultsUI resultsUI;
     public string UniqueMobileKey { get; private set; }
@@ -91,7 +93,7 @@ public class GameManager : Singleton<GameManager>
         MissionUIManager.Init(missionManager);    
         Application.targetFrameRate = 60;
         UniqueMobileKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        ResetSender.Instance.SendResetToPhone();
+        // ResetSender.Instance.SendResetToPhone();
         ShowMainMenu();
 
         if (!Application.isMobilePlatform)
@@ -110,7 +112,7 @@ public class GameManager : Singleton<GameManager>
         else
         {
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
-            // GameStateReceiver.Instance.StartListening();
+            // StateListener.Instance.StartListening();
         }
 
         if (!Application.isMobilePlatform && mobileScreensaverCanvas != null)
@@ -135,16 +137,20 @@ public class GameManager : Singleton<GameManager>
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        isMainSequence = true;
         MissionsManager.Instance.LoadMissionSequence(mainGameSequence); // dynamically chosen
         StartMissions();
+        ResetSender.Instance.SendResetToPhone();
     }
 
     public void StartTutorial()
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu();
+        isMainSequence = false;
         MissionsManager.Instance.LoadMissionSequence(tutorialSequence); // dynamically chosen
         StartMissions();
+        ResetSender.Instance.SendResetToPhone();
     }
 
     public void StartMissions()
@@ -384,6 +390,7 @@ public class GameManager : Singleton<GameManager>
         if (missionManager != null)
         {
             Debug.Log("Inside condition, before ResetMissions");
+            MissionsManager.Instance.LoadMissionSequence(isMainSequence ? mainGameSequence : tutorialSequence);
             yield return MissionsManager.Instance.ResetMissions();
         }
 

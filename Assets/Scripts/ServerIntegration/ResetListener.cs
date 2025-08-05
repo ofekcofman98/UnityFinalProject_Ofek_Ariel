@@ -75,6 +75,14 @@ namespace Assets.Scripts.ServerIntegration
                             if ((int)request.responseCode == 200)
                             {
                                 Debug.Log("✅ 200 OK received, about to reset...✅");
+                                string receivedJson = request.downloadHandler.text;
+                                Debug.Log($"📥 Received JSON: {receivedJson}");
+
+                                var settings = new JsonSerializerSettings();
+                                settings.Converters.Add(new OperatorConverter());
+
+                                Dictionary<string, bool> result = JsonConvert.DeserializeObject<Dictionary<string, bool>>(receivedJson, settings);
+                                GameManager.Instance.isMainSequence = result["seqNumber"];
                                 CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
                             }
                             else if ((int)request.responseCode == 204)

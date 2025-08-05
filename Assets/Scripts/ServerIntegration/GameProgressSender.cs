@@ -19,10 +19,10 @@ namespace Assets.Scripts.ServerIntegration
         private string m_gameKey = "12345";
         private bool m_isGameSaved = false;
 
-        private void Awake()
-        {
-           // m_gameKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        }
+        // private void Awake()
+        // {
+        //    // m_gameKey = DeviceKeyManager.GetOrCreateDeviceKey();
+        // }
         public GameProgressSender()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendGameProgress);

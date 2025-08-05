@@ -24,3 +24,5 @@ MonoBehaviour:
     DataType: text
   - ColumnName: shirt_color
     DataType: text
+  - ColumnName: photo_url
+    DataType: text

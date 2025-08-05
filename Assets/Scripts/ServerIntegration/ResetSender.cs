@@ -28,7 +28,9 @@ namespace Assets.Scripts.ServerIntegration
                 // Construct the payload with the correct key and value
                 var payload = new Dictionary<string, bool>
                  {
-                    { "reset", true }
+                    { "reset", true },
+                    { "seqNumber", GameManager.Instance.isMainSequence}
+
                  };
 
                 string jsonPayload = JsonConvert.SerializeObject(payload);

@@ -24,7 +24,7 @@ public class QueryExecutor : MonoBehaviour
 
     private IEnumerator RunQuery(Query query)
     {
-        Debug.Log("Starting SQL Query Execution...");
+        // Debug.Log("Starting SQL Query Execution...");
 
         if (query.fromClause.table == null || string.IsNullOrEmpty(query.fromClause.table.Name))
         {
@@ -32,12 +32,7 @@ public class QueryExecutor : MonoBehaviour
             yield break;
         }
 
-if (query.fromClause.table.Name.ToLower() == "persons")
-{
-    if (!query.selectClause.Columns.Any(c => c.Name == "person_id"))
-        query.selectClause.Columns.Insert(0, new Column("person_id", eDataType.String));
-}
-
+        QueryDecorator.Enrich(query);
 
         //https://vwudsbcqlhwajpkmcpsz.supabase.co/rest/v1/Persons?select=age&age=eq.40
 

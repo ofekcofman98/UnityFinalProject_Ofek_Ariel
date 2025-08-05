@@ -7,6 +7,8 @@ public class MissionSequence : ScriptableObject
 {
     public bool isTutorial = false;
     public List<MissionData> Missions = new List<MissionData>();
+    [Header("Case ID (from Supabase)")]
+    public string case_id; // 👈 YES. Add this field
 
     [Header("Dialogues")]
     public List<PersonDialogueSet> PersonDialogues;

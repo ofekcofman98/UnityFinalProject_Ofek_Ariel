@@ -17,14 +17,10 @@ MonoBehaviour:
   - ColumnName: time
     DataType: date
   - ColumnName: victim_id
-    DataType: bigint
+    DataType: text
   - ColumnName: object
     DataType: text
   - ColumnName: location_id
     DataType: text
-  - ColumnName: witness_id
-    DataType: uuid
-  - ColumnName: evidence_id
-    DataType: integer
-  - ColumnName: crimenumber
+  - ColumnName: case_id
     DataType: integer

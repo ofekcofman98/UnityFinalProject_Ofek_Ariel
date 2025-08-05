@@ -22,6 +22,7 @@ public class MissionSequenceEditor : Editor
         MissionSequence sequence = (MissionSequence)target;
 
         // Draw everything manually
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("case_id")); // 👈 Add this line
         EditorGUILayout.PropertyField(serializedObject.FindProperty("isTutorial"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("Missions"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("FinalAnswerPersonId"));

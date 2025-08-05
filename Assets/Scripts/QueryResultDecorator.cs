@@ -7,6 +7,22 @@ public static class QueryResultDecorator
 {
     public static void Enrich(JArray rows, string tableName, List<Column> columnList)
     {
+        string currentCaseId = MissionsManager.Instance.MissionSequence.case_id;
+
+        if (tableName == "Witnesses" || tableName == "CrimeEvidence")
+        {
+            for (int i = rows.Count - 1; i >= 0; i--)
+            {
+                var row = rows[i];
+                string rowCaseId = row["case_id"]?.ToString();
+                if (rowCaseId != currentCaseId)
+                {
+                    rows.RemoveAt(i);
+                }
+            }
+        }
+
+
         if (tableName != "Persons")
             return;
 
