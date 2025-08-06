@@ -40,7 +40,7 @@ public class QueryBuilder : MonoBehaviour
     {
         IsReady = true;
         QueryPanel.SetActive(false);
-        Debug.Log("called");
+        // Debug.Log("called");
     }
 
     void Start()

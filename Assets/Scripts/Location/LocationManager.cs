@@ -63,7 +63,7 @@ public class LocationManager : Singleton<LocationManager>
 
     public void ShowCombinedMenu()
     {
-            Debug.Log($"🟢 Showing combined menu. allLocations: {allLocations.Count}, privateHomes: {privateHomes.Count}");
+            // Debug.Log($"🟢 Showing combined menu. allLocations: {allLocations.Count}, privateHomes: {privateHomes.Count}");
 
         var combined = new List<Location>();
         combined.AddRange(allLocations);
@@ -75,7 +75,7 @@ public class LocationManager : Singleton<LocationManager>
     public void TeleportTo(Transform spawnPoint)
     {
 
-        Debug.Log($"🟣 Teleporting player to {spawnPoint.position}");
+        // Debug.Log($"🟣 Teleporting player to {spawnPoint.position}");
 
         CharacterController controller = player.GetComponent<CharacterController>();
         if (controller != null)

@@ -24,7 +24,7 @@ public class LocationCard : MonoBehaviour
 
         GetComponent<Button>().onClick.AddListener(() =>
         {
-            Debug.Log($"🟢 CLICKED card for location: {location.LocationName}");
+            // Debug.Log($"🟢 CLICKED card for location: {location.LocationName}");
             OnClicked?.Invoke(this);
         });
     }

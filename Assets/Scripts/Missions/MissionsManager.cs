@@ -168,9 +168,44 @@ public class MissionsManager : Singleton<MissionsManager>
             }
             else
             {
-                Debug.Log($"❌ Ignored interaction with wrong object: {id} (expected: {im.requiredObjectId})");
+                // Debug.Log($"❌ Ignored interaction with wrong object: {id} (expected: {im.requiredObjectId})");
             }
         }
+    }
+
+
+
+    public void ReportInteractableUsed(string id)
+    {
+        if (CurrentMission is InteractableMissionData m &&
+            m.requiredObjectId == id)
+        {
+            Debug.Log("Correct Object!");
+            GoToNextMission();
+
+        }
+        else
+        {
+            Debug.Log("Incorrect object!");
+        }
+    }
+    
+    public void ReportTutorialStep(string stepId)
+    {
+        if (CurrentMission is CustomTutorialMissionData custom && custom.requiredStepId == stepId)
+        {
+            custom.MarkAsCompleted();
+            ValidateMission();
+        }
+    }
+
+    public void CheckPopupMission()
+    {
+        if (CurrentMission is TutorialPopupMissionData popupMissionData)
+        {
+            ValidateMission();
+        }
+
     }
 
 
@@ -199,21 +234,6 @@ public class MissionsManager : Singleton<MissionsManager>
         
     }
 
-    public void ReportInteractableUsed(string id)
-    {
-        if (CurrentMission is InteractableMissionData m &&
-            m.requiredObjectId == id)
-        {
-            Debug.Log("Correct Object!");
-            GoToNextMission();
-            
-        }
-        else
-        {
-            Debug.Log("Incorrect object!");
-        }
-    }
-
 
     public void GoToNextMission()
     {
@@ -228,27 +248,27 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("🏁 All missions completed! Game over.");
         }
-        Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
+
+        // if (CheckForTutorialMission()) return;
+
+        // Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
     }
 
-    private bool CheckForTutorialMission()
-    {
-        bool res = false;
-        if (CurrentMission is TutorialPopupMissionData tutorialMission)
-        {
-            GameManager.Instance.MissionUIManager.ShowTutorialPopup(
-                tutorialMission.missionTitle,
-                tutorialMission.popupText,
-                () =>
-                {
-                    MarkMissionAsCompleted();
-                    CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
-                });
-            res = true;
-        }
+    // public void CheckForTutorialMission()
+    // {
+    //     if (CurrentMission is TutorialPopupMissionData tutorialMission)
+    //     {
+    //         GameManager.Instance.MissionUIManager.ShowTutorialPopup(
+    //             tutorialMission.missionTitle,
+    //             tutorialMission.popupText,
+    //             () =>
+    //             {
+    //                 MarkMissionAsCompleted();
+    //                 CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
+    //             });
+    //     }
 
-        return res;
-    }
+    // }
 
     public int GetCurrentMissionNumber()
     {
@@ -265,7 +285,7 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator DelayedAdvance()
     {
-        Debug.Log("🟡 You unlocked a new table!");
+        // Debug.Log("[[DelayedAdvance!]]");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         //yield return new WaitForSeconds(2.0f);
 
@@ -289,14 +309,7 @@ public class MissionsManager : Singleton<MissionsManager>
         GameManager.Instance.MissionUIManager.ShowUI();
         HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
-    public void ReportTutorialStep(string stepId)
-    {
-        if (CurrentMission is CustomTutorialMissionData custom && custom.requiredStepId == stepId)
-        {
-            custom.MarkAsCompleted();
-            ValidateMission();
-        }
-    }
+
 
 
     public IEnumerator ResetMissions()

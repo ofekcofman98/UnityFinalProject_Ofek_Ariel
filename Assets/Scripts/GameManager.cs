@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Assets.Scripts.ServerIntegration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject mobileCanvas;
     [SerializeField] private GameObject mobileScreensaverCanvas;
+private ScreensaverController screensaverController;
 
 
     public Query CurrentQuery {get; set;}
@@ -53,9 +55,9 @@ public class GameManager : Singleton<GameManager>
     protected override void Awake()
     {
 
-    // DontDestroyOnLoad(this.gameObject);
-    // SceneManager.sceneLoaded += OnSceneLoaded;
-        base.Awake(); 
+        // DontDestroyOnLoad(this.gameObject);
+        // SceneManager.sceneLoaded += OnSceneLoaded;
+        base.Awake();
         if (querySender == null)
         {
             Debug.LogWarning("QuerySender is not assigned in the Inspector! Trying to find it...");
@@ -86,6 +88,9 @@ public class GameManager : Singleton<GameManager>
             };
 
         }
+        
+        Debug.Log($"📦 mobileCanvas = {mobileCanvas}, screensaverCanvas = {mobileScreensaverCanvas}");
+
     }
 
     void Start()
@@ -111,14 +116,16 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
+    screensaverController = new ScreensaverController(mobileCanvas, mobileScreensaverCanvas);
+    screensaverController.ShowScreensaver();
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
             // StateListener.Instance.StartListening();
         }
 
-        if (!Application.isMobilePlatform && mobileScreensaverCanvas != null)
-        {
-            mobileScreensaverCanvas.SetActive(false);
-        }
+        // if (!Application.isMobilePlatform && mobileScreensaverCanvas != null)
+        // {
+        //     mobileScreensaverCanvas.SetActive(false);
+        // }
     }
 
 
@@ -158,82 +165,62 @@ public class GameManager : Singleton<GameManager>
         MissionUIManager.ShowUI(); // This will handle popup or normal mission
     }
 
-    public void SwitchMobileCanvas(bool i_sqlMode)
-    {
-        if (Application.isMobilePlatform)
-        {
-            if (mobileCanvas != null)
-            {
-                mobileCanvas.SetActive(i_sqlMode);
-                Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
-            }
+    // public void SwitchMobileCanvas(bool i_sqlMode)
+    // {
+    //     if (Application.isMobilePlatform)
+    //     {
+    //         if (mobileCanvas != null)
+    //         {
+    //             mobileCanvas.SetActive(i_sqlMode);
+    //             Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
+    //         }
 
-            if (mobileScreensaverCanvas != null)
-            {
-                mobileScreensaverCanvas.SetActive(!i_sqlMode);
-                Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
-            }
+    //         if (mobileScreensaverCanvas != null)
+    //         {
+    //             mobileScreensaverCanvas.SetActive(!i_sqlMode);
+    //             Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
+    //         }
 
-            if (pcGameCanvas != null)
-            {
-                pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
-            }
+    //         if (pcGameCanvas != null)
+    //         {
+    //             pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
+    //         }
 
-            if (i_sqlMode && queryBuilder != null)
-            {
-                queryBuilder.ResetQuery();
-                queryBuilder.BuildQuery();
-            }
-        }
+    //         if (i_sqlMode && queryBuilder != null)
+    //         {
+    //             queryBuilder.ResetQuery();
+    //             queryBuilder.BuildQuery();
+    //         }
+    //     }
 
-    }
-    //public void SetSqlMode()
-    //{
-    //    bool newMode = !SqlMode;
-
-    //    SwitchMobileCanvas(newMode);
-    //    if(!Application.isMobilePlatform)
-    //    {
-    //        // PC: always show pcGameCanvas, hide both mobile canvases
-    //        if (pcGameCanvas != null)
-    //        {
-    //            pcGameCanvas.SetActive(true);
-    //        }
-
-    //        if (mobileCanvas != null)
-    //        {
-    //            mobileCanvas.SetActive(false);
-    //        }
-
-    //        if (mobileScreensaverCanvas != null)
-    //        {
-    //            mobileScreensaverCanvas.SetActive(false);
-    //        }
-    //    }
-
-    //    SqlMode = newMode;
-
-    //    //// Enable/disable movement and camera on both platforms
-    //    //PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
-    //    //if (playerMovement != null) playerMovement.enabled = !SqlMode;
-
-    //    //MouseLook mouseLook = FindObjectOfType<MouseLook>();
-    //    //if (mouseLook != null) mouseLook.enabled = !SqlMode;
-
-    //    //CharacterController characterController = FindObjectOfType<CharacterController>();
-    //    //if (characterController != null) characterController.enabled = !SqlMode;
-
-    //    Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
-    //}
+    // }
 
     public void SetSqlMode()
     {
         SqlMode = !SqlMode;
 
-        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        // if (pcQueryCanvas != null) pcQueryCanvas.SetActive(SqlMode);
-        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        // if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+        // if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
+        HandleMovement();
+
+        Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
+
+
+        if (Application.isMobilePlatform && SqlMode)
+        {
+
+            screensaverController?.HideScreensaver();
+
+            queryBuilder.ResetQuery();
+            queryBuilder.BuildQuery();
+        }
+
+    }
+
+
+    private void HandleMovement()
+    {
         // Disable/Enable movement
         PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
         if (playerMovement != null) playerMovement.enabled = !SqlMode;
@@ -246,18 +233,7 @@ public class GameManager : Singleton<GameManager>
         CharacterController characterController = FindObjectOfType<CharacterController>();
         if (characterController != null) characterController.enabled = !SqlMode;
 
-        Debug.Log($"🎮 SQL Mode toggled to {SqlMode}");
-
-
-        if (Application.isMobilePlatform && SqlMode)
-        {
-            queryBuilder.ResetQuery();
-            queryBuilder.BuildQuery();
-        }
-
     }
-
-
 
     public void SaveQuery(Query i_Query)
     {
@@ -272,8 +248,8 @@ public class GameManager : Singleton<GameManager>
         {
             i_Query.selectClause.Columns = new List<Column>(CurrentQuery.selectClause.Columns);
         }
-        
-        CurrentQuery = i_Query;       
+
+        CurrentQuery = i_Query;
 
     }
 
@@ -337,7 +313,7 @@ public class GameManager : Singleton<GameManager>
         }
         Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
-    await PersonDataManager.Instance.WaitUntilReady();
+        await PersonDataManager.Instance.WaitUntilReady();
 
         QueryResultDecorator.Enrich(jsonResponse, CurrentQuery.fromClause.table.Name, CurrentQuery.selectClause.Columns);
 
@@ -345,6 +321,17 @@ public class GameManager : Singleton<GameManager>
             jsonResponse,
             CurrentQuery.selectClause.Columns,
             CurrentQuery.GetTable().Name);
+            
+
+        // 🔐 After showing results, lock the screen again after delay
+        await Task.Delay(2000); // wait 4 seconds before locking again
+        Debug.Log("⌛ Delay finished, about to show screensaver again.");
+        if (Application.isMobilePlatform)
+        {
+    Debug.Log("📲 Calling screensaverController.ShowScreensaver()");
+            screensaverController?.ShowScreensaver();
+        }
+
     }
 
 

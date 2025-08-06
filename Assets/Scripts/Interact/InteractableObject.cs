@@ -25,7 +25,7 @@ public class InteractableObject : MonoBehaviour
 
     public virtual void Interact()
     {
-        Debug.Log($"Interacted with {objectName}");
+        // Debug.Log($"Interacted with {objectName}");
 
         MissionsManager.Instance.ValidateInteractableMission(interactableId);
     }

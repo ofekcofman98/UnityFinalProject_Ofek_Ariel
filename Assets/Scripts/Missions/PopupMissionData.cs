@@ -17,8 +17,8 @@ public class TutorialPopupMissionData : MissionData
     {
         uiManager.ShowTutorialPopup(missionTitle, missionDescription, () =>
         {
-            GameManager.Instance.missionManager.MarkMissionAsCompleted();
-            CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.missionManager.DelayedAdvance());
+            MissionsManager.Instance.CheckPopupMission();
+            // Debug.Log("just clicked in TutorialPopupMissionData.ShowUI()");
         });
     }
 

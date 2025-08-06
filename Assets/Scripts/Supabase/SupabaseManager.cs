@@ -50,7 +50,7 @@ public class SupabaseManager : Singleton<SupabaseManager>
                 Table newTable = new Table(tableName, i_IsUnlocked: false);
                 Tables.Add(newTable);
                 StartCoroutine(FetchTableColumns(newTable));
-                Debug.Log($"{tableName} table was added from SupaBase");
+                // Debug.Log($"{tableName} table was added from SupaBase");
             }
 
             OnTableNamesFetched?.Invoke(); 
