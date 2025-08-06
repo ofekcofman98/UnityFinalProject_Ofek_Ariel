@@ -28,6 +28,13 @@ public class QuerySender : MonoBehaviour
     {     
         query.PostDeserialize();
         StartCoroutine(SendQuery(query));
+        new WaitForSeconds(2000);
+        Debug.Log("⌛ Delay finished, about to show screensaver again.");
+        if (Application.isMobilePlatform)
+        {
+            Debug.Log("📲 Calling screensaverController.ShowScreensaver()");
+            GameManager.Instance.screensaverController?.ShowScreensaver();
+        }
     }
 
     private IEnumerator SendQuery(Query query)
@@ -62,6 +69,7 @@ public class QuerySender : MonoBehaviour
         {
             Debug.Log($"✅ Query Sent Successfully! Response: {request.downloadHandler.text}");
             IsQuerySent = true;
+           
         }
         else
         {
