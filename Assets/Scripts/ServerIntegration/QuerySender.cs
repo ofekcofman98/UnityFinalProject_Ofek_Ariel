@@ -28,7 +28,7 @@ public class QuerySender : MonoBehaviour
     {     
         query.PostDeserialize();
         StartCoroutine(SendQuery(query));
-        new WaitForSeconds(2000);
+        new WaitForSeconds(m_communicator.screensaverDelayAfterQuery);
         Debug.Log("⌛ Delay finished, about to show screensaver again.");
         if (Application.isMobilePlatform)
         {

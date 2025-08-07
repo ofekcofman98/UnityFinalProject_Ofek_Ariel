@@ -38,9 +38,10 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
+
     [SerializeField] private MissionSequence mainGameSequence;
     [SerializeField] private MissionSequence tutorialSequence;
-    public bool isMainSequence;
+    public int sequenceNumber;
 
 
     [SerializeField] private ResultsUI resultsUI;
@@ -144,7 +145,7 @@ public class GameManager : Singleton<GameManager>
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu(); // ✅ UI-only
-        isMainSequence = true;
+        sequenceNumber = 1;
         MissionsManager.Instance.LoadMissionSequence(mainGameSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
@@ -154,7 +155,7 @@ public class GameManager : Singleton<GameManager>
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu();
-        isMainSequence = false;
+        sequenceNumber = 0;
         MissionsManager.Instance.LoadMissionSequence(tutorialSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
@@ -369,7 +370,7 @@ public class GameManager : Singleton<GameManager>
         if (missionManager != null)
         {
             Debug.Log("Inside condition, before ResetMissions");
-            MissionsManager.Instance.LoadMissionSequence(isMainSequence ? mainGameSequence : tutorialSequence);
+            MissionsManager.Instance.LoadMissionSequence(sequenceNumber == 1 ? mainGameSequence : tutorialSequence);
             yield return MissionsManager.Instance.ResetMissions();
         }
 
@@ -386,7 +387,6 @@ public class GameManager : Singleton<GameManager>
     internal IEnumerator resetAction()
     {
         Debug.Log("Inside ResetAction, before ResetGame");
-        GameManager.Instance.SqlMode = false;
         // GameManager.Instance.SwitchMobileCanvas(SqlMode);
         //GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();

@@ -35,6 +35,7 @@ namespace Assets.Scripts.ServerIntegration
         private string m_resource;
         public int pollRateMilliSeconds { get; } = 500;
 
+        public int screensaverDelayAfterQuery = 2000;
 
         public ServerCommunicator(Endpoint endpoint)
         {

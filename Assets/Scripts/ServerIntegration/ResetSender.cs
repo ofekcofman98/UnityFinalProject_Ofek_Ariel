@@ -26,10 +26,10 @@ namespace Assets.Scripts.ServerIntegration
             {
                 Debug.Log("SENDING RESET MESSAGE TO SERVER");
                 // Construct the payload with the correct key and value
-                var payload = new Dictionary<string, bool>
+                var payload = new Dictionary<string, int>
                  {
-                    { "reset", true },
-                    { "seqNumber", GameManager.Instance.isMainSequence}
+                    { "reset", 1 },
+                    { "seqNumber", GameManager.Instance.sequenceNumber}
 
                  };
 

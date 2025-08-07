@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google.cloud import storage
 import logging
+import random
 import json
 import os
 
@@ -17,6 +18,7 @@ PORT = int(os.getenv("PORT", 8080))
 
 # Google Cloud Storage setup
 BUCKET_NAME = "sqlgamebucket"
+KEY_FILE_PATH = "keys.txt"
 FILE_NAME = "relay-query.json"
 storage_client = storage.Client()
 bucket = storage_client.bucket(BUCKET_NAME)
@@ -24,8 +26,8 @@ bucket = storage_client.bucket(BUCKET_NAME)
 # In-memory state
 stored_data = []
 current_state = {'isLevelDone': False}
-current_reset = {'reset': False}
-current_SQLmode = {'sqlmode': False}
+current_reset = {'reset': 1}
+seqNumber = 1
 query_ready = False  # Only serve query once
 
 
@@ -138,49 +140,43 @@ def get_query():
 
 @app.route('/send-reset', methods=['POST'])
 def send_reset():
+    global seqNumber  
     data = request.get_json()
-    if not data or 'reset' not in data or not isinstance(data['reset'], bool):
-        return jsonify({'error': 'Expected JSON with boolean "reset" key'}), 400
+    if not data or 'reset' not in data or not isinstance(data['reset'], int):
+        return jsonify({'error': 'Expected JSON with int "reset" key'}), 400
 
     current_reset['reset'] = data['reset']
-    logging.info(f"reset updated to: {current_reset['reset']}")
-    return jsonify({'message': 'reset sent successfully', 'reset': current_reset['reset']}), 200
+
+    if 'seqNumber' not in data or not isinstance(data['seqNumber'], int):
+        return jsonify({'error': 'Expected JSON with int "seqNumber" key'}), 400
+
+    seqNumber = data['seqNumber']  # ✅ Now updates global seqNumber
+    return jsonify({
+        'message': 'reset sent successfully',
+        'reset': current_reset['reset'],
+        'seqNumber': seqNumber
+    }), 200
 
 
 @app.route('/get-reset', methods=['GET'])
 def get_reset():
-    if current_reset['reset']:
+    if current_reset['reset'] == 1:
         current_state['isLevelDone'] = False
-        current_reset['reset'] = False
-        current_SQLmode['sqlmode'] = False
-        current_reset['reset'] = False
-        logging.info("reset was True, returning 200 and resetting to False")
+        current_reset['reset'] = 0
+        logging.info("reset was 1, returning 200 and resetting to 0")
 
-        return jsonify({'reset': True}), 200
-    return '', 204
+        return jsonify({
+            'reset': current_reset['reset'],
+            'seqNumber': seqNumber
+        }), 200
 
-
-# ===== SQLMODE SEND AND RETRIEVE ENDPOINTS =====
-@app.route('/send-sqlmode', methods=['POST'])
-def send_sqlmode():
-    data = request.get_json()
-    if not data or 'sqlmode' not in data or not isinstance(data['sqlmode'], bool):
-        return jsonify({'error': 'Expected JSON with boolean "sqlmode" key'}), 400
-
-    current_SQLmode['sqlmode'] = data['sqlmode']
-    logging.info(f"Setting the sqlmode value in server to {current_SQLmode['sqlmode']}")
-    return jsonify(current_SQLmode), 200
+    return jsonify({
+        'reset': current_reset['reset'],
+        'seqNumber': seqNumber
+    }), 204
 
 
-@app.route('/get-sqlmode', methods=['GET'])
-def get_sqlmode():
-    if current_SQLmode['sqlmode']:
-        logging.info(f"sqlmode is True.")
-        return jsonify({'message': 'sqlmode is TRUE', 'sqlmode': True}), 200
-    else:
-        logging.info(f"sqlmode changes to False.")
-        return jsonify({'message': 'changing SQLmode to False', 'sqlmode': False}), 201
-
+# ===== SEND AND RETRIEVE GAME PROGRESS ENDPOINTS =====
 
 @app.route('/send-gameprogress', methods=['POST'])
 def store_object():
@@ -219,6 +215,42 @@ def get_object_post():
         return jsonify(obj), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+# ===== UNIQUE KEY GENERATOR LOGIC, METHODS AND ENDPOINTS =====
+
+def load_existing_keys():
+    if not os.path.exists(KEY_FILE_PATH):
+        return set()
+
+    with open(KEY_FILE_PATH, "r") as f:
+        return set(line.strip() for line in f if line.strip())
+
+
+def append_key_to_file(key):
+    with open(KEY_FILE_PATH, "a") as f:
+        f.write(f"{key}\n")
+
+
+@app.route('/generate-key', methods=['GET'])
+def generate_unique_key():
+    existing_keys = load_existing_keys()
+
+    max_attempts = 10000
+    for _ in range(max_attempts):
+        new_key = str(random.randint(100000, 999999))  # 6-digit string key
+        if new_key not in existing_keys:
+            append_key_to_file(new_key)
+            return jsonify({'key': new_key}), 200
+
+    return jsonify({'error': 'Unable to generate a unique key'}), 500
+
+
+@app.route('/all-keys', methods=['GET'])
+def view_keys():
+    keys = list(load_existing_keys())
+    return jsonify({'keys': keys, 'count': len(keys)})
+
 
 # ==== SERVER RESET ====
 @app.route('/server-reset', methods=['POST'])
