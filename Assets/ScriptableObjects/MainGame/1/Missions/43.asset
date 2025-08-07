@@ -9,19 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 60
+  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
+  m_Name: 43
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Persons
-  missionDescription: Find the names of all witnesses
+  missionTitle: 
+  missionDescription: Maybe the police can help
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
-  requiredTable: Persons
-  requiredColumns:
-  - first_name
-  - last_name
-  requiredCondition: 
-  expectedPrimaryKeyField: first_name
-  expectedRowIdValue: Michelle
+  popupText: 
+  popupImage: {fileID: 0}

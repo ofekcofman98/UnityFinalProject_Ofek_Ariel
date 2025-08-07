@@ -20,7 +20,9 @@ public class SuspectsManager : Singleton<SuspectsManager>
     {
         m_Lives = MissionsManager.Instance.m_Lives;
         OnLivesChanged?.Invoke(m_Lives);
+        Debug.Log($"num of lifes: {m_Lives}");
     }
+
     public void AddSuspect(PersonData suspect)
     {
         if (!Suspects.Contains(suspect))
@@ -43,6 +45,7 @@ public class SuspectsManager : Singleton<SuspectsManager>
     {
         OnLivesChanged.Invoke(MissionsManager.Instance.m_Lives);
     }
+
     public void AddSuspectFromRow(JObject row)
     {
         if (!row.TryGetValue("person_id", out var idToken)) return;
@@ -63,7 +66,7 @@ public class SuspectsManager : Singleton<SuspectsManager>
             id = id,
             first_name = firstName,
             last_name = lastName,
-            // ProfilePictureUrl = pictureUrl,
+            photo_url = pictureUrl,
             description = description
         };
 

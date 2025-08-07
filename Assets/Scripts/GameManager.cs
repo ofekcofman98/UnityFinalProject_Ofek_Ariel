@@ -19,7 +19,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject mobileCanvas;
     [SerializeField] private GameObject mobileScreensaverCanvas;
-private ScreensaverController screensaverController;
+public ScreensaverController screensaverController;
 
 
     public Query CurrentQuery {get; set;}
@@ -323,14 +323,6 @@ private ScreensaverController screensaverController;
             CurrentQuery.GetTable().Name);
             
 
-        // 🔐 After showing results, lock the screen again after delay
-        await Task.Delay(2000); // wait 4 seconds before locking again
-        Debug.Log("⌛ Delay finished, about to show screensaver again.");
-        if (Application.isMobilePlatform)
-        {
-    Debug.Log("📲 Calling screensaverController.ShowScreensaver()");
-            screensaverController?.ShowScreensaver();
-        }
 
     }
 

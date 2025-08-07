@@ -34,7 +34,7 @@ namespace Assets.Scripts.ServerIntegration
         public bool m_isRunning { get; set; } = false;
         private string m_resource;
         public int pollRateMilliSeconds { get; } = 500;
-
+        public readonly int screensaverDelayAfterQuery = 2;
 
         public ServerCommunicator(Endpoint endpoint)
         {

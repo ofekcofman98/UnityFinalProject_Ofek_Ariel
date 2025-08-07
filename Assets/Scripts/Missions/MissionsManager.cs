@@ -39,9 +39,9 @@ public class MissionsManager : Singleton<MissionsManager>
         //    }
         //}));
 
-        SuspectsManager.Instance.Lives = m_Lives;
-        SuspectsManager.Instance.invokeLivesChanged();
-        SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
+        // SuspectsManager.Instance.Lives = m_Lives;
+        // SuspectsManager.Instance.invokeLivesChanged();
+        // SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
     }
 
     public void LoadMissionSequence(MissionSequence sequence)
@@ -57,6 +57,10 @@ public class MissionsManager : Singleton<MissionsManager>
         }
 
         CoroutineRunner.Instance.StartCoroutine(LoadCaseMetadata());
+
+        SuspectsManager.Instance.Lives = m_Lives;
+        SuspectsManager.Instance.initLivesFromMissiomsManager();
+        SuspectsManager.Instance.invokeLivesChanged();
 
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
         GameManager.Instance.MissionUIManager.ShowUI();

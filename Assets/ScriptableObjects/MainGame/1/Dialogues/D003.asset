@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   personId: 003
   lines:
-  - dialogueText: Hello, im 003!
+  - dialogueText: I saw him wearing a black shirt
     unlockAfterMissionTitle: 
     oneTimeOnly: 0
     isFallback: 0

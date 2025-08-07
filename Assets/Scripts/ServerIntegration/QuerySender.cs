@@ -9,11 +9,12 @@ using System.Text;
 using System;
 using Newtonsoft.Json;
 using Assets.Scripts.ServerIntegration;
+using System.Threading.Tasks;
 
 
 public class QuerySender : MonoBehaviour
 {  
-    public bool IsQuerySent { get; private set; } = false;
+public bool IsQuerySent { get; private set; } = false;
     private ServerCommunicator m_communicator;
 
     private void Awake()
@@ -28,6 +29,13 @@ public class QuerySender : MonoBehaviour
     {     
         query.PostDeserialize();
         StartCoroutine(SendQuery(query));
+        new WaitForSeconds(2000);
+        Debug.Log("⌛ Delay finished, about to show screensaver again.");
+        if (Application.isMobilePlatform)
+        {
+            Debug.Log("📲 Calling screensaverController.ShowScreensaver()");
+            GameManager.Instance.screensaverController?.ShowScreensaver();
+        }
     }
 
     private IEnumerator SendQuery(Query query)
@@ -62,6 +70,7 @@ public class QuerySender : MonoBehaviour
         {
             Debug.Log($"✅ Query Sent Successfully! Response: {request.downloadHandler.text}");
             IsQuerySent = true;
+           
         }
         else
         {
@@ -79,7 +88,6 @@ public class QuerySender : MonoBehaviour
     {
         IsQuerySent = true;
     }
-
 
 
 }

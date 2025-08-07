@@ -9,19 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 60
+  m_Script: {fileID: 11500000, guid: 23cf98f2500b3fb4688f74f5ee1b17fa, type: 3}
+  m_Name: 80
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Persons
-  missionDescription: Find the names of all witnesses
+  missionTitle: 
+  missionDescription: Go to the witness' house
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
-  requiredTable: Persons
-  requiredColumns:
-  - first_name
-  - last_name
-  requiredCondition: 
-  expectedPrimaryKeyField: first_name
-  expectedRowIdValue: Michelle
+  requiredObjectId: 003
+  dialogueTriggers: []

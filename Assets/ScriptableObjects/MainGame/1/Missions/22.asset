@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: 
-  missionDescription: This is the victim, we need to find who did the crime!
+  missionDescription: "This is the victim, \nwe need to find who did the crime!"
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
