@@ -26,6 +26,10 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Transform canvasTransform;
     private int originalSiblingIndex;
 
+    [SerializeField] private AudioCue dragCue;
+    [SerializeField] private AudioCue dropCueCorrect;
+    [SerializeField] private AudioCue dropCueWrong;
+
 
     private bool _isDragging = false;   // ✅ Prevents re-entering drag state
 
@@ -50,6 +54,10 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
         if (image != null) image.raycastTarget = false;
 
+        if (dragCue != null)
+        {
+            SfxManager.Instance.Play2D(dragCue);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -76,6 +84,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             {
                 Debug.Log("[OnEndDrag]: wasn't dropped in a new place, dropped back to original");
                 dropBackToOriginal();
+
+                if (dropCueWrong != null)
+                {
+                    SfxManager.Instance.Play2D(dropCueWrong);
+                }
+
                 return;
             }
 
@@ -84,18 +98,35 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
                 Debug.Log($"[OnEndDrag]: Valid drop in {dropZone.transform.name}");
                 dropZone.OnDrop(eventData);
                 // OnDropped?.Invoke(this); 
+
+                if (dropCueCorrect != null)
+                {
+                    SfxManager.Instance.Play2D(dropCueCorrect);
+                }
+
             }
             else
             {
                 Debug.Log($"[OnEndDrag]: NOT valid drop in {dropZone.transform.name}");
                 transform.SetParent(OriginalParent, true);
                 transform.position = originalPosition;
+
+                if (dropCueWrong != null)
+                {
+                    SfxManager.Instance.Play2D(dropCueWrong);
+                }
+
             }
         }
         else
         {
             Debug.Log("[OnEndDrag]: dropZone is null, dropped back to original");
             dropBackToOriginal();
+            if (dropCueWrong != null)
+            {
+                SfxManager.Instance.Play2D(dropCueWrong);
+            }
+
         }
 
         image.raycastTarget = true;

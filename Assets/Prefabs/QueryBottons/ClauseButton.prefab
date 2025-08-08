@@ -154,6 +154,9 @@ MonoBehaviour:
   draggableType: 0
   OriginalParent: {fileID: 0}
   AssignedSection: {fileID: 0}
+  dragCue: {fileID: 11400000, guid: 7ba9fb0b23e4d494c83c509c40a8f8c6, type: 2}
+  dropCueCorrect: {fileID: 11400000, guid: e1bbad759c9edb7499dce010e632fec8, type: 2}
+  dropCueWrong: {fileID: 11400000, guid: 90a45a32d46d3914495fe6a3ac7f0c96, type: 2}
 --- !u!225 &-849821276101538183
 CanvasGroup:
   m_ObjectHideFlags: 0

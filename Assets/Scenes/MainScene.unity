@@ -2522,6 +2522,54 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 2013445337}
   m_SourcePrefab: {fileID: 100100000, guid: d0486cf451fe1174199f4ff6d412299e, type: 3}
+--- !u!1 &151130324
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 151130325}
+  - component: {fileID: 151130326}
+  m_Layer: 0
+  m_Name: SfxManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &151130325
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151130324}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1568912927}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &151130326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 151130324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee20f57c403a0574f80cec8ea572a65a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  poolSize: 16
+  defaultMinDistance: 2
+  defaultMaxDistance: 20
+  sameCueCooldown: 0.05
 --- !u!4 &161957112 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9213117596566188673, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
@@ -2924,6 +2972,7 @@ GameObject:
   - component: {fileID: 202697165}
   - component: {fileID: 202697164}
   - component: {fileID: 202697163}
+  - component: {fileID: 202697166}
   m_Layer: 5
   m_Name: StartButton
   m_TagString: Untagged
@@ -3045,6 +3094,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 202697161}
   m_CullTransparentMesh: 1
+--- !u!114 &202697166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 202697161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1001 &203402054
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3568,6 +3630,7 @@ MonoBehaviour:
   objectName: Door
   interactableType: 0
   interactableId: Door02
+  interactCue: {fileID: 0}
 --- !u!54 &229400303
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6435,9 +6498,9 @@ RectTransform:
   - {fileID: 180634995}
   m_Father: {fileID: 1324763935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 1181.606, y: 0}
   m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &492150884 stripped
@@ -8297,6 +8360,7 @@ MonoBehaviour:
   objectName: 
   interactableType: 2
   interactableId: Person01
+  interactCue: {fileID: 0}
 --- !u!65 &625022631
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8845,6 +8909,7 @@ GameObject:
   - component: {fileID: 664254251}
   - component: {fileID: 664254250}
   - component: {fileID: 664254249}
+  - component: {fileID: 664254252}
   m_Layer: 5
   m_Name: QuitButton
   m_TagString: Untagged
@@ -8954,6 +9019,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 664254247}
   m_CullTransparentMesh: 1
+--- !u!114 &664254252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 664254247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &668831183
 GameObject:
   m_ObjectHideFlags: 0
@@ -9143,8 +9221,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8567825}
   m_HandleRect: {fileID: 8567824}
   m_Direction: 0
-  m_Value: 1
-  m_Size: 0.99999994
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9996,6 +10074,7 @@ MonoBehaviour:
   objectName: Computer
   interactableType: 2
   interactableId: computer01
+  interactCue: {fileID: 0}
 --- !u!114 &722663614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10301,8 +10380,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1087351237}
   m_HandleRect: {fileID: 1087351236}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.9999999
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10726,6 +10805,7 @@ MonoBehaviour:
   objectName: Door
   interactableType: 0
   interactableId: Door02
+  interactCue: {fileID: 0}
 --- !u!54 &773491883
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -11934,6 +12014,7 @@ MonoBehaviour:
   objectName: Officer
   interactableType: 3
   interactableId: Officer01
+  interactCue: {fileID: 0}
 --- !u!65 &819865649
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11972,6 +12053,7 @@ GameObject:
   - component: {fileID: 823885220}
   - component: {fileID: 823885219}
   - component: {fileID: 823885218}
+  - component: {fileID: 823885222}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -12081,6 +12163,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 30}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0}
+--- !u!114 &823885222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 823885217}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &826295380
 GameObject:
   m_ObjectHideFlags: 0
@@ -13365,6 +13460,7 @@ MonoBehaviour:
   objectName: Door
   interactableType: 0
   interactableId: Door02
+  interactCue: {fileID: 0}
 --- !u!54 &927297377
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -14488,7 +14584,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 529.3115, y: -118.228485}
+  m_AnchoredPosition: {x: 561.3115, y: -82.228485}
   m_SizeDelta: {x: 225.4857, y: 158.56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1000442539
@@ -14870,6 +14966,7 @@ GameObject:
   - component: {fileID: 1033464752}
   - component: {fileID: 1033464751}
   - component: {fileID: 1033464750}
+  - component: {fileID: 1033464753}
   m_Layer: 5
   m_Name: LoadGameButton
   m_TagString: Untagged
@@ -14979,6 +15076,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1033464748}
   m_CullTransparentMesh: 1
+--- !u!114 &1033464753
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1033464748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &1037717855 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5541403962932598829, guid: 2da7a846ee6ec3a458c36ac7e23627ba, type: 3}
@@ -14998,7 +15108,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: CrimeSceneDoor
   interactableType: 0
-  interactableId: Door02
+  interactableId: DoorCrimeEvidence
+  interactCue: {fileID: 11400000, guid: 74369cab73f7d8548989cd06e39d6580, type: 2}
 --- !u!1 &1040577280
 GameObject:
   m_ObjectHideFlags: 0
@@ -15941,6 +16052,7 @@ GameObject:
   - component: {fileID: 1072514961}
   - component: {fileID: 1072514960}
   - component: {fileID: 1072514959}
+  - component: {fileID: 1072514962}
   m_Layer: 5
   m_Name: TutorialsButton
   m_TagString: Untagged
@@ -16062,6 +16174,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1072514957}
   m_CullTransparentMesh: 1
+--- !u!114 &1072514962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072514957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &1087351235
 GameObject:
   m_ObjectHideFlags: 0
@@ -17561,9 +17686,9 @@ RectTransform:
   - {fileID: 1284978111}
   m_Father: {fileID: 1324763935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 828.686, y: 0}
   m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1157078194
@@ -17842,7 +17967,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Door
   interactableType: 0
-  interactableId: 
+  interactableId: DoorPoliceStation
+  interactCue: {fileID: 11400000, guid: 74369cab73f7d8548989cd06e39d6580, type: 2}
 --- !u!1001 &1166565772
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19041,7 +19167,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 529.3115, y: -323.4915}
+  m_AnchoredPosition: {x: 561.3115, y: -287.4915}
   m_SizeDelta: {x: 142.8872, y: 214.366}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1256157659
@@ -20063,6 +20189,7 @@ MonoBehaviour:
   objectName: CrimeScene
   interactableType: 1
   interactableId: CrimeScene01
+  interactCue: {fileID: 0}
 --- !u!65 &1308171429
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20971,7 +21098,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1006734534}
   m_HandleRect: {fileID: 1006734533}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22703,6 +22830,7 @@ MonoBehaviour:
   objectName: Officer
   interactableType: 3
   interactableId: Officer01
+  interactCue: {fileID: 0}
 --- !u!65 &1427789220
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -24753,6 +24881,7 @@ Transform:
   - {fileID: 1231452991}
   - {fileID: 741372833}
   - {fileID: 625343201}
+  - {fileID: 151130325}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1570693969
@@ -25650,6 +25779,7 @@ MonoBehaviour:
   objectName: Officer
   interactableType: 1
   interactableId: Officer01
+  interactCue: {fileID: 0}
 --- !u!65 &1649395452
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -26478,7 +26608,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Door
   interactableType: 0
-  interactableId: 
+  interactableId: DoorOfiice
+  interactCue: {fileID: 11400000, guid: 74369cab73f7d8548989cd06e39d6580, type: 2}
 --- !u!54 &1708179747
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -30294,7 +30425,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: Door
   interactableType: 0
-  interactableId: 
+  interactableId: DoorPrivateHome
+  interactCue: {fileID: 11400000, guid: 74369cab73f7d8548989cd06e39d6580, type: 2}
 --- !u!1 &1982745926
 GameObject:
   m_ObjectHideFlags: 0
@@ -31435,7 +31567,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 659695890}
   m_HandleRect: {fileID: 659695889}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

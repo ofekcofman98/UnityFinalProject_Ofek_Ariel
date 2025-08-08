@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2e57cff76f741849a701f09c6cb6945, type: 3}
+  m_Name: Door
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 3c3c8b181b1acae4aab9a3f504bb68c6, type: 3}
+  volume: 1
+  pitchSemitones: 0
+  volumeJitter: 0.03
+  pitchJitterSemitones: 0.1
+  spatial3D: 0
+  spatialBlend: 0
+  mixerGroup: {fileID: -3276902034924318325, guid: 30a697fbc0872e547af6381bcf0bc83b, type: 2}
