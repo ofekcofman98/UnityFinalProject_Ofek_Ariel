@@ -25,9 +25,10 @@ namespace Assets.Scripts.ServerIntegration
         {
             if (!m_communicator.IsMobile)
             {
-                var payload = new Dictionary<string, bool>
+                var payload = new Dictionary<string, int>
                  {
-                    { "isLevelDone", true }
+                    { "isLevelDone", 1 } ,
+                    { "currentLevelIndex", MissionsManager.Instance.currentMissionIndex }
                  };
 
                 string jsonPayload = JsonConvert.SerializeObject(payload);

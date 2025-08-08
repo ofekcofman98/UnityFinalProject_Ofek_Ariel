@@ -199,8 +199,8 @@ public ScreensaverController screensaverController;
     {
         SqlMode = !SqlMode;
 
-        // if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        // if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
 
         HandleMovement();
 
