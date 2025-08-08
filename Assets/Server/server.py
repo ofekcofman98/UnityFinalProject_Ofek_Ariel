@@ -18,15 +18,16 @@ PORT = int(os.getenv("PORT", 8080))
 
 # Google Cloud Storage setup
 BUCKET_NAME = "sqlgamebucket"
-KEY_FILE_PATH = "keys.txt"
+KEYS_OBJECT = "keys/keys.txt"
 FILE_NAME = "relay-query.json"
 storage_client = storage.Client()
 bucket = storage_client.bucket(BUCKET_NAME)
 
 # In-memory state
 stored_data = []
-current_state = {'isLevelDone': False}
+current_state = {'isLevelDone': 0}
 current_reset = {'reset': 1}
+current_level = 0
 seqNumber = 1
 query_ready = False  # Only serve query once
 
@@ -73,22 +74,30 @@ def echo():
 
 @app.route('/send-state', methods=['POST'])
 def send_state():
+    global current_level
+
     data = request.get_json()
-    if not data or 'isLevelDone' not in data or not isinstance(data['isLevelDone'], bool):
-        return jsonify({'error': 'Expected JSON with boolean "isLevelDone" key'}), 400
+    if not data or 'isLevelDone' not in data or not isinstance(data['isLevelDone'], int):
+        return jsonify({'error': 'Expected JSON with integer "isLevelDone" key'}), 400
+
+    if not data or 'currentLevelIndex' not in data or not isinstance(data['currentLevelIndex'], int):
+        return jsonify({'error': 'Expected JSON with integer "currentLevelIndex" key'}), 400
 
     current_state['isLevelDone'] = data['isLevelDone']
+    current_level = data['currentLevelIndex']
     logging.info(f"isLevelDone updated to: {current_state['isLevelDone']}")
-    return jsonify({'message': 'State updated successfully', 'isLevelDone': current_state['isLevelDone']}), 200
+    return jsonify({'message': 'State updated successfully', 'isLevelDone': current_state['isLevelDone'],
+                    'currentLevelIndex': current_level}), 200
 
 
 @app.route('/get-state', methods=['GET'])
 def get_state():
-    if current_state['isLevelDone']:
-        current_state['isLevelDone'] = False
-        logging.info("isLevelDone was True, returning 200 and resetting to False")
-        return jsonify({'isLevelDone': True}), 200
-    return '', 204
+    if current_state['isLevelDone'] == 1:
+        current_state['isLevelDone'] = 0
+        logging.info("isLevelDone was 1, returning 200 and resetting to 0")
+        return jsonify({'isLevelDone': 1, 'currentLevelIndex': current_level}), 200
+    return jsonify({'isLevelDone': 0, 'currentLevelIndex': current_level}), 200
+
 
 
 # ===== QUERY SEND AND RETRIEVE ENDPOINTS =====
@@ -140,7 +149,7 @@ def get_query():
 
 @app.route('/send-reset', methods=['POST'])
 def send_reset():
-    global seqNumber  
+    global seqNumber
     data = request.get_json()
     if not data or 'reset' not in data or not isinstance(data['reset'], int):
         return jsonify({'error': 'Expected JSON with int "reset" key'}), 400
@@ -219,56 +228,51 @@ def get_object_post():
 
 # ===== UNIQUE KEY GENERATOR LOGIC, METHODS AND ENDPOINTS =====
 
+
 def load_existing_keys():
-    if not os.path.exists(KEY_FILE_PATH):
+    blob = bucket.blob(KEYS_OBJECT)
+    if not blob.exists():
         return set()
-
-    with open(KEY_FILE_PATH, "r") as f:
-        return set(line.strip() for line in f if line.strip())
+    return set(line for line in blob.download_as_text().splitlines() if line)
 
 
-def append_key_to_file(key):
-    with open(KEY_FILE_PATH, "a") as f:
-        f.write(f"{key}\n")
+def append_key_to_store(key):
+    blob = bucket.blob(KEYS_OBJECT)
+    existing = ""
+    if blob.exists():
+        existing = blob.download_as_text()
+    blob.upload_from_string(existing + f"{key}\n", content_type="text/plain")
 
 
 @app.route('/generate-key', methods=['GET'])
 def generate_unique_key():
-    existing_keys = load_existing_keys()
-
-    max_attempts = 10000
-    for _ in range(max_attempts):
-        new_key = str(random.randint(100000, 999999))  # 6-digit string key
-        if new_key not in existing_keys:
-            append_key_to_file(new_key)
-            return jsonify({'key': new_key}), 200
-
+    keys = load_existing_keys()
+    for _ in range(10000):
+        k = str(random.randint(100000, 999999))
+        if k not in keys:
+            append_key_to_store(k)
+            return jsonify({'key': k}), 200
     return jsonify({'error': 'Unable to generate a unique key'}), 500
 
 
 @app.route('/all-keys', methods=['GET'])
 def view_keys():
-    keys = list(load_existing_keys())
+    keys = sorted(load_existing_keys())
     return jsonify({'keys': keys, 'count': len(keys)})
 
 
 # ==== SERVER RESET ====
-@app.route('/server-reset', methods=['POST'])
+@app.route('/server-reset', methods=['GET'])
 def server_reset():
-    data = request.get_json()
-    if not data or 'password' not in data:
-        return jsonify({'error': 'Expected JSON with a string value for password key'}), 400
-
-    password = data['password']
-    if password == 'nuw39miNC83MF94989D3nmomcl9j4mfnnxE83NTS12fvded':
-        logging.info(f"reseting server values and information stored to default")
-        stored_data = []
-        current_state = {'isLevelDone': False}
-        current_reset = {'reset': False}
-        current_SQLmode = {'sqlmode': False}
-        query_ready = False
-        return jsonify({'message': 'server contents have been reset'}), 200
-    return jsonify({'message': 'incorrect password'}), 403
+    logging.info("resetting server values to defaults")
+    global stored_data, current_state, current_reset, query_ready, seqNumber, current_level
+    stored_data = []
+    current_state = {'isLevelDone': 0}
+    current_reset = {'reset': 0}
+    query_ready = False
+    seqNumber = 1
+    current_level = 0
+    return jsonify({'message': 'server contents have been reset'}), 200
 
 
 # ===== Launch =====

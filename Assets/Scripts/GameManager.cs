@@ -98,8 +98,6 @@ public class GameManager : Singleton<GameManager>
     {
         MissionUIManager.Init(missionManager);    
         Application.targetFrameRate = 60;
-        UniqueMobileKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        // ResetSender.Instance.SendResetToPhone();
         ShowMainMenu();
 
         if (!Application.isMobilePlatform)
@@ -387,10 +385,13 @@ public class GameManager : Singleton<GameManager>
     internal IEnumerator resetAction()
     {
         Debug.Log("Inside ResetAction, before ResetGame");
-        // GameManager.Instance.SwitchMobileCanvas(SqlMode);
-        //GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
         ShowMainMenu();
+    }
+
+    private void OnDestroy()
+    {
+        StartCoroutine(ResetSender.Instance.ResetServerOnDestroy());
     }
 }

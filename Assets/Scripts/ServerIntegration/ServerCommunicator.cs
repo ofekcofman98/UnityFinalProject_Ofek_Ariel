@@ -25,6 +25,9 @@ namespace Assets.Scripts.ServerIntegration
             Retrieve,
             Store,
             Echo,
+            GenerateKey,
+            AllKeys,
+            ServerReset,
         }
 
 
@@ -65,7 +68,10 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.Retrieve => "/retrieve",
                 Endpoint.Store => "/store",
                 Endpoint.Echo => "/echo",
-                _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
+                Endpoint.GenerateKey => "/generate-key",
+                Endpoint.AllKeys => "/all-keys",
+                Endpoint.ServerReset => "/server-reset",
+                    _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }
 

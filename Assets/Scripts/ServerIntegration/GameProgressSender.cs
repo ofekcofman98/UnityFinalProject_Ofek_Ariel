@@ -16,23 +16,62 @@ namespace Assets.Scripts.ServerIntegration
     {
         private GameProgressContainer m_progressContainer;
         private ServerCommunicator m_communicator;
-        private string m_gameKey = "12345";
+        private string m_gameKey;
         private bool m_isGameSaved = false;
 
-        // private void Awake()
-        // {
-        //    // m_gameKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        // }
+        
         public GameProgressSender()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendGameProgress);
         }
 
+        private IEnumerator getUniqueKey()
+        {
+            UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.GenerateKey).ServerUrl);
 
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                string receivedJson = request.downloadHandler.text;
+                try
+                {
+                    var settings = new JsonSerializerSettings();
+                    settings.Converters.Add(new OperatorConverter());
+
+                    Dictionary<string,string> result = JsonConvert.DeserializeObject<Dictionary<string,string>>(receivedJson, settings);
+                    m_gameKey = result["key"];
+                    Debug.Log($"gameKey value returned from server : {m_gameKey}");
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
+                }
+            }
+            else if (request.responseCode == 204)
+            {
+                Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
+            }
+            else
+            {
+                Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+            }
+
+
+        }
 
         public IEnumerator SendGameProgressToServer(GameProgressContainer gpc)
         {
+            if (m_isGameSaved) 
+            {
+                Debug.LogError($"Game/container is already sent.");
+                yield return null;
+
+            }
             m_progressContainer = gpc;
+            yield return StartCoroutine(getUniqueKey());
+            Debug.Log($"📤 m_gameKey value after function and before payload: {m_gameKey}");
             var payload = new Dictionary<string, object>
                  {
                     { "game", m_progressContainer },
@@ -64,7 +103,7 @@ namespace Assets.Scripts.ServerIntegration
             if (request.result == UnityWebRequest.Result.Success)
             {
                 Debug.Log($"✅ GameProgressContainer Sent Successfully! Response: {request.downloadHandler.text}");
-                Debug.Log($"✅ GameProgressContainer contains : lives {gpc.Lives}, currentMissionIndex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
+                Debug.Log($"✅ GameProgressContainer contains : lives {gpc.Lives}, currentMissionIndex {gpc.currentMissionIndex}, gameCode : {m_gameKey}");
 
                 m_isGameSaved = true;
             }
@@ -75,8 +114,9 @@ namespace Assets.Scripts.ServerIntegration
             }
         }
 
-        public IEnumerator GetSavedGameFromServer(Action<GameProgressContainer> onComplete)
+        public IEnumerator GetSavedGameFromServer()
         {
+            Debug.Log($"📤 m_gameKey value before sending a getGameProgress request: {m_gameKey}");
             var payload = new Dictionary<string, string>
             {
                 { "key", m_gameKey }
@@ -114,18 +154,18 @@ namespace Assets.Scripts.ServerIntegration
                     GameProgressContainer result = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
                     Debug.Log("✅ Game object deserialized");
 
-                    onComplete?.Invoke(result);
+                    //onComplete?.Invoke(result);
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"❌ Deserialization error: {ex.Message}");
-                    onComplete?.Invoke(null);
+                    //onComplete?.Invoke(null);
                 }
             }
             else
             {
                 Debug.LogError($"❌ Server request failed: {request.responseCode} | {request.error}");
-                onComplete?.Invoke(null);
+                //onComplete?.Invoke(null);
             }
         }
 

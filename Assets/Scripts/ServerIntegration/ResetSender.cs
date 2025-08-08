@@ -65,5 +65,23 @@ namespace Assets.Scripts.ServerIntegration
                 };
             }
         }
+
+        public IEnumerator ResetServerOnDestroy()
+        {
+            UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.ServerReset).ServerUrl);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Server contents have been reset upon destruction");
+            }           
+            else
+            {
+                Debug.LogError($"❌ An error has occured : {request.responseCode} | {request.error}");
+            }
+
+
+        }
     }
 }

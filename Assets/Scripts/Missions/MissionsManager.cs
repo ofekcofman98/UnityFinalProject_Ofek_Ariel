@@ -131,21 +131,22 @@ public class MissionsManager : Singleton<MissionsManager>
         }
         else
         {
-            Debug.Log("❌ Mission failed.");
-            if (currentMissionIndex == missionSequence.Missions.Count - 1)
-            {
-                Debug.Log("❌ You arrested the wrong suspect !.");
-                m_Lives--;
-                if (m_Lives > 0)
-                    Debug.Log($"You have {m_Lives} lives left .");
-                else
-                    Debug.Log("Game over :/");
+            //Debug.Log("❌ Mission failed.");
+            //if (currentMissionIndex == missionSequence.Missions.Count - 1)
+            //{
+            //    Debug.Log("❌ You arrested the wrong suspect !.");
+            //    m_Lives--;
+            //    if (m_Lives > 0)
+            //        Debug.Log($"You have {m_Lives} lives left .");
+            //    else
+            //        Debug.Log("Game over :/");
 
-            }
+            //}
 
             GameManager.Instance.QuerySender?.ResetQuerySendFlag();
             OnMissionValidated?.Invoke(false);
         }
+        Debug.Log($"<3 <3 missionManager lives : {m_Lives} . SuspectsManager : {SuspectsManager.Instance.Lives}");
     }
 
     public void ValidateSqlMission(Query query, JArray result, QueryValidator validator)

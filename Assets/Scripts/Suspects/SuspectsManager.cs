@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class SuspectsManager : Singleton<SuspectsManager>
 {
-    private int m_Lives;
     public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
     public event Action<bool> OnGuessResult;
@@ -18,8 +17,8 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
     public void initLivesFromMissiomsManager()
     {
-        m_Lives = MissionsManager.Instance.m_Lives;
-        OnLivesChanged?.Invoke(m_Lives);
+        Lives = MissionsManager.Instance.m_Lives;
+        OnLivesChanged?.Invoke(Lives);
     }
     public void AddSuspect(PersonData suspect)
     {
@@ -91,7 +90,7 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
         bool correct = suspectId == FinalAnswerSuspectId;
 
-        if(m_Lives > 0)
+        if(Lives > 0)
         {
             if (correct)
             {
@@ -101,10 +100,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
             }
             else
             {
-                m_Lives--;
+                Lives--;
                 Debug.Log($"❌ Wrong guess");
                 OnGuessResult?.Invoke(false);
-                OnLivesChanged?.Invoke(m_Lives);
+                OnLivesChanged?.Invoke(Lives);
             }
         }    
         else 
