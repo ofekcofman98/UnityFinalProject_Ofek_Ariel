@@ -74,20 +74,20 @@ def echo():
 
 @app.route('/send-state', methods=['POST'])
 def send_state():
-    global current_level
-
+    global current_level, seqNumber
     data = request.get_json()
-    if not data or 'isLevelDone' not in data or not isinstance(data['isLevelDone'], int):
-        return jsonify({'error': 'Expected JSON with integer "isLevelDone" key'}), 400
+    if not data or 'seqNumber' not in data or not isinstance(data['seqNumber'], int):
+        return jsonify({'error': 'Expected JSON with integer "seqNumber" key'}), 400
 
     if not data or 'currentLevelIndex' not in data or not isinstance(data['currentLevelIndex'], int):
         return jsonify({'error': 'Expected JSON with integer "currentLevelIndex" key'}), 400
 
-    current_state['isLevelDone'] = data['isLevelDone']
+    current_state['isLevelDone'] = 1
+    seqNumber = data['seqNumber']
     current_level = data['currentLevelIndex']
-    logging.info(f"isLevelDone updated to: {current_state['isLevelDone']}")
-    return jsonify({'message': 'State updated successfully', 'isLevelDone': current_state['isLevelDone'],
-                    'currentLevelIndex': current_level}), 200
+    logging.info(f"isLevelDone updated to 1")
+    return jsonify(
+        {'message': 'State updated successfully', 'currentLevelIndex': current_level, 'seqNumber': seqNumber}), 200
 
 
 @app.route('/get-state', methods=['GET'])
@@ -97,7 +97,6 @@ def get_state():
         logging.info("isLevelDone was 1, returning 200 and resetting to 0")
         return jsonify({'isLevelDone': 1, 'currentLevelIndex': current_level}), 200
     return jsonify({'isLevelDone': 0, 'currentLevelIndex': current_level}), 200
-
 
 
 # ===== QUERY SEND AND RETRIEVE ENDPOINTS =====

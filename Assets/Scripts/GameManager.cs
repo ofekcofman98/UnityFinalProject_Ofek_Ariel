@@ -41,6 +41,8 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField] private MissionSequence mainGameSequence;
     [SerializeField] private MissionSequence tutorialSequence;
+    public MissionSequence MainGameSequence => mainGameSequence;
+    public MissionSequence TutorialSequence => tutorialSequence;
     public int sequenceNumber;
 
 
@@ -115,8 +117,8 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-    screensaverController = new ScreensaverController(mobileCanvas, mobileScreensaverCanvas);
-    screensaverController.ShowScreensaver();
+            screensaverController = new ScreensaverController(mobileCanvas, mobileScreensaverCanvas);
+            screensaverController.ShowScreensaver();
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
             // StateListener.Instance.StartListening();
         }
@@ -144,7 +146,7 @@ public class GameManager : Singleton<GameManager>
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu(); // ✅ UI-only
         sequenceNumber = 1;
-        MissionsManager.Instance.LoadMissionSequence(mainGameSequence); // dynamically chosen
+        MissionsManager.Instance.LoadMissionSequence(MainGameSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
@@ -154,11 +156,19 @@ public class GameManager : Singleton<GameManager>
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu();
         sequenceNumber = 0;
-        MissionsManager.Instance.LoadMissionSequence(tutorialSequence); // dynamically chosen
+        MissionsManager.Instance.LoadMissionSequence(TutorialSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
 
+    public void StartSavedGame()
+    {
+        Time.timeScale = 1f;
+        MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        GameProgressSender gps = new GameProgressSender();
+        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer());
+       
+    }
     public void StartMissions()
     {
         MissionUIManager.ShowUI(); // This will handle popup or normal mission
@@ -390,8 +400,9 @@ public class GameManager : Singleton<GameManager>
         ShowMainMenu();
     }
 
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
         StartCoroutine(ResetSender.Instance.ResetServerOnDestroy());
     }
+    
 }

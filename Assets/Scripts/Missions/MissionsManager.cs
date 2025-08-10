@@ -20,30 +20,20 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private void Start()
     {
-
-        //StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer((gpc) =>
-        //{
-        //    if (gpc != null)
-        //    {
-        //        Debug.Log($"the gpc values are : lives {gpc.Lives}, currentMissionindex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
-        //        //m_Lives = gpc.Lives;
-        //        m_Lives = 2;
-        //        currentMissionIndex = gpc.currentMissionIndex;
-        //        GameManager.Instance.SqlMode = gpc.SqlMode;
-        //        SuspectsManager.Instance.initLivesFromMissiomsManager();
-        //        UnlockTablesForSavedGame();
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("⚠️ Could not load saved game from server.");
-        //    }
-        //}));
-
+          
         SuspectsManager.Instance.Lives = m_Lives;
         SuspectsManager.Instance.invokeLivesChanged();
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
     }
 
+    public void SetStatsFromLoadedGame(int i_seqIndex, int i_lives, int i_levelIndex)
+    {
+        GameManager.Instance.sequenceNumber = i_seqIndex;
+        m_Lives = i_lives;
+        currentMissionIndex = i_levelIndex;
+        SuspectsManager.Instance.initLivesFromMissiomsManager();
+        UnlockTablesForSavedGame();
+    }
     public void LoadMissionSequence(MissionSequence sequence)
     {
         missionSequence = sequence;
@@ -146,7 +136,6 @@ public class MissionsManager : Singleton<MissionsManager>
             GameManager.Instance.QuerySender?.ResetQuerySendFlag();
             OnMissionValidated?.Invoke(false);
         }
-        Debug.Log($"<3 <3 missionManager lives : {m_Lives} . SuspectsManager : {SuspectsManager.Instance.Lives}");
     }
 
     public void ValidateSqlMission(Query query, JArray result, QueryValidator validator)
@@ -286,10 +275,7 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator DelayedAdvance()
     {
-        // Debug.Log("[[DelayedAdvance!]]");
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
-        //yield return new WaitForSeconds(2.0f);
-
         checkUnlocking();
         Debug.Log("✅ checkUnlocking passed");
 

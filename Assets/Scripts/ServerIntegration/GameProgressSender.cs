@@ -14,8 +14,9 @@ namespace Assets.Scripts.ServerIntegration
 {
     public class GameProgressSender : Singleton<GameProgressSender>
     {
-        private GameProgressContainer m_progressContainer;
+        public GameProgressContainer m_progressContainer;
         private ServerCommunicator m_communicator;
+        public event Action OnGameFetchComplete;
         private string m_gameKey;
         private bool m_isGameSaved = false;
 
@@ -23,8 +24,10 @@ namespace Assets.Scripts.ServerIntegration
         public GameProgressSender()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendGameProgress);
+            OnGameFetchComplete += OnGameFetchCompleteAction;
         }
 
+        
         private IEnumerator getUniqueKey()
         {
             UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.GenerateKey).ServerUrl);
@@ -114,12 +117,25 @@ namespace Assets.Scripts.ServerIntegration
             }
         }
 
+        private void OnGameFetchCompleteAction()
+        {
+            if (m_progressContainer != null)
+            {
+                MissionsManager.Instance.LoadMissionSequence(m_progressContainer.sequenceIndex == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+                MissionsManager.Instance.SetStatsFromLoadedGame(m_progressContainer.sequenceIndex, m_progressContainer.Lives, m_progressContainer.currentMissionIndex);
+                GameManager.Instance.StartMissions();
+                StateSender.Instance.UpdatePhone();
+            }
+            else
+                Debug.Log("gps or container are null !");
+            
+        }
         public IEnumerator GetSavedGameFromServer()
         {
             Debug.Log($"📤 m_gameKey value before sending a getGameProgress request: {m_gameKey}");
             var payload = new Dictionary<string, string>
             {
-                { "key", m_gameKey }
+                { "key", "183673" }
             };
 
             string jsonPayload = JsonConvert.SerializeObject(payload);
@@ -151,21 +167,20 @@ namespace Assets.Scripts.ServerIntegration
                     var settings = new JsonSerializerSettings();
                     settings.Converters.Add(new OperatorConverter());
 
-                    GameProgressContainer result = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
-                    Debug.Log("✅ Game object deserialized");
+                    m_progressContainer = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
+                    Debug.Log("✅ Game object deserialized and placed into the object's container !");
+                    OnGameFetchComplete.Invoke();
 
-                    //onComplete?.Invoke(result);
+
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"❌ Deserialization error: {ex.Message}");
-                    //onComplete?.Invoke(null);
                 }
             }
             else
             {
                 Debug.LogError($"❌ Server request failed: {request.responseCode} | {request.error}");
-                //onComplete?.Invoke(null);
             }
         }
 
