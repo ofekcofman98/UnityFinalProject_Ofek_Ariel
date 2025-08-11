@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SQLClick
   m_EditorClassIdentifier: 
   clips:
-  - {fileID: 8300000, guid: b652840d8a99c884a9bb39a976c255ad, type: 3}
+  - {fileID: 8300000, guid: 386c7410ae5a40b47940429160d7f48d, type: 3}
   volume: 1
   pitchSemitones: 0
   volumeJitter: 0.03

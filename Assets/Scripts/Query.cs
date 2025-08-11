@@ -8,19 +8,12 @@ using System.Text;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
 
-// public enum eQueryState
-// {
-//     None, 
-//     SelectingTable,
-//     SelectingColumns,
-//     SelectingConditions,
-// }
 
 public class Query
 {
     [JsonProperty] private string m_QueryString;
 
-    public SelectClause selectClause; 
+    public SelectClause selectClause;
     public FromClause fromClause;
     public WhereClause whereClause;
     // [JsonIgnore] public List<IQueryClause> clauses;
@@ -31,7 +24,7 @@ public class Query
     public QueryState queryState;
     public List<Dictionary<string, string>> Results { get; set; }
     public bool IsValid => Clauses.All(clause => clause.IsValid());
-    public event Action OnQueryUpdated;  
+    public event Action OnQueryUpdated;
 
 
     [JsonIgnore] private Dictionary<IQueryClause, Button> clauseButtons = new Dictionary<IQueryClause, Button>();
@@ -40,18 +33,18 @@ public class Query
     public Query()
     {
         selectClause = new SelectClause();
-        fromClause   = new FromClause();
-        whereClause  = new WhereClause();
+        fromClause = new FromClause();
+        whereClause = new WhereClause();
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
 
         Results = new List<Dictionary<string, string>>();
-    }    
+    }
 
     public string QueryString
     {
-        get { return m_QueryString ;}
-        
+        get { return m_QueryString; }
+
         set
         {
             m_QueryString = value;
@@ -92,14 +85,14 @@ public class Query
                 clause.Deactivate();
             }
             // Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
-            
+
             clause.UpdateString();
             updateQueryString();
         }
     }
 
     public void SetTable(Table i_Table)
-    {  
+    {
         fromClause.SetTable(i_Table);
         NotifyClauses();
         updateQueryString();
@@ -210,10 +203,10 @@ public class Query
 
             if (clauseElements.Count > 0)
             {
-                orderedElements.Add(clauseElements); 
+                orderedElements.Add(clauseElements);
             }
         }
-        
+
         return orderedElements;
     }
 
@@ -233,7 +226,7 @@ public class Query
             // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
             clause.OnQueryUpdated(this);
         }
-        
+
     }
 
     public void PostDeserialize()
@@ -249,7 +242,7 @@ public class Query
         // }
 
         // updateQueryString(); // Also ensure final string is accurate
-    
+
         if (whereClause != null && whereClause.Conditions != null && whereClause.Conditions.Count > 0)
         {
             whereClause.Activate();              // ✅ So it shows in the panel

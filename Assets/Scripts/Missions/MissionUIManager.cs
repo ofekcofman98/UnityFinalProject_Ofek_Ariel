@@ -17,11 +17,10 @@ public class MissionUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI PcMissionDescription;
 
     [SerializeField] private NewTablePopup newTablePopup;
+    [SerializeField] private AudioCue unlockCue;
+    
     [SerializeField] private TutorialPopupUI tutorialPopupUI;
 
-
-
-    private MissionsManager missionManager; //TODO: missionManager is singleton !!! 
 
     private bool isQueryCorrect;
     private string k_IsCorrectString => isQueryCorrect ? "correct" : "incorrect";
@@ -30,30 +29,21 @@ public class MissionUIManager : MonoBehaviour
     [SerializeField] public GameObject executeButton;
     [SerializeField] public GameObject clearButton;
 
-    public void Init(MissionsManager missionsManager)
-    {
-        this.missionManager = missionsManager;
-    }
 
     public void ShowUI()
     {
-        if (missionManager == null)
-        {
-            Debug.LogError("MissionManager not set on MissionUIManager.");
-            return;
-        }
         Debug.Log("?? Rebuilding query for: " + MissionsManager.Instance.CurrentMission.missionTitle);
 
-        MissionData mission = missionManager.CurrentMission;
+        MissionData mission = MissionsManager.Instance.CurrentMission;
 
-        missionManager.CurrentMission.ShowUI(this);
+        MissionsManager.Instance.CurrentMission.ShowUI(this);
     }
 
     public void DisplayStandardMission(MissionData mission)
     {
         bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
 
-        string missionNumberText = isTutorial ? "Tutorial" : missionManager.GetCurrentMissionNumber().ToString();
+        string missionNumberText = isTutorial ? "Tutorial" : MissionsManager.Instance.GetCurrentMissionNumber().ToString();
 
         MobileMissionNumber.text = missionNumberText;
         MobileMissionTitle.text = mission.missionTitle;
@@ -69,23 +59,25 @@ public class MissionUIManager : MonoBehaviour
 
     public void ShowResult(bool i_Result)
     {
-        isQueryCorrect = i_Result;
+        if (MissionsManager.Instance.CurrentMission is SQLMissionData)
+        {
+            isQueryCorrect = i_Result;
 
-        MobileMissionTitle.text = "";
-        MobileMissionDescription.text = $"Query is {k_IsCorrectString}";
-        MobileMissionDescription.color = k_Color;
+            MobileMissionTitle.text = "";
+            MobileMissionDescription.text = $"Query is {k_IsCorrectString}";
+            MobileMissionDescription.color = k_Color;
 
-        PcMissionTitle.text = "";
-        PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
-        PcMissionDescription.color = k_Color;
-
+            PcMissionTitle.text = "";
+            PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
+            PcMissionDescription.color = k_Color;
+        }
         // executeButton.gameObject.SetActive(!i_Result);
         // clearButton.gameObject.SetActive(i_Result);        
 
-        if (GameManager.Instance.missionManager.CurrentMission.unlocksTable)
+        if (MissionsManager.Instance.CurrentMission.unlocksTable)
         {
-            string tableName = GameManager.Instance.missionManager.CurrentMission.tableToUnlock;
-    Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
+            string tableName = MissionsManager.Instance.CurrentMission.tableToUnlock;
+            Table table = SupabaseManager.Instance.Tables.FirstOrDefault(t => t.Name == tableName);
             if (table != null)
             {
                 table.UnlockTable(); // ✅ Do it here so Init sees the unlocked state
@@ -106,13 +98,10 @@ public class MissionUIManager : MonoBehaviour
         if (table != null)
         {
             newTablePopup.Open(table);
-
-            // if (MissionsManager.Instance.MissionSequence.isTutorial)
-            // {
-            //     newTablePopup.onCloseCallback = () => {
-            //         CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
-            //     };
-            // }
+            if (unlockCue != null)
+            {
+                SfxManager.Instance.Play2D(unlockCue);
+            }            
         }
     }
 

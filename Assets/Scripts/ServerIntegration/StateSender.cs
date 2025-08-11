@@ -27,7 +27,7 @@ namespace Assets.Scripts.ServerIntegration
             {
                 var payload = new Dictionary<string, int>
                  {
-                    { "isLevelDone", 1 } ,
+                    { "seqNumber", GameManager.Instance.sequenceNumber } ,
                     { "currentLevelIndex", MissionsManager.Instance.currentMissionIndex }
                  };
 

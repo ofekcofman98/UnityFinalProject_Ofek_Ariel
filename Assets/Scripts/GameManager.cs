@@ -19,7 +19,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject mobileCanvas;
     [SerializeField] private GameObject mobileScreensaverCanvas;
-public ScreensaverController screensaverController;
+    public ScreensaverController screensaverController { get; private set; }
 
 
     public Query CurrentQuery {get; set;}
@@ -36,11 +36,13 @@ public ScreensaverController screensaverController;
     [SerializeField] private QueryListener queryReceiver;
 
     [SerializeField] private QueryValidator queryValidator;
-    [SerializeField] public MissionsManager missionManager; 
     [SerializeField] public MissionUIManager MissionUIManager;
+
     [SerializeField] private MissionSequence mainGameSequence;
     [SerializeField] private MissionSequence tutorialSequence;
-    public bool isMainSequence;
+    public MissionSequence MainGameSequence => mainGameSequence;
+    public MissionSequence TutorialSequence => tutorialSequence;
+    public int sequenceNumber;
 
 
     [SerializeField] private ResultsUI resultsUI;
@@ -73,12 +75,9 @@ public ScreensaverController screensaverController;
             queryExecutor.OnQueryExecuted += HandleQueryResults;
             queryExecutor.OnQueryExecuted += result =>
             {
-                if (missionManager != null)
-                {
-                    missionManager.ValidateSqlMission(CurrentQuery, result, queryValidator);
-                }
+                MissionsManager.Instance.ValidateSqlMission(CurrentQuery, result, queryValidator);
             };
-            missionManager.OnMissionValidated += isCorrect =>
+            MissionsManager.Instance.OnMissionValidated += isCorrect =>
             {
                 OnQueryIsCorrect?.Invoke(isCorrect);
                 if (isCorrect)
@@ -95,10 +94,7 @@ public ScreensaverController screensaverController;
 
     void Start()
     {
-        MissionUIManager.Init(missionManager);    
         Application.targetFrameRate = 60;
-        UniqueMobileKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        // ResetSender.Instance.SendResetToPhone();
         ShowMainMenu();
 
         if (!Application.isMobilePlatform)
@@ -116,8 +112,8 @@ public ScreensaverController screensaverController;
         }
         else
         {
-    screensaverController = new ScreensaverController(mobileCanvas, mobileScreensaverCanvas);
-    screensaverController.ShowScreensaver();
+            screensaverController = new ScreensaverController(mobileCanvas, mobileScreensaverCanvas);
+            screensaverController.ShowScreensaver();
             Debug.Log("📱 Mobile detected — not starting listener (mobile only sends queries).");
             // StateListener.Instance.StartListening();
         }
@@ -144,8 +140,8 @@ public ScreensaverController screensaverController;
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu(); // ✅ UI-only
-        isMainSequence = true;
-        MissionsManager.Instance.LoadMissionSequence(mainGameSequence); // dynamically chosen
+        sequenceNumber = 1;
+        MissionsManager.Instance.LoadMissionSequence(MainGameSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
@@ -154,12 +150,20 @@ public ScreensaverController screensaverController;
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMainMenu();
-        isMainSequence = false;
-        MissionsManager.Instance.LoadMissionSequence(tutorialSequence); // dynamically chosen
+        sequenceNumber = 0;
+        MissionsManager.Instance.LoadMissionSequence(TutorialSequence); // dynamically chosen
         StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
 
+    public void StartSavedGame()
+    {
+        Time.timeScale = 1f;
+        MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        GameProgressSender gps = new GameProgressSender();
+        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer());
+       
+    }
     public void StartMissions()
     {
         MissionUIManager.ShowUI(); // This will handle popup or normal mission
@@ -297,9 +301,7 @@ public ScreensaverController screensaverController;
 
     private async void HandleQueryResults(JArray jsonResponse)
     {
-
-        Debug.Log($"📥 GameManager received {jsonResponse.Count} rows!");
-
+        // Debug.Log($"📥 GameManager received {jsonResponse.Count} rows!");
         if (CurrentQuery == null)
         {
             Debug.LogError("🚨 CurrentQuery is NULL!");
@@ -311,7 +313,7 @@ public ScreensaverController screensaverController;
             Debug.LogError("🚨 CurrentQuery.Columns is EMPTY!");
             return;
         }
-        Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
+        // Debug.Log($"📌 Query Columns: {string.Join(", ", CurrentQuery.selectClause.Columns.Select(col => col.Name))}");
 
         await PersonDataManager.Instance.WaitUntilReady();
 
@@ -321,8 +323,8 @@ public ScreensaverController screensaverController;
             jsonResponse,
             CurrentQuery.selectClause.Columns,
             CurrentQuery.GetTable().Name);
-            
-
+                  
+ 
 
     }
 
@@ -365,13 +367,9 @@ public ScreensaverController screensaverController;
         CurrentQuery = null;
         SqlMode = false;
 
-        Debug.Log($"inside ResetGame, missionManager : {missionManager}");
-        if (missionManager != null)
-        {
-            Debug.Log("Inside condition, before ResetMissions");
-            MissionsManager.Instance.LoadMissionSequence(isMainSequence ? mainGameSequence : tutorialSequence);
-            yield return MissionsManager.Instance.ResetMissions();
-        }
+        Debug.Log("Inside condition, before ResetMissions");
+        MissionsManager.Instance.LoadMissionSequence(sequenceNumber == 1 ? mainGameSequence : tutorialSequence);
+        yield return MissionsManager.Instance.ResetMissions();
 
         if (queryBuilder != null)
         {
@@ -386,11 +384,14 @@ public ScreensaverController screensaverController;
     internal IEnumerator resetAction()
     {
         Debug.Log("Inside ResetAction, before ResetGame");
-        GameManager.Instance.SqlMode = false;
-        // GameManager.Instance.SwitchMobileCanvas(SqlMode);
-        //GameManager.Instance.SwitchMobileCanvas(SqlMode);
         yield return ResetGame();
         Debug.Log("Inside ResetAction, after ResetGame");
         ShowMainMenu();
     }
+
+    private void OnApplicationQuit()
+    {
+        StartCoroutine(ResetSender.Instance.ResetServerOnDestroy());
+    }
+    
 }

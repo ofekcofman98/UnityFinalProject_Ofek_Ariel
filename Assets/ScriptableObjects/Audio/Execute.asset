@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2e57cff76f741849a701f09c6cb6945, type: 3}
   m_Name: Execute
   m_EditorClassIdentifier: 
-  clips: []
+  clips:
+  - {fileID: 8300000, guid: eddabea42b5713e47be2ae6efaf82665, type: 3}
   volume: 1
   pitchSemitones: 0
   volumeJitter: 0.03

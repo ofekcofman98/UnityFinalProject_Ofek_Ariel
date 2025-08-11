@@ -37,4 +37,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fb7899bd5876d5147af231e04de4ece6, type: 2}
   - {fileID: 11400000, guid: 04fe229a07a89ff479089e6e12cdffe8, type: 2}
   - {fileID: 11400000, guid: e49e0663b5d66b440b9b6d481978a812, type: 2}
+  case_id: 1
+  PersonDialogues: []
   FinalAnswerPersonId: 008

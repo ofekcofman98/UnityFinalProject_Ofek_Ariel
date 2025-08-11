@@ -34,7 +34,10 @@ public class InteractableObject : MonoBehaviour
         {
             SfxManager.Instance.Play2D(interactCue);
             Debug.Log("[interact] Interact fired");
-
+        }
+        else
+        {
+            Debug.Log("[interact] Im null !");
         }
 
         MissionsManager.Instance.ValidateInteractableMission(interactableId);

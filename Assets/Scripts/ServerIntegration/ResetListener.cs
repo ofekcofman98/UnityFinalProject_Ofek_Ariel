@@ -81,8 +81,8 @@ namespace Assets.Scripts.ServerIntegration
                                 var settings = new JsonSerializerSettings();
                                 settings.Converters.Add(new OperatorConverter());
 
-                                Dictionary<string, bool> result = JsonConvert.DeserializeObject<Dictionary<string, bool>>(receivedJson, settings);
-                                GameManager.Instance.isMainSequence = result["seqNumber"];
+                                Dictionary<string, int> result = JsonConvert.DeserializeObject<Dictionary<string, int>>(receivedJson, settings);
+                                GameManager.Instance.sequenceNumber = result["seqNumber"];
                                 CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
                             }
                             else if ((int)request.responseCode == 204)

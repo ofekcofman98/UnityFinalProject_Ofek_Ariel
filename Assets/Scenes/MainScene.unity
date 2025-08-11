@@ -338,6 +338,7 @@ GameObject:
   - component: {fileID: 8477534}
   - component: {fileID: 8477533}
   - component: {fileID: 8477535}
+  - component: {fileID: 8477536}
   m_Layer: 5
   m_Name: SchemeMapButton
   m_TagString: Untagged
@@ -515,6 +516,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepId: ClickMap
+--- !u!114 &8477536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8477527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &8567823
 GameObject:
   m_ObjectHideFlags: 0
@@ -3538,6 +3552,10 @@ PrefabInstance:
       propertyPath: m_IsTrigger
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 425540202559583263, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
+      propertyPath: interactableId
+      value: DoorPoliceStation
+      objectReference: {fileID: 0}
     - target: {fileID: 8399284810002606139, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
       propertyPath: m_Name
       value: Door
@@ -5946,7 +5964,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1909943340}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &445157412
 GameObject:
@@ -6382,6 +6400,7 @@ GameObject:
   - component: {fileID: 489182193}
   - component: {fileID: 489182192}
   - component: {fileID: 489182191}
+  - component: {fileID: 489182195}
   m_Layer: 5
   m_Name: ClearBotton
   m_TagString: Untagged
@@ -6503,6 +6522,19 @@ RectTransform:
   m_AnchoredPosition: {x: 1181.606, y: 0}
   m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &489182195
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489182190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 0178600deacc5a94e9a9201fae69c697, type: 2}
 --- !u!4 &492150884 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 86474656052235968, guid: ef31a4724b6c20d4fbb545e5446dc668, type: 3}
@@ -8542,7 +8574,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1316173262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &643165869 stripped
 Transform:
@@ -10009,6 +10041,7 @@ MonoBehaviour:
   PcMissionTitle: {fileID: 0}
   PcMissionDescription: {fileID: 0}
   newTablePopup: {fileID: 0}
+  unlockCue: {fileID: 0}
   tutorialPopupUI: {fileID: 0}
   executeButton: {fileID: 0}
   clearButton: {fileID: 0}
@@ -10074,7 +10107,7 @@ MonoBehaviour:
   objectName: Computer
   interactableType: 2
   interactableId: computer01
-  interactCue: {fileID: 0}
+  interactCue: {fileID: 11400000, guid: b3629815a6d045c4abeb3de5a1ef5250, type: 2}
 --- !u!114 &722663614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10790,22 +10823,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8399284810002606139, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
   m_PrefabInstance: {fileID: 854124948}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &773491882
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 773491878}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6fd9ed11e69a1fe4190042246d3ecac6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  objectName: Door
-  interactableType: 0
-  interactableId: Door02
-  interactCue: {fileID: 0}
 --- !u!54 &773491883
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -12567,11 +12584,8 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 8399284810002606139, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
-      insertIndex: -1
+      insertIndex: 4
       addedObject: {fileID: 773491883}
-    - targetCorrespondingSourceObject: {fileID: 8399284810002606139, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 773491882}
   m_SourcePrefab: {fileID: 100100000, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
 --- !u!1001 &854328080
 PrefabInstance:
@@ -13367,6 +13381,10 @@ PrefabInstance:
     - target: {fileID: -6201572551641521399, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
       propertyPath: m_IsTrigger
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 425540202559583263, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
+      propertyPath: interactableId
+      value: DoorPrivateHome
       objectReference: {fileID: 0}
     - target: {fileID: 8399284810002606139, guid: 136929cd1485b304888aa7a2eb81551f, type: 3}
       propertyPath: m_Name
@@ -14712,6 +14730,7 @@ GameObject:
   - component: {fileID: 1008462663}
   - component: {fileID: 1008462662}
   - component: {fileID: 1008462661}
+  - component: {fileID: 1008462664}
   m_Layer: 5
   m_Name: SuspectButton
   m_TagString: Untagged
@@ -14833,6 +14852,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1008462659}
   m_CullTransparentMesh: 1
+--- !u!114 &1008462664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008462659}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &1016293439
 GameObject:
   m_ObjectHideFlags: 0
@@ -17210,6 +17242,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2475863031411639318, guid: 3bf068fa16d23884898706cc90734933, type: 3}
   m_PrefabInstance: {fileID: 1339271313}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1132238081 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7017735779680107299, guid: c61339d7f5c955241bf00ac141283309, type: 3}
+  m_PrefabInstance: {fileID: 2045749928}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1145734737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -17664,6 +17701,7 @@ GameObject:
   - component: {fileID: 1157078196}
   - component: {fileID: 1157078195}
   - component: {fileID: 1157078194}
+  - component: {fileID: 1157078197}
   m_Layer: 5
   m_Name: ExecuteBotton
   m_TagString: Untagged
@@ -17773,6 +17811,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1157078192}
   m_CullTransparentMesh: 1
+--- !u!114 &1157078197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1157078192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 54f5177b264c9e4499c4441df87aa948, type: 2}
 --- !u!1001 &1157979636
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18254,7 +18305,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1316173262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1200313627
 PrefabInstance:
@@ -18381,6 +18432,7 @@ GameObject:
   - component: {fileID: 1207621693}
   - component: {fileID: 1207621692}
   - component: {fileID: 1207621695}
+  - component: {fileID: 1207621696}
   m_Layer: 5
   m_Name: BuildQueryButton
   m_TagString: Untagged
@@ -18558,6 +18610,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepId: ClickSQL
+--- !u!114 &1207621696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1207621687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: ade4fde9751eb774cae040f48298d7b0, type: 2}
 --- !u!1001 &1211714710
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19123,7 +19188,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1316173262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1256021059 stripped
 Transform:
@@ -20189,7 +20254,7 @@ MonoBehaviour:
   objectName: CrimeScene
   interactableType: 1
   interactableId: CrimeScene01
-  interactCue: {fileID: 0}
+  interactCue: {fileID: 11400000, guid: b3629815a6d045c4abeb3de5a1ef5250, type: 2}
 --- !u!65 &1308171429
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20533,6 +20598,41 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1316173261
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1316173262}
+  m_Layer: 0
+  m_Name: Query
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1316173262
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316173261}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 636239165}
+  - {fileID: 1194503378}
+  - {fileID: 1249424915}
+  - {fileID: 1774472697}
+  m_Father: {fileID: 1568912927}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1321892945
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21098,7 +21198,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1006734534}
   m_HandleRect: {fileID: 1006734533}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -22684,6 +22784,7 @@ GameObject:
   - component: {fileID: 1424717488}
   - component: {fileID: 1424717487}
   - component: {fileID: 1424717486}
+  - component: {fileID: 1424717489}
   m_Layer: 5
   m_Name: ResultButton
   m_TagString: Untagged
@@ -22805,6 +22906,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1424717484}
   m_CullTransparentMesh: 1
+--- !u!114 &1424717489
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424717484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: 5081c45b09cd3b345b7fd2a94055d3da, type: 2}
 --- !u!1 &1427789216 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8619338778009079851, guid: 47a3741b253f088469eedd6d403dd89a, type: 3}
@@ -24852,19 +24966,15 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1832505887}
-  - {fileID: 636239165}
+  - {fileID: 1316173262}
   - {fileID: 206827529}
-  - {fileID: 1194503378}
-  - {fileID: 1774472697}
   - {fileID: 1860370024}
   - {fileID: 1983374370}
   - {fileID: 920879672}
   - {fileID: 296661683}
   - {fileID: 1739118910}
-  - {fileID: 1249424915}
   - {fileID: 583582806}
-  - {fileID: 442066648}
-  - {fileID: 1829252719}
+  - {fileID: 1909943340}
   - {fileID: 1147584003}
   - {fileID: 770539974}
   - {fileID: 290825079}
@@ -25779,7 +25889,7 @@ MonoBehaviour:
   objectName: Officer
   interactableType: 1
   interactableId: Officer01
-  interactCue: {fileID: 0}
+  interactCue: {fileID: 11400000, guid: b3629815a6d045c4abeb3de5a1ef5250, type: 2}
 --- !u!65 &1649395452
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -28170,6 +28280,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7651564287589212569, guid: c61339d7f5c955241bf00ac141283309, type: 3}
   m_PrefabInstance: {fileID: 2045749928}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1770715893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1132238081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6fd9ed11e69a1fe4190042246d3ecac6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectName: Door
+  interactableType: 0
+  interactableId: DoorCrimeEvidence
+  interactCue: {fileID: 11400000, guid: 74369cab73f7d8548989cd06e39d6580, type: 2}
 --- !u!1 &1774472695
 GameObject:
   m_ObjectHideFlags: 0
@@ -28212,7 +28338,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1316173262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1775289651
 PrefabInstance:
@@ -28785,6 +28911,7 @@ MonoBehaviour:
   PcMissionTitle: {fileID: 908347875}
   PcMissionDescription: {fileID: 804023645}
   newTablePopup: {fileID: 2126077733}
+  unlockCue: {fileID: 0}
   tutorialPopupUI: {fileID: 806481742}
   executeButton: {fileID: 1157078192}
   clearButton: {fileID: 489182190}
@@ -28801,7 +28928,7 @@ Transform:
   m_LocalScale: {x: 1.0021075, y: 1.0021075, z: 1.0021075}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1568912927}
+  m_Father: {fileID: 1909943340}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1832505885
 GameObject:
@@ -28842,11 +28969,10 @@ MonoBehaviour:
   querySender: {fileID: 636239164}
   queryReceiver: {fileID: 1194503377}
   queryValidator: {fileID: 1249424914}
-  missionManager: {fileID: 442066647}
   MissionUIManager: {fileID: 1829252718}
   mainGameSequence: {fileID: 11400000, guid: 28be72455013e534281eedffe7d73d25, type: 2}
   tutorialSequence: {fileID: 11400000, guid: 43189a94977779440aab1b2a37bba068, type: 2}
-  isMainSequence: 0
+  sequenceNumber: 0
   resultsUI: {fileID: 692684119}
 --- !u!4 &1832505887
 Transform:
@@ -29688,6 +29814,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Suspects: []
+  guessCorrectCue: {fileID: 11400000, guid: c40fa6702b5414c4a8a350dbdbed8114, type: 2}
+  guessWrongCue: {fileID: 11400000, guid: dd33a9b948923c04cb16a3253be80719, type: 2}
 --- !u!1001 &1907326116
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29762,6 +29890,39 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4135877430373947301, guid: ebdca89bfebef564087f454c9945efe8, type: 3}
   m_PrefabInstance: {fileID: 1907326116}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1909943339
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1909943340}
+  m_Layer: 0
+  m_Name: Missions
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1909943340
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1909943339}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 442066648}
+  - {fileID: 1829252719}
+  m_Father: {fileID: 1568912927}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1910661754 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1888936409659730122, guid: f94ba195b661cef42bcf4e95e875f82f, type: 3}
@@ -29877,6 +30038,7 @@ GameObject:
   - component: {fileID: 1925164198}
   - component: {fileID: 1925164197}
   - component: {fileID: 1925164196}
+  - component: {fileID: 1925164199}
   m_Layer: 5
   m_Name: BuildQueryButton
   m_TagString: Untagged
@@ -29998,6 +30160,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925164194}
   m_CullTransparentMesh: 1
+--- !u!114 &1925164199
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925164194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickCue: {fileID: 11400000, guid: ade4fde9751eb774cae040f48298d7b0, type: 2}
 --- !u!1001 &1927321039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -31160,7 +31335,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7017735779680107299, guid: c61339d7f5c955241bf00ac141283309, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1770715893}
   m_SourcePrefab: {fileID: 100100000, guid: c61339d7f5c955241bf00ac141283309, type: 3}
 --- !u!1001 &2046301038
 PrefabInstance:
@@ -31567,7 +31745,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 659695890}
   m_HandleRect: {fileID: 659695889}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

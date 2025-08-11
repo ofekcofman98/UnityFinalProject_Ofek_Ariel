@@ -14,25 +14,67 @@ namespace Assets.Scripts.ServerIntegration
 {
     public class GameProgressSender : Singleton<GameProgressSender>
     {
-        private GameProgressContainer m_progressContainer;
+        public GameProgressContainer m_progressContainer;
         private ServerCommunicator m_communicator;
-        private string m_gameKey = "12345";
+        public event Action OnGameFetchComplete;
+        private string m_gameKey;
         private bool m_isGameSaved = false;
 
-        // private void Awake()
-        // {
-        //    // m_gameKey = DeviceKeyManager.GetOrCreateDeviceKey();
-        // }
+        
         public GameProgressSender()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendGameProgress);
+            OnGameFetchComplete += OnGameFetchCompleteAction;
         }
 
+        
+        private IEnumerator getUniqueKey()
+        {
+            UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.GenerateKey).ServerUrl);
 
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                string receivedJson = request.downloadHandler.text;
+                try
+                {
+                    var settings = new JsonSerializerSettings();
+                    settings.Converters.Add(new OperatorConverter());
+
+                    Dictionary<string,string> result = JsonConvert.DeserializeObject<Dictionary<string,string>>(receivedJson, settings);
+                    m_gameKey = result["key"];
+                    Debug.Log($"gameKey value returned from server : {m_gameKey}");
+
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogError($"❌ Failed to parse full Query object: {ex.Message}");
+                }
+            }
+            else if (request.responseCode == 204)
+            {
+                Debug.Log("⏳ Server responded with 204 No Content — no new query yet.");
+            }
+            else
+            {
+                Debug.LogError($"❌ Failed to fetch query: {request.responseCode} | {request.error}");
+            }
+
+
+        }
 
         public IEnumerator SendGameProgressToServer(GameProgressContainer gpc)
         {
+            if (m_isGameSaved) 
+            {
+                Debug.LogError($"Game/container is already sent.");
+                yield return null;
+
+            }
             m_progressContainer = gpc;
+            yield return StartCoroutine(getUniqueKey());
+            Debug.Log($"📤 m_gameKey value after function and before payload: {m_gameKey}");
             var payload = new Dictionary<string, object>
                  {
                     { "game", m_progressContainer },
@@ -64,7 +106,7 @@ namespace Assets.Scripts.ServerIntegration
             if (request.result == UnityWebRequest.Result.Success)
             {
                 Debug.Log($"✅ GameProgressContainer Sent Successfully! Response: {request.downloadHandler.text}");
-                Debug.Log($"✅ GameProgressContainer contains : lives {gpc.Lives}, currentMissionIndex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
+                Debug.Log($"✅ GameProgressContainer contains : lives {gpc.Lives}, currentMissionIndex {gpc.currentMissionIndex}, gameCode : {m_gameKey}");
 
                 m_isGameSaved = true;
             }
@@ -75,11 +117,25 @@ namespace Assets.Scripts.ServerIntegration
             }
         }
 
-        public IEnumerator GetSavedGameFromServer(Action<GameProgressContainer> onComplete)
+        private void OnGameFetchCompleteAction()
         {
+            if (m_progressContainer != null)
+            {
+                MissionsManager.Instance.LoadMissionSequence(m_progressContainer.sequenceIndex == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+                MissionsManager.Instance.SetStatsFromLoadedGame(m_progressContainer.sequenceIndex, m_progressContainer.Lives, m_progressContainer.currentMissionIndex);
+                GameManager.Instance.StartMissions();
+                StateSender.Instance.UpdatePhone();
+            }
+            else
+                Debug.Log("gps or container are null !");
+            
+        }
+        public IEnumerator GetSavedGameFromServer()
+        {
+            Debug.Log($"📤 m_gameKey value before sending a getGameProgress request: {m_gameKey}");
             var payload = new Dictionary<string, string>
             {
-                { "key", m_gameKey }
+                { "key", "183673" }
             };
 
             string jsonPayload = JsonConvert.SerializeObject(payload);
@@ -111,21 +167,20 @@ namespace Assets.Scripts.ServerIntegration
                     var settings = new JsonSerializerSettings();
                     settings.Converters.Add(new OperatorConverter());
 
-                    GameProgressContainer result = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
-                    Debug.Log("✅ Game object deserialized");
+                    m_progressContainer = JsonConvert.DeserializeObject<GameProgressContainer>(receivedJson, settings);
+                    Debug.Log("✅ Game object deserialized and placed into the object's container !");
+                    OnGameFetchComplete.Invoke();
 
-                    onComplete?.Invoke(result);
+
                 }
                 catch (Exception ex)
                 {
                     Debug.LogError($"❌ Deserialization error: {ex.Message}");
-                    onComplete?.Invoke(null);
                 }
             }
             else
             {
                 Debug.LogError($"❌ Server request failed: {request.responseCode} | {request.error}");
-                onComplete?.Invoke(null);
             }
         }
 

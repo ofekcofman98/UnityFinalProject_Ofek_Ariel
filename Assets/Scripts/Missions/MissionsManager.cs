@@ -44,6 +44,15 @@ public class MissionsManager : Singleton<MissionsManager>
         // SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
     }
 
+    public void SetStatsFromLoadedGame(int i_seqIndex, int i_lives, int i_levelIndex)
+    {
+        GameManager.Instance.sequenceNumber = i_seqIndex;
+        m_Lives = i_lives;
+        currentMissionIndex = i_levelIndex;
+        SuspectsManager.Instance.initLivesFromMissiomsManager();
+        UnlockTablesForSavedGame();
+    }
+
     public void LoadMissionSequence(MissionSequence sequence)
     {
         missionSequence = sequence;
@@ -122,34 +131,27 @@ public class MissionsManager : Singleton<MissionsManager>
             StateSender.Instance.UpdatePhone();
             OnMissionValidated?.Invoke(true);
             CoroutineRunner.Instance.StartCoroutine(DelayedAdvance());
-            //GameManager.Instance.SqlMode = (CurrentMission is SQLMissionData);
-            //SQLmodeSender.Instance.SendSQLmodeToPhone();
-            //if (currentMissionIndex == 3)
-            //{
-            //    GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.SqlMode, GameManager.Instance.missionManager.currentMissionIndex, GameManager.Instance.missionManager.m_Lives);
-            //    GameProgressSender.Instance.StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
-            //    Debug.Log("✅✅✅ container sent to server !!");
-
-            //}
-
         }
         else
         {
-            Debug.Log("❌ Mission failed.");
-            if (currentMissionIndex == missionSequence.Missions.Count - 1)
-            {
-                Debug.Log("❌ You arrested the wrong suspect !.");
-                m_Lives--;
-                if (m_Lives > 0)
-                    Debug.Log($"You have {m_Lives} lives left .");
-                else
-                    Debug.Log("Game over :/");
-
-            }
-
             GameManager.Instance.QuerySender?.ResetQuerySendFlag();
             OnMissionValidated?.Invoke(false);
+
+            if (CurrentMission is SQLMissionData)  // <<< guard: only SQL missions
+            {
+                CoroutineRunner.Instance.StartCoroutine(ReturnToCurrentMissionAfterDelay()); // <<< add
+            }
         }
+    }
+
+    private IEnumerator ReturnToCurrentMissionAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+
+        GameManager.Instance.queryBuilder.ResetQuery();
+        GameManager.Instance.queryBuilder.BuildQuery();
+        GameManager.Instance.MissionUIManager.ShowUI();
+        HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }
 
     public void ValidateSqlMission(Query query, JArray result, QueryValidator validator)
@@ -241,9 +243,6 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public void GoToNextMission()
     {
-        // if (CheckForTutorialMission())
-        //     return;
-
         if (currentMissionIndex < missionSequence.Missions.Count - 1)
         {
             currentMissionIndex++;
@@ -252,10 +251,6 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             Debug.Log("🏁 All missions completed! Game over.");
         }
-
-        // if (CheckForTutorialMission()) return;
-
-        // Debug.Log($"➡️ Now at mission {currentMissionIndex}: {CurrentMission.missionTitle}");
     }
 
     // public void CheckForTutorialMission()
@@ -289,12 +284,14 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator DelayedAdvance()
     {
-        // Debug.Log("[[DelayedAdvance!]]");
-        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
-        //yield return new WaitForSeconds(2.0f);
+        if (CurrentMission is SQLMissionData)  // <<< guard: only SQL missions
+        {
+            yield return new WaitForSecondsRealtime(2f);  // <<< add this line
+        }
 
+        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         checkUnlocking();
-        Debug.Log("✅ checkUnlocking passed");
+        // Debug.Log("✅ checkUnlocking passed");
 
         GoToNextMission();
         if (currentMissionIndex >= missionSequence.Missions.Count)
@@ -304,7 +301,7 @@ public class MissionsManager : Singleton<MissionsManager>
         }
 
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
-        Debug.Log("✅ ResetQuerySendFlag passed");
+        // Debug.Log("✅ ResetQuerySendFlag passed");
 
         Debug.Log($"🆕 mission number {GetCurrentMissionNumber()} started: " + CurrentMission.missionTitle);
 

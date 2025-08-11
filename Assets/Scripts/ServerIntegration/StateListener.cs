@@ -177,7 +177,6 @@ namespace Assets.Scripts.ServerIntegration
         {
             try
             {
-                // If you removed the mobile-only condition, this will also run in Editor/PC.
                 while (!token.IsCancellationRequested)
                 {
                     Debug.Log($"⏳ Polling {m_communicator.ServerUrl} ...");
@@ -189,7 +188,6 @@ namespace Assets.Scripts.ServerIntegration
 
                         if (code == 200)
                         {
-                            // Parse only on 200
                             var text = request.downloadHandler.text;
                             Dictionary<string, int> result = null;
 
@@ -204,27 +202,30 @@ namespace Assets.Scripts.ServerIntegration
 
                             if (result != null)
                             {
-                                // Match server keys
+                                int seqNumber = result.TryGetValue("seqNumber", out var seq) ? seq : -1;
+                                int isLevelDone = result.TryGetValue("isLevelDone", out var isDone) ? isDone : -1;
                                 int serverLevelIndex = result.TryGetValue("currentLevelIndex", out var s) ? s : -1;
-                                int isLevelDone = result.TryGetValue("isLevelDone", out var d) ? d : 0;
                                 int mobileIndex = MissionsManager.Instance.currentMissionIndex;
 
+                                if(MissionsManager.Instance.MissionSequence == null)
+                                {
+                                    Debug.Log($"Loading sequence number {seqNumber}");
+                                    MissionsManager.Instance.LoadMissionSequence(seqNumber == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+
+                                }
                                 if (isLevelDone == 1 && mobileIndex == serverLevelIndex)
                                 {
-                                    Debug.Log("✅ isLevelDone=1 and indices aligned → single DelayedAdvance");
+                                    Debug.Log("✅ indices aligned → single DelayedAdvance");
                                     CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
                                 }
                                 else if (mobileIndex < serverLevelIndex)
                                 {
                                     Debug.Log($"🔧 Mobile behind ({mobileIndex} -> {serverLevelIndex}) → sequential catch-up");
                                     CoroutineRunner.Instance.StartCoroutine(AdvanceSequentially(mobileIndex, serverLevelIndex));
+                                    
                                 }
                             }
-                        }
-                        else if (code == 204)
-                        {
-                            // No content; do nothing
-                        }
+                        }                       
                         else
                         {
                             Debug.LogError($"❌ Unexpected response: {code} | {request.error} | body: {request.downloadHandler.text}");
@@ -236,7 +237,8 @@ namespace Assets.Scripts.ServerIntegration
             }
             catch (TaskCanceledException) { Debug.Log("🟡 Polling cancelled"); }
             catch (Exception ex) { Debug.LogError($"❌ Poll loop error: {ex.Message}"); }
-            finally { m_communicator.m_isRunning = false; }
+            finally { m_communicator.m_isRunning = false; 
+            }
         }
 
         private IEnumerator AdvanceSequentially(int fromIndex, int toIndex)
@@ -247,6 +249,8 @@ namespace Assets.Scripts.ServerIntegration
                 yield return null; // let UI settle
             }
             Debug.Log("✅ Catch-up complete.");
+            GameManager.Instance.StartMissions();
         }
     }
+
 }

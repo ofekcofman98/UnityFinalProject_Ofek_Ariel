@@ -7,20 +7,23 @@ using UnityEngine;
 
 public class SuspectsManager : Singleton<SuspectsManager>
 {
-    private int m_Lives;
     public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
-    public event Action<bool> OnGuessResult;
+    public event Action<bool, AudioCue> OnGuessResult;
     public event Action OnSuspectsChanged;
     // public List<SuspectData> Suspects = new();
     public List<PersonData> Suspects = new();
     public string FinalAnswerSuspectId { get; private set; }
 
+    [SerializeField] private AudioCue guessCorrectCue;
+    [SerializeField] private AudioCue guessWrongCue;
+
+
+
     public void initLivesFromMissiomsManager()
     {
-        m_Lives = MissionsManager.Instance.m_Lives;
-        OnLivesChanged?.Invoke(m_Lives);
-        Debug.Log($"num of lifes: {m_Lives}");
+        Lives = MissionsManager.Instance.m_Lives;
+        OnLivesChanged?.Invoke(Lives);
     }
 
     public void AddSuspect(PersonData suspect)
@@ -94,20 +97,20 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
         bool correct = suspectId == FinalAnswerSuspectId;
 
-        if(m_Lives > 0)
+        if(Lives > 0)
         {
             if (correct)
             {
                 Debug.Log("🎉 Correct suspect guessed!");
-                OnGuessResult?.Invoke(true);
+                OnGuessResult?.Invoke(true, guessCorrectCue);
                 MissionsManager.Instance.MarkMissionAsCompleted(); // final win
             }
             else
             {
-                m_Lives--;
+                Lives--;
                 Debug.Log($"❌ Wrong guess");
-                OnGuessResult?.Invoke(false);
-                OnLivesChanged?.Invoke(m_Lives);
+                OnGuessResult?.Invoke(false, guessWrongCue);
+                OnLivesChanged?.Invoke(Lives);
             }
         }    
         else 

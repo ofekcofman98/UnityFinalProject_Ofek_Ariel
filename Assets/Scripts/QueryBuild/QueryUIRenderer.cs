@@ -400,7 +400,7 @@ public class QueryUIRenderer : MonoBehaviour
 
     private void CheckForHighlight<T>(T item, Button button)
     {
-        SQLMissionData currentMission = GameManager.Instance.missionManager.CurrentMission as SQLMissionData;
+        SQLMissionData currentMission = MissionsManager.Instance.CurrentMission as SQLMissionData;
         if (currentMission == null || !currentMission.isTutorial)
         {
             return;

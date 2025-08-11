@@ -25,6 +25,9 @@ namespace Assets.Scripts.ServerIntegration
             Retrieve,
             Store,
             Echo,
+            GenerateKey,
+            AllKeys,
+            ServerReset,
         }
 
 
@@ -34,7 +37,8 @@ namespace Assets.Scripts.ServerIntegration
         public bool m_isRunning { get; set; } = false;
         private string m_resource;
         public int pollRateMilliSeconds { get; } = 500;
-        public readonly int screensaverDelayAfterQuery = 2;
+
+        public int screensaverDelayAfterQuery = 2000;
 
         public ServerCommunicator(Endpoint endpoint)
         {
@@ -64,7 +68,10 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.Retrieve => "/retrieve",
                 Endpoint.Store => "/store",
                 Endpoint.Echo => "/echo",
-                _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
+                Endpoint.GenerateKey => "/generate-key",
+                Endpoint.AllKeys => "/all-keys",
+                Endpoint.ServerReset => "/server-reset",
+                    _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }
 

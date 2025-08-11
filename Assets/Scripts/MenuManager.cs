@@ -1,3 +1,4 @@
+using Assets.Scripts.ServerIntegration;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +51,16 @@ public class MenuManager : Singleton<MenuManager>
         GameManager.Instance.StartTutorial();
     }
 
+    public void OnLoadSavedGameClicked()
+    {
+        GameManager.Instance.StartSavedGame();
+    }
 
+    public void OnSaveCurrentGame()
+    {
+        GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.sequenceNumber, MissionsManager.Instance.currentMissionIndex, SuspectsManager.Instance.Lives);
+        StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
+    }
     public void PauseGame()
     {
         Time.timeScale = 0f;

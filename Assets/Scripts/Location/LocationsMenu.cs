@@ -34,7 +34,7 @@ public class LocationsMenu : MonoBehaviour
 
     public void Show(List<Location> locations)
     {
-        // Time.timeScale = 0f;
+        Time.timeScale = 0f;
 
         foreach (Transform child in contentParent)
         {

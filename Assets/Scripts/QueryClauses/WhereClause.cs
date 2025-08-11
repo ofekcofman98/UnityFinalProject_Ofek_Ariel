@@ -41,11 +41,10 @@ public class WhereClause : IQueryClause
         if (isClicked)
         {
             clearConditions();
+            Debug.Log("im clearing conditions right now");
         }
-        else
-        {
-            isClicked = false;
-        }
+
+        isClicked = false;
     }
 
     public void CreateNewCondition(Column i_Column)

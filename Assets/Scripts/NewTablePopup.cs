@@ -10,6 +10,7 @@ public class NewTablePopup : MonoBehaviour
     [SerializeField] private Popup popup;
     [SerializeField] private TableBoxUI tableBoxPrefab;
     [SerializeField] private Transform tableContainer;
+
     private TableBoxUI currentTableBox;
     public Action onCloseCallback;
     public bool IsOpen { get; private set; }

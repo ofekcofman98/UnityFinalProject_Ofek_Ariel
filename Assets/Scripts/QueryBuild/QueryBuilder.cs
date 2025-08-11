@@ -259,13 +259,14 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateColumnSelection(Table i_Table)
     {
-        // foreach (var col in i_Table.Columns)
-        // {
-        //     Debug.Log($"🔍 Column found: {col.Name}");
-        // }
         List<Column> visibleColumns = TableDataFilter.GetVisibleColumns(i_Table.Columns).ToList();
 
+        visibleColumns = visibleColumns
+            .Where(c => !query.selectClause.Columns.Contains(c))
+            .ToList();
+
         ClearSelectionPanel();
+
         uiRenderer.populateSelectionButtons
         (
               i_Items: visibleColumns
