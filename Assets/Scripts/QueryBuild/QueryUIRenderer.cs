@@ -32,8 +32,6 @@ public class QueryUIRenderer : MonoBehaviour
     private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalConditions
         = new Dictionary<Button, (Func<bool>, Action)>();
 
-
-
     void Awake()
     {
         executeButton.onClick.AddListener(ExecuteQuery);  
@@ -51,7 +49,6 @@ public class QueryUIRenderer : MonoBehaviour
         // ObjectPoolService<Button> i_ButtonPool,
         Button i_ButtonPrefab,
         Dictionary<T, Button> i_ActiveButtons,
-
         Func<T, bool> i_RemovalCondition = null,
         Action<T> i_OnItemRemoved = null)
 
@@ -502,3 +499,4 @@ public void ClearClauseSections(Transform[] clauseSections)
 
 
 }
+

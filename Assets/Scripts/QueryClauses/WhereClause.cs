@@ -35,15 +35,22 @@ public class WhereClause : IQueryClause
         isClicked = false;
     }
 
-    public void CreateNewCondition(Column i_Column)
+    public void StartNewCondition()
     {
         newCondition = new Condition();
         newCondition.OnConditionUpdated += UpdateString;
-        newCondition.Column = i_Column;
-
         UpdateString();
     }
 
+
+    public void CreateNewCondition(Column i_Column)
+    {
+        if (newCondition == null)
+            StartNewCondition();      // reuse instead of always replacing
+        newCondition.Column = i_Column;
+        UpdateString();
+    }
+    
     public void AddCondition()
     {
         if (newCondition == null || newCondition.Value == null)

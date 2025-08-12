@@ -473,18 +473,19 @@ public class QueryBuilder : MonoBehaviour
         List<Button> buttonsToRelease = new List<Button>();
         foreach (Transform child in selectionParent)
         {
-        if (child.TryGetComponent<Button>(out var button))
-        {
-            buttonsToRelease.Add(button);
-        }
+            if (child.TryGetComponent<Button>(out var button))
+            {
+                // buttonsToRelease.Add(button);
+                Destroy(button.gameObject); 
+            }
         }
 
         // ✅ Now release safely
         foreach (var button in buttonsToRelease)
         {
-        uiRenderer.selectionButtonPool.Release(button);
+            uiRenderer.selectionButtonPool.Release(button);
         }
-        }
+    }
 
 
 public void SetConditionValue(object i_Value)
@@ -507,7 +508,7 @@ public void SetConditionValue(object i_Value)
         {
             section = fromSection;
         }
-        else if (name == QueryConstants.Where)
+        else if (name == QueryConstants.Where || name == QueryConstants.And)
         {
             section = whereSection;
         }
@@ -549,3 +550,4 @@ uiRenderer.ClearClauseSections(new[] { selectSection, fromSection, whereSection 
         //     Debug.Log("🟡 Leftover in WHERE: " + child.name);
     }
 }
+

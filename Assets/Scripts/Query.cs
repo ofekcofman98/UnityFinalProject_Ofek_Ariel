@@ -16,6 +16,8 @@ public class Query
     public SelectClause selectClause;
     public FromClause fromClause;
     public WhereClause whereClause;
+    private AndClause andClause;
+
     // [JsonIgnore] public List<IQueryClause> clauses;
     [JsonIgnore] public List<IQueryClause> Clauses => new() { selectClause, fromClause, whereClause };
 
@@ -35,9 +37,17 @@ public class Query
         selectClause = new SelectClause();
         fromClause = new FromClause();
         whereClause = new WhereClause();
+
+        andClause = new AndClause(() =>
+        {
+            // Ensure WHERE is active and move UI state to pick another condition
+            whereClause.Activate();
+            UpdateQueryState();
+            // nothing to change in SQL string now; user will pick column -> operator -> value
+        });
+
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
-
         Results = new List<Dictionary<string, string>>();
     }
 
@@ -67,6 +77,12 @@ public class Query
             {
                 availableClauses.Add(clause);
             }
+        }
+
+        andClause.OnQueryUpdated(this);
+        if (andClause.isAvailable)
+        {
+            availableClauses.Add(andClause);
         }
 
         OnAvailableClausesChanged?.Invoke();
@@ -227,22 +243,12 @@ public class Query
             clause.OnQueryUpdated(this);
         }
 
+        andClause.OnQueryUpdated(this);
+        CheckAvailableClause();
     }
 
     public void PostDeserialize()
     {
-        //     // clauses = new List<IQueryClause> { selectClause, fromClause, whereClause };
-        //     availableClauses = new List<IQueryClause> { selectClause, fromClause };
-        // if (whereClause != null && whereClause.Conditions != null)
-        // {
-        //     foreach (var condition in whereClause.Conditions)
-        //     {
-        //         condition.Refresh(); // ✅ This MUST be called
-        //     }
-        // }
-
-        // updateQueryString(); // Also ensure final string is accurate
-
         if (whereClause != null && whereClause.Conditions != null && whereClause.Conditions.Count > 0)
         {
             whereClause.Activate();              // ✅ So it shows in the panel
@@ -260,3 +266,4 @@ public class Query
 
 
 }
+

@@ -82,7 +82,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             if (!isNewDrop)
             {
-                Debug.Log("[OnEndDrag]: wasn't dropped in a new place, dropped back to original");
+                // Debug.Log("[OnEndDrag]: wasn't dropped in a new place, dropped back to original");
                 dropBackToOriginal();
 
                 if (dropCueWrong != null)
@@ -95,7 +95,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
             if (strategy != null && strategy.IsValidDrop(this))
             {
-                Debug.Log($"[OnEndDrag]: Valid drop in {dropZone.transform.name}");
+                // Debug.Log($"[OnEndDrag]: Valid drop in {dropZone.transform.name}");
                 dropZone.OnDrop(eventData);
                 // OnDropped?.Invoke(this); 
 
@@ -107,7 +107,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             }
             else
             {
-                Debug.Log($"[OnEndDrag]: NOT valid drop in {dropZone.transform.name}");
+                // Debug.Log($"[OnEndDrag]: NOT valid drop in {dropZone.transform.name}");
                 transform.SetParent(OriginalParent, true);
                 transform.position = originalPosition;
 
@@ -120,7 +120,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         else
         {
-            Debug.Log("[OnEndDrag]: dropZone is null, dropped back to original");
+            // Debug.Log("[OnEndDrag]: dropZone is null, dropped back to original");
             dropBackToOriginal();
             if (dropCueWrong != null)
             {
@@ -152,23 +152,13 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         transform.SetParent(OriginalParent, false);
         transform.SetSiblingIndex(originalSiblingIndex);
 
-        // LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)OriginalParent);
         LayoutRebuilder.MarkLayoutForRebuild((RectTransform)OriginalParent);
-
-
-    // OriginalParent = transform.parent;//!
-        // originalSiblingIndex = transform.GetSiblingIndex();//!
-
     }
 
     public void SetParentAndPosition(Transform newParent)
     {
         transform.SetParent(newParent, false);
         transform.localScale = Vector3.one;
-
-        // OriginalParent = newParent;//!
-        // originalSiblingIndex = transform.GetSiblingIndex();//!
-
     }
 
     private DropZone FindDropZone()
@@ -197,21 +187,12 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
     public void Reset()
     {
-        // OnDropped = null;
-        // OnRemoved = null;
-        // AssignedSection = null;
-        // draggableType = eDraggableType.SelectionButton;
-        // OriginalParent = null;
-        // image.raycastTarget = true;
-        // _isDragging = false;
-        
-    OriginalParent = null;
-    AssignedSection = null;
-    CurrentDropZone = null;
-    OnDropped = null;
-    OnRemoved = null;
-    draggableType = eDraggableType.None;
-
+        OriginalParent = null;
+        AssignedSection = null;
+        CurrentDropZone = null;
+        OnDropped = null;
+        OnRemoved = null;
+        draggableType = eDraggableType.None;
     }
 
 }
