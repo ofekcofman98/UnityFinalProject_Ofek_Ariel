@@ -58,7 +58,7 @@ public class MenuManager : Singleton<MenuManager>
 
     public void OnSaveCurrentGame()
     {
-        GameProgressContainer gpc= new GameProgressContainer(GameManager.Instance.sequenceNumber, MissionsManager.Instance.currentMissionIndex, SuspectsManager.Instance.Lives);
+        GameProgressContainer gpc = new GameProgressContainer(GameManager.Instance.sequenceNumber, MissionsManager.Instance.currentMissionIndex, LivesManager.Instance.Lives);
         StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));
     }
     public void PauseGame()

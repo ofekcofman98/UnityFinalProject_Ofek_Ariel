@@ -19,18 +19,6 @@ public class WhereClause : IQueryClause
         Conditions = new List<Condition>();
     }
 
-    //     public void Toggle()
-    //     {
-    //         isClicked = !isClicked;
-
-    //         if (!isClicked)
-    //         {
-    //             clearConditions();
-    //         }
-    // Debug.Log($"[WhereClause] Toggle() called — isClicked now: {isClicked}");
-    //         UpdateString();
-    //     }
-
     public void Activate()
     {
         isClicked = true;
@@ -74,7 +62,11 @@ public class WhereClause : IQueryClause
     {
         if (isClicked)
         {
-            List<string> allConditions = Conditions.Select(cond => cond.ConditionString).ToList();
+            List<string> allConditions = Conditions
+                .Select(cond => cond.ConditionString)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .ToList();
+
 
             if (newCondition != null && !string.IsNullOrWhiteSpace(newCondition.ConditionString))
             {
@@ -83,14 +75,12 @@ public class WhereClause : IQueryClause
 
             if (allConditions.Count > 0)
             {
-                WherePart = QueryConstants.Where + " " + string.Join(QueryConstants.Comma, allConditions);
+                WherePart = QueryConstants.Where + " " + string.Join($" {QueryConstants.And} ", allConditions);
             }
             else
             {
                 WherePart = QueryConstants.Where;
             }
-
-            // Debug.Log($"where PArt: {WherePart}");
         }
         else
         {
@@ -102,11 +92,6 @@ public class WhereClause : IQueryClause
     {
         return WherePart;
     }
-
-    // public string ToSupabase()
-    // {
-    //     return Conditions.Count > 0 ? string.Join(QueryConstants.And, Conditions.Select(cond => cond.ConditionStringSupaBase)) : "";
-    // }
 
     public string ToSupabase()
     {

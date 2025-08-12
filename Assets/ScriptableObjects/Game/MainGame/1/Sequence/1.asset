@@ -33,7 +33,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5d4b501da941b4b489833ac20e0ebea4, type: 2}
   - {fileID: 11400000, guid: 143f5cf782f03ab4c840b84c06607e12, type: 2}
   - {fileID: 11400000, guid: d31b82b7e93b0494f916fb606658e4d0, type: 2}
-  - {fileID: 11400000, guid: 46c9fcaebe3512b4b81fef7356f628c0, type: 2}
+  - {fileID: 11400000, guid: 29bae704d7cf2964a9a3683576221c70, type: 2}
+  - {fileID: 11400000, guid: fe937d4be60b9fa408f16ee7c1493e61, type: 2}
+  - {fileID: 11400000, guid: 765a3fc3c78fbc74683630d44a66107c, type: 2}
   case_id: 1
   PersonDialogues:
   - {fileID: 11400000, guid: 07a379b4a68bd284e9bad0aef265d0a1, type: 2}

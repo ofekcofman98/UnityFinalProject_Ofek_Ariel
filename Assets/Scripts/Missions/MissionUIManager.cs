@@ -18,7 +18,7 @@ public class MissionUIManager : MonoBehaviour
 
     [SerializeField] private NewTablePopup newTablePopup;
     [SerializeField] private AudioCue unlockCue;
-    
+
     [SerializeField] private TutorialPopupUI tutorialPopupUI;
 
 
@@ -28,6 +28,10 @@ public class MissionUIManager : MonoBehaviour
 
     [SerializeField] public GameObject executeButton;
     [SerializeField] public GameObject clearButton;
+
+
+    private bool _resultFlashActive = false;
+    private Coroutine _resultFlashCo;
 
 
     public void ShowUI()
@@ -41,8 +45,12 @@ public class MissionUIManager : MonoBehaviour
 
     public void DisplayStandardMission(MissionData mission)
     {
-        bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
+        if (_resultFlashActive)
+        {
+            return;
+        }    
 
+        bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
         string missionNumberText = isTutorial ? "Tutorial" : MissionsManager.Instance.GetCurrentMissionNumber().ToString();
 
         MobileMissionNumber.text = missionNumberText;
@@ -70,6 +78,8 @@ public class MissionUIManager : MonoBehaviour
             PcMissionTitle.text = "";
             PcMissionDescription.text = $"Mission is {k_IsCorrectString}";
             PcMissionDescription.color = k_Color;
+
+            StartResultFlash(2f);
         }
         // executeButton.gameObject.SetActive(!i_Result);
         // clearButton.gameObject.SetActive(i_Result);        
@@ -101,7 +111,7 @@ public class MissionUIManager : MonoBehaviour
             if (unlockCue != null)
             {
                 SfxManager.Instance.Play2D(unlockCue);
-            }            
+            }
         }
     }
 
@@ -109,11 +119,33 @@ public class MissionUIManager : MonoBehaviour
     {
         tutorialPopupUI.Show(title, message, onContinue);
     }
-    
+
     public bool IsPopupOpen()
     {
         return newTablePopup.IsOpen || tutorialPopupUI.IsOpen;
     }
+    
+
+        private void StartResultFlash(float seconds)
+    {
+        if (_resultFlashCo != null) StopCoroutine(_resultFlashCo);
+        _resultFlashActive = true;
+        _resultFlashCo = StartCoroutine(ResultFlashCountdown(seconds));
+    }
+
+    private IEnumerator ResultFlashCountdown(float seconds)
+    {
+        yield return new WaitForSecondsRealtime(seconds);
+        _resultFlashActive = false;
+
+        // After the flash, render the CURRENT mission’s standard UI (which may already be the next mission)
+        var mission = MissionsManager.Instance.CurrentMission;
+        if (mission != null)
+            DisplayStandardMission(mission);
+
+        _resultFlashCo = null;
+    }
+
 
         
 }

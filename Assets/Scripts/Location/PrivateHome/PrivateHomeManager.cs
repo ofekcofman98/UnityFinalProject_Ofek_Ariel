@@ -34,6 +34,10 @@ public class PrivateHomeManager : Singleton<PrivateHomeManager>
         currentCharacter = Instantiate(person.characterPrefab, spawnPoint.position, spawnPoint.rotation);
         currentCharacter.name = person.name;
 
+        int interactableLayer = LayerMask.NameToLayer("Interactable");
+        SetLayerRecursively(currentCharacter, interactableLayer);
+
+
         PersonInteract interact = currentCharacter.GetComponent<PersonInteract>();
         if (interact == null)
         {
@@ -41,6 +45,7 @@ public class PrivateHomeManager : Singleton<PrivateHomeManager>
             interact.objectName = person.name;
             interact.InteractableId = person.id;
             interact.interactableType = eInteractableType.MessagePopup;
+            interact.Init(person);
         }
 
         interact.Init(person);
@@ -81,4 +86,12 @@ public class PrivateHomeManager : Singleton<PrivateHomeManager>
             currentCharacter = null;
         }
     }
+
+    private static void SetLayerRecursively(GameObject go, int layer)
+    {
+        go.layer = layer;
+        foreach (Transform t in go.transform)
+            SetLayerRecursively(t.gameObject, layer);
+    }
+
 }

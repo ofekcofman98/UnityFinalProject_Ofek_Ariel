@@ -10,8 +10,8 @@ public class LivesUIManager : MonoBehaviour
 
     private void Start()
     {
-        UpdateHearts(SuspectsManager.Instance.Lives);
-        SuspectsManager.Instance.OnLivesChanged += UpdateHearts;
+        UpdateHearts(LivesManager.Instance.Lives);
+        LivesManager.Instance.OnLivesChanged += UpdateHearts;
     }
 
     private void OnDestroy()

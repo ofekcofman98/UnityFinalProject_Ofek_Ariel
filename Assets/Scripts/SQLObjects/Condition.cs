@@ -89,19 +89,35 @@ public class Condition
 
 
     private void updateConditionString()
-    {   //!before
-        // ConditionStringSupaBase = $"{ColumnPart}={OperatorPartSupaBase}.{FormattedValueForOperator}";
+    {
+        // Debug.Log($"current condition is {ColumnPart} {ValuePart}");
 
-        //!second
-        // ConditionStringSupaBase = $"{ColumnPart}={OperatorPartSupaBase}.{GetCorrectSupabaseValue()}";
-        // ConditionString = $"{ColumnPart} {OperatorPart} {ValuePart}";
+        // if (!string.IsNullOrEmpty(ColumnPart) &&
+        //     !string.IsNullOrEmpty(OperatorPartSupaBase) &&
+        //     !string.IsNullOrEmpty(SupabaseValuePart))
+        // {
+        //     ConditionStringSupaBase = $"{ColumnPart}={OperatorPartSupaBase}.{SupabaseValuePart}";
+        // }
+        // else
+        // {
+        //     ConditionStringSupaBase = "";
+        // }
 
-        // Debug.Log($"current condition is {ConditionString}");
         // Debug.Log($"current SupaBase formatted condition is {ConditionStringSupaBase}");
 
-        //!now
-        Debug.Log($"current condition is {ColumnPart} {ValuePart}");
+        // Build SQL-facing string
+        if (!string.IsNullOrEmpty(ColumnPart) &&
+            !string.IsNullOrEmpty(OperatorPart) &&
+            !string.IsNullOrEmpty(ValuePart))
+        {
+            ConditionString = $"{ColumnPart} {OperatorPart} {ValuePart}";
+        }
+        else
+        {
+            ConditionString = QueryConstants.Empty;
+        }
 
+        // Build Supabase-facing string (column=op.value)
         if (!string.IsNullOrEmpty(ColumnPart) &&
             !string.IsNullOrEmpty(OperatorPartSupaBase) &&
             !string.IsNullOrEmpty(SupabaseValuePart))
@@ -110,10 +126,8 @@ public class Condition
         }
         else
         {
-            ConditionStringSupaBase = "";
+            ConditionStringSupaBase = QueryConstants.Empty;
         }
-
-        Debug.Log($"current SupaBase formatted condition is {ConditionStringSupaBase}");
 
     }
 

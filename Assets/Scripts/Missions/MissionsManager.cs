@@ -14,9 +14,13 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public int currentMissionIndex { get; private set; } = 0;
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
-
-    public int m_Lives { get; private set; } = 3;
     public event Action<bool> OnMissionValidated;
+
+    public int m_Lives
+    {
+        get => LivesManager.Instance.Lives;
+        set => LivesManager.Instance.SetLives(value);
+    }
 
     private void Start()
     {
@@ -47,9 +51,9 @@ public class MissionsManager : Singleton<MissionsManager>
     public void SetStatsFromLoadedGame(int i_seqIndex, int i_lives, int i_levelIndex)
     {
         GameManager.Instance.sequenceNumber = i_seqIndex;
-        m_Lives = i_lives;
+        LivesManager.Instance.SetLives(i_lives);
         currentMissionIndex = i_levelIndex;
-        SuspectsManager.Instance.initLivesFromMissiomsManager();
+        // SuspectsManager.Instance.initLivesFromMissiomsManager();
         UnlockTablesForSavedGame();
     }
 
@@ -57,7 +61,7 @@ public class MissionsManager : Singleton<MissionsManager>
     {
         missionSequence = sequence;
         currentMissionIndex = 0;
-        m_Lives = 3;
+        LivesManager.Instance.ResetLives();
 
         if (missionSequence == null || missionSequence.Missions.Count == 0)
         {
@@ -67,9 +71,9 @@ public class MissionsManager : Singleton<MissionsManager>
 
         CoroutineRunner.Instance.StartCoroutine(LoadCaseMetadata());
 
-        SuspectsManager.Instance.Lives = m_Lives;
-        SuspectsManager.Instance.initLivesFromMissiomsManager();
-        SuspectsManager.Instance.invokeLivesChanged();
+        // SuspectsManager.Instance.Lives = m_Lives;
+        // SuspectsManager.Instance.initLivesFromMissiomsManager();
+        // SuspectsManager.Instance.invokeLivesChanged();
 
         SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
         GameManager.Instance.MissionUIManager.ShowUI();
@@ -284,10 +288,10 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator DelayedAdvance()
     {
-        if (CurrentMission is SQLMissionData)  // <<< guard: only SQL missions
-        {
-            yield return new WaitForSecondsRealtime(2f);  // <<< add this line
-        }
+        // if (CurrentMission is SQLMissionData)  // <<< guard: only SQL missions
+        // {
+        //     yield return new WaitForSecondsRealtime(2f);  // <<< add this line
+        // }
 
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         checkUnlocking();
@@ -316,7 +320,7 @@ public class MissionsManager : Singleton<MissionsManager>
     public IEnumerator ResetMissions()
     {
         currentMissionIndex = 0;
-        m_Lives = 3;
+        LivesManager.Instance.ResetLives();
         foreach (Table table in SupabaseManager.Instance.Tables)
         {
             table.LockTable();

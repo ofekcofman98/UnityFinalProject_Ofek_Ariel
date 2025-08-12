@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class SuspectsManager : Singleton<SuspectsManager>
 {
-    public int Lives { get; set; }
+    // public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
     public event Action<bool, AudioCue> OnGuessResult;
     public event Action OnSuspectsChanged;
@@ -20,11 +20,11 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
 
 
-    public void initLivesFromMissiomsManager()
-    {
-        Lives = MissionsManager.Instance.m_Lives;
-        OnLivesChanged?.Invoke(Lives);
-    }
+    // public void initLivesFromMissiomsManager()
+    // {
+    //     Lives = MissionsManager.Instance.m_Lives;
+    //     OnLivesChanged?.Invoke(Lives);
+    // }
 
     public void AddSuspect(PersonData suspect)
     {
@@ -44,10 +44,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
 //TODO 💡 OR remove AddSuspectFromRow(JObject) altogether and use PersonDataManager.GetById() directly!
 
-    public void invokeLivesChanged()
-    {
-        OnLivesChanged.Invoke(MissionsManager.Instance.m_Lives);
-    }
+    // public void invokeLivesChanged()
+    // {
+    //     OnLivesChanged.Invoke(MissionsManager.Instance.m_Lives);
+    // }
 
     public void AddSuspectFromRow(JObject row)
     {
@@ -97,29 +97,53 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
         bool correct = suspectId == FinalAnswerSuspectId;
 
-        if(Lives > 0)
+        if (correct)
         {
-            if (correct)
-            {
-                Debug.Log("🎉 Correct suspect guessed!");
-                OnGuessResult?.Invoke(true, guessCorrectCue);
-                MissionsManager.Instance.MarkMissionAsCompleted(); // final win
-            }
-            else
-            {
-                Lives--;
-                Debug.Log($"❌ Wrong guess");
-                OnGuessResult?.Invoke(false, guessWrongCue);
-                OnLivesChanged?.Invoke(Lives);
-            }
-        }    
-        else 
+            Debug.Log("🎉 Correct suspect guessed!");
+            OnGuessResult?.Invoke(true, guessCorrectCue);
+
+            // Move to the next MissionSequence / end-game flow.
+            // GameManager.Instance.AdvanceToNextSequence();
+        }
+        else
         {
-            Debug.Log("💀 Game Over — no lives remaining.");
-            // TODO: Trigger actual game-over screen / logic here
-        }     
-       
-        
+            int remaining = LivesManager.Instance.Decrement();
+            Debug.Log("❌ Wrong guess");
+            OnGuessResult?.Invoke(false, guessWrongCue);
+
+            // Critical: check AFTER decrement to catch the 1→0 edge case
+            if (remaining <= 0)
+            {
+                Debug.Log("💀 Game Over — no lives remaining.");
+                GameManager.Instance.ResetGame();
+            }
+        }
+
+
+
+        // if(Lives > 0)
+        // {
+        //     if (correct)
+        //     {
+        //         Debug.Log("🎉 Correct suspect guessed!");
+        //         OnGuessResult?.Invoke(true, guessCorrectCue);
+        //         MissionsManager.Instance.MarkMissionAsCompleted(); // final win
+        //     }
+        //     else
+        //     {
+        //         Lives--;
+        //         Debug.Log($"❌ Wrong guess");
+        //         OnGuessResult?.Invoke(false, guessWrongCue);
+        //         OnLivesChanged?.Invoke(Lives);
+        //     }
+        // }    
+        // else 
+        // {
+        //     Debug.Log("💀 Game Over — no lives remaining.");
+        //     // TODO: Trigger actual game-over screen / logic here
+        // }     
+
+
     }
     
     public void SetFinalAnswerFromMissionSequence(MissionSequence sequence)
