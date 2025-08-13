@@ -50,7 +50,7 @@ public class WhereClause : IQueryClause
         newCondition.Column = i_Column;
         UpdateString();
     }
-    
+
     public void AddCondition()
     {
         if (newCondition == null || newCondition.Value == null)
@@ -107,27 +107,15 @@ public class WhereClause : IQueryClause
             : "";
     }
 
-
-    public void OnQueryUpdated(Query query)
+    public bool CheckAvailableClause(Query query)
     {
-        bool wasAvailable = isAvailable;
-        isAvailable = query.selectClause.IsValid();
+        bool newlyAvailable = query.selectClause.IsValid();
+        if (!newlyAvailable && isClicked) Deactivate();
 
-        if (wasAvailable != isAvailable)
-        {
-            query.CheckAvailableClause();
-        }
+        isAvailable = newlyAvailable;
+        return isAvailable;
+    } 
 
-        if (isAvailable)
-        {
-            UpdateString();
-        }
-        else
-        {
-            Reset();
-        }
-
-    }
 
     public bool IsValid()
     {
@@ -135,26 +123,155 @@ public class WhereClause : IQueryClause
                               Conditions.All(c => c.Column != null && c.Operator != null && c.Value != null));
     }
 
-    public List<object> GetOrderedElements()
+    public bool IsValidForOperator()
     {
-        List<object> elements = new List<object>();
-
-        if (isClicked)
+        // if (newCondition != null)
+        // {
+        //     return newCondition.Column != null;
+        // }
+        // else if (Conditions.Count > 0)
+        // {
+        //     return Conditions.Last().Column != null;
+        // }
+        bool res = false;
+        Condition condition = FindLastCondition();
+        if (condition != null)
         {
-            elements.Add(this); // WHERE clause first
-            elements.AddRange(Conditions); // Then all conditions
+            res = condition.Column != null;
         }
 
-        return elements;
+        return res;
     }
 
+    public bool IsValidForValue()
+    {
+        bool res = false;
+
+        // if (newCondition != null)
+        // {
+        //     res = newCondition.Operator != null;
+        //     Debug.Log($"[IsValidForValue] newCondition.Operator != null = {res}");
+        // }
+
+        // else if (Conditions.Count > 0)
+        // {
+        //     res = Conditions.Last().Operator != null;
+        //     Debug.Log($"[IsValidForValue] Conditions.Last().Operator != null = {res}");
+        // }
+
+        Condition condition = FindLastCondition();
+        if (condition != null)
+        {
+            res = condition.Operator != null;
+        }
+        return res;
+    }
+
+
+    public void RemoveConditionsByColumn(Column columnToRemove)
+    {
+        if (columnToRemove == null) return;
+
+        // Check how many conditions use this column
+        int count = Conditions.Count(cond => cond.Column == columnToRemove);
+
+        if (count == 1)
+        {
+            // Remove the only one using this column
+            Conditions.RemoveAll(cond => cond.Column == columnToRemove);
+        }
+        else if (count > 1)
+        {
+            // ⚠️ Smart choice: removing this column breaks a range (e.g., age ≥ 30 AND age ≤ 40)
+            // In this case, better to clear all conditions using that column
+            Conditions.RemoveAll(cond => cond.Column == columnToRemove);
+        }
+
+        // Always remove `newCondition` if it references the column
+        if (newCondition?.Column == columnToRemove)
+        {
+            newCondition = null;
+        }
+
+        UpdateString();
+    }
+
+    public void SetOperator(IOperatorStrategy i_operator)
+    {
+        // if (newCondition != null)
+        // {
+        //     newCondition.Operator = i_Operator;
+        // }
+        // else if (whereClause.Conditions.Count > 0)
+        // {
+        //     whereClause.Conditions.Last().Operator = i_Operator;
+        // }
+        Condition condition = FindLastCondition();
+
+        if (condition != null)
+        {
+            condition.Operator = i_operator;
+        }
+    }
+
+    public void RemoveOperator()
+    {
+        Condition condition = FindLastCondition();
+
+        if (condition != null)
+        {
+            Conditions.Remove(condition);
+            CreateNewCondition(condition.Column);
+        }
+    }
+
+    public void SetValue(object i_Value)
+    {
+        Condition last = FindLastCondition();
+        if (last != null)
+        {
+            last.Value = i_Value;
+            AddCondition();
+        }
+    }
+
+    public void RemoveValue()
+    {
+        Condition last = FindLastCondition();
+        if (last != null)
+        {
+            Conditions.Remove(last);
+            CreateNewCondition(last.Column);
+            SetOperator(last.Operator);
+        }
+    }
 
     private void clearConditions()
     {
         Conditions.Clear();
         newCondition = null;
     }
-    
+
+    public Condition FindLastCondition()
+    {
+        Condition condition;
+
+        if (newCondition != null)
+        {
+            condition = newCondition;
+        }
+        else if (Conditions.Count > 0)
+        {
+            condition = Conditions.Last();
+        }
+        else
+        {
+            condition = null;
+        }
+
+        return condition;
+    }
+
     public void Reset()
     {
         isClicked = false;
@@ -163,4 +280,8 @@ public class WhereClause : IQueryClause
         clearConditions();
     }
 
+    public bool IsEmpty()
+    {
+        return Conditions.Count == 0;
+    }
 }

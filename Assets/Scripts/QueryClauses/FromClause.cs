@@ -12,18 +12,8 @@ public class FromClause : IQueryClause
     public bool isClicked { get; private set; } = false;
     public bool isAvailable { get; set; } = true;
 
-    // public void Toggle()
-    // {
-    //     isClicked = !isClicked;
+private Action _onRemoved;
 
-    //     if (!isClicked)
-    //     {
-    //         table = null;
-    //     }
-    //     UpdateString();
-
-    //     // OnFromChanged?.Invoke();
-    // }
     public void Activate()
     {
         isClicked = true;
@@ -33,6 +23,7 @@ public class FromClause : IQueryClause
     {
         table = null;
         isClicked = false;
+        _onRemoved?.Invoke();
     }
 
     public void SetTable(Table i_Table)
@@ -48,10 +39,10 @@ public class FromClause : IQueryClause
         UpdateString();
     }
 
-    public void ClearTable(bool i_IsSelectClicked = false)
+    public void RemoveTable(bool i_IsSelectClicked = false)
     {
         table = null;
-        FromPart = QueryConstants.Empty;
+        // FromPart = QueryConstants.Empty;
         UpdateString();
     } 
 
@@ -87,37 +78,21 @@ public class FromClause : IQueryClause
         return table != null;
     }
 
-    public void OnQueryUpdated(Query query)
+    public bool CheckAvailableClause(Query query)
     {
-        // if (table == null)
-        // {
-        //     // FromPart = QueryConstants.Empty;
-        //     query.ClearColumns();
-        // }
-    }
+        return isAvailable;
+    } 
 
     public Table GetTable()
     {
         return table;
     }
 
-
-    public List<object> GetOrderedElements()
+    public void SetOnRemovedCallback(Action callback)
     {
-        List<object> elements = new List<object>();
-
-        if (isClicked)
-        {
-            elements.Add(this); // FROM clause first
-            if (table != null)
-            {
-                elements.Add(table); // Then the table name
-            }
-        }
-
-        return elements;
+        _onRemoved = callback;
     }
- 
+
 
     public void Reset()
     {

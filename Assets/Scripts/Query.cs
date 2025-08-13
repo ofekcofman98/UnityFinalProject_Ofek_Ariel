@@ -18,24 +18,28 @@ public class Query
     public WhereClause whereClause;
     private AndClause andClause;
 
-    // [JsonIgnore] public List<IQueryClause> clauses;
+private readonly IQueryClause[] _clauses; // ofek
     [JsonIgnore] public List<IQueryClause> Clauses => new() { selectClause, fromClause, whereClause };
-
     [JsonIgnore] public List<IQueryClause> availableClauses;
-    public event Action OnAvailableClausesChanged;
+
     public QueryState queryState;
-    public List<Dictionary<string, string>> Results { get; set; }
     public bool IsValid => Clauses.All(clause => clause.IsValid());
+
+    // public event Action OnAvailableClausesChanged;
     public event Action OnQueryUpdated;
 
-
-    [JsonIgnore] private Dictionary<IQueryClause, Button> clauseButtons = new Dictionary<IQueryClause, Button>();
-    [JsonIgnore] private Dictionary<Column, Button> selectionButtons = new Dictionary<Column, Button>();
+    private bool _isRecomputing = false;
 
     public Query()
     {
         selectClause = new SelectClause();
         fromClause = new FromClause();
+        fromClause.SetOnRemovedCallback(() =>
+        {
+            selectClause.ClearColumns();
+            fromClause.RemoveTable();
+        });
+
         whereClause = new WhereClause();
 
         andClause = new AndClause(() =>
@@ -48,18 +52,65 @@ public class Query
 
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
-        Results = new List<Dictionary<string, string>>();
+
+        Recompute();    
     }
 
     public string QueryString
     {
-        get { return m_QueryString; }
+        get => m_QueryString; 
+        private set { m_QueryString = value; } 
+        // set
+        // {
+        //     m_QueryString = value;
+        //     OnQueryUpdated?.Invoke();
+        // }
+    }
 
-        set
+    public void Recompute(bool fireEvents = true)
+    {
+        if (_isRecomputing)
         {
-            m_QueryString = value;
+            return;
+        }
+        _isRecomputing = true;
+
+        try
+        {
+            CheckAvailableClause();
+            UpdateClausesStrings();
+            UpdateQueryState();
+            updateQueryString();
+        }
+        finally
+        {
+            _isRecomputing = false;
+        }
+
+        if (fireEvents)
+        {
+            Debug.Log("[Recompute] [fireEvents]");
+            // OnAvailableClausesChanged?.Invoke();
             OnQueryUpdated?.Invoke();
         }
+    }
+
+
+
+
+    public void CheckAvailableClause()
+    {
+        availableClauses.Clear();
+
+        foreach (IQueryClause clause in Clauses)
+        {
+            if (clause.CheckAvailableClause(this))
+            {
+                availableClauses.Add(clause);
+            }
+        }
+
+        if (andClause.CheckAvailableClause(this)) availableClauses.Add(andClause);
     }
 
     public void UpdateQueryState()
@@ -67,118 +118,61 @@ public class Query
         queryState.UpdateState(this);
     }
 
-
-    public void CheckAvailableClause()
-    {
-        availableClauses.Clear();
-        foreach (IQueryClause clause in Clauses)
-        {
-            if (clause.isAvailable)
-            {
-                availableClauses.Add(clause);
-            }
-        }
-
-        andClause.OnQueryUpdated(this);
-        if (andClause.isAvailable)
-        {
-            availableClauses.Add(andClause);
-        }
-
-        OnAvailableClausesChanged?.Invoke();
-    }
-
     public void ToggleClause(IQueryClause clause, bool isToggledOn)
     {
-        if (clause != null)
-        {
-            if (isToggledOn)
-            {
-                clause.Activate();
-            }
-            else
-            {
-                clause.Deactivate();
-            }
-            // Debug.Log($"Toggling clause: {clause.DisplayName} — Current isClicked: {clause.isClicked}");
+        if (clause == null) return;
 
-            clause.UpdateString();
-            updateQueryString();
+        if (isToggledOn)
+        {
+            clause.Activate();
         }
+        else
+        {
+            clause.Deactivate();
+        }
+
+        Recompute();
+        // clause.UpdateString();
+        // updateQueryString();
     }
 
     public void SetTable(Table i_Table)
     {
-        fromClause.SetTable(i_Table);
-        NotifyClauses();
-        updateQueryString();
+        if (fromClause.table == null)
+        {
+            fromClause.SetTable(i_Table);
+        }
+        Recompute();
+        // NotifyClauses();
+        // updateQueryString();
     }
+
+    public void RemoveTable()
+    {
+        fromClause.RemoveTable();
+        selectClause.ClearColumns();
+        Recompute();
+        // NotifyClauses();
+        // updateQueryString();
+    }
+
 
     public void AddColumn(Column i_ColumnToAdd)
     {
         selectClause.AddColumn(i_ColumnToAdd);
-        NotifyClauses();
-        updateQueryString();
+        Recompute();
+        // NotifyClauses();
+        // updateQueryString();
     }
 
     public void RemoveColumn(Column i_ColumnToRemove)
     {
         selectClause.RemoveColumn(i_ColumnToRemove);
-        NotifyClauses();
-        UpdateQueryState();
-        updateQueryString();
+        Recompute();
+        // NotifyClauses();
+        // UpdateQueryState();
+        // updateQueryString();
     }
-
-    public void CreateNewCondition(Column i_Column)
-    {
-        whereClause.CreateNewCondition(i_Column);
-        NotifyClauses();
-        UpdateQueryState();
-        updateQueryString();
-    }
-
-    public void SetConditionOperator(IOperatorStrategy i_Operator)
-    {
-        if (whereClause.newCondition != null)
-        {
-            whereClause.newCondition.Operator = i_Operator;
-        }
-        NotifyClauses();
-        updateQueryString();
-    }
-
-    public void SetConditionValue(object i_Value)
-    {
-        if (whereClause.newCondition != null)
-        {
-            whereClause.newCondition.Value = i_Value;
-            AddCondition();
-            updateQueryString();
-        }
-    }
-
-    public void clearConditionValue()
-    {
-        if (whereClause.Conditions.Count > 0)
-        {
-            Condition last = whereClause.Conditions.Last();
-            whereClause.Conditions.Remove(last);
-
-            whereClause.CreateNewCondition(last.Column);
-            whereClause.newCondition.Operator = last.Operator;
-
-            NotifyClauses();
-            updateQueryString();
-        }
-    }
-
-    public void AddCondition()
-    {
-        whereClause.AddCondition();
-        NotifyClauses();
-        updateQueryString();
-    }
-
 
     public void ClearColumns()
     {
@@ -186,16 +180,90 @@ public class Query
         {
             selectClause.ClearColumns();
         }
+        Recompute();
         // NotifyClauses();
-        updateQueryString();
+        // updateQueryString();
+    }
+
+    public void AddCondition()
+    {
+        whereClause.AddCondition();
+        Recompute();
+        // NotifyClauses();
+        // updateQueryString();
     }
 
 
+    public void CreateNewCondition(Column i_Column)
+    {
+        whereClause.CreateNewCondition(i_Column);
+        Recompute();
+        // NotifyClauses();
+        // UpdateQueryState();
+        // updateQueryString();
+    }
+
+    public void RemoveConditionColumn(Column i_Column)
+    {
+        whereClause.RemoveConditionsByColumn(i_Column);
+        Recompute();
+    }
+
+    public void SetConditionOperator(IOperatorStrategy i_Operator)
+    {
+        whereClause.SetOperator(i_Operator);
+        Recompute();
+    }
+
+    public void RemoveConditionOperator()
+    {
+        whereClause.RemoveOperator();
+        Recompute();
+    }
+
+    public void SetConditionValue(object i_Value)
+    {
+        whereClause.SetValue(i_Value);
+        Recompute();
+        // if (whereClause.newCondition != null)
+        // {
+        //     whereClause.newCondition.Value = i_Value;
+        //     AddCondition();
+        //     Recompute();
+        //     // updateQueryString();
+        // }
+    }
+
+    public void clearConditionValue()
+    {
+        whereClause.RemoveValue();
+        Recompute();
+
+        // if (whereClause.Conditions.Count > 0)
+        // {
+        //     Condition last = whereClause.Conditions.Last();
+        //     whereClause.Conditions.Remove(last);
+        //     whereClause.CreateNewCondition(last.Column);
+        //     whereClause.newCondition.Operator = last.Operator;
+        //     Recompute();
+        //     // NotifyClauses();
+        //     // updateQueryString();
+        // }
+    }
+
+
+    public void UpdateClausesStrings()
+    {
+        foreach (IQueryClause clause in Clauses)
+        {
+            clause.UpdateString();
+        }
+    }
+
     private void updateQueryString()
     {
-        // Debug.Log($"QUERY STRING IS: {QueryString}");
-        // // QueryString = selectClause.ToSQL() + "\n" + fromClause.ToSQL() + "\n" + whereClause.ToSQL();
         QueryString = string.Join("\n", Clauses.Select(c => c.ToSQL()));
+        Debug.Log($"query is: {QueryString}");
     }
 
     internal string GetSelectFields()
@@ -209,23 +277,6 @@ public class Query
     }
 
 
-    public List<List<object>> GetOrderedElements()
-    {
-        List<List<object>> orderedElements = new List<List<object>>();
-
-        foreach (IQueryClause clause in Clauses)
-        {
-            List<object> clauseElements = clause.GetOrderedElements();
-
-            if (clauseElements.Count > 0)
-            {
-                orderedElements.Add(clauseElements);
-            }
-        }
-
-        return orderedElements;
-    }
-
     public void Reset()
     {
         foreach (IQueryClause clause in Clauses)
@@ -233,19 +284,21 @@ public class Query
             clause.Deactivate();
             clause.Reset();
         }
+
+        Recompute();
     }
 
-    public void NotifyClauses()
-    {
-        foreach (IQueryClause clause in Clauses)
-        {
-            // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
-            clause.OnQueryUpdated(this);
-        }
+    // public void NotifyClauses()
+    // {
+    //     // foreach (IQueryClause clause in Clauses)
+    //     // {
+    //     //     // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
+    //     //     clause.OnQueryUpdated(this);
+    //     // }
 
-        andClause.OnQueryUpdated(this);
-        CheckAvailableClause();
-    }
+    //     // andClause.OnQueryUpdated(this);
+    //     // CheckAvailableClause();
+    // }
 
     public void PostDeserialize()
     {

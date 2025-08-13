@@ -17,13 +17,11 @@ public class QueryUIRenderer : MonoBehaviour
     public GameObject ClausesButtonPrefab;
     public Transform clausesParent;
     public ObjectPoolService<Button> clauseButtonPool;
-    private Dictionary<IQueryClause, Button> activeClauseButtons = new Dictionary<IQueryClause, Button>();
 
 
     [SerializeField] private GameObject inputFieldPrefab;
     [SerializeField] private GameObject confirmButtonPrefab;
     public Button executeButton;
-
 
     private GameObject currentInputField;
     private GameObject currentConfirmButton;
@@ -34,7 +32,7 @@ public class QueryUIRenderer : MonoBehaviour
 
     void Awake()
     {
-        executeButton.onClick.AddListener(ExecuteQuery);  
+        executeButton.onClick.AddListener(ExecuteQuery);
         selectionButtonPool = new ObjectPoolService<Button>(selectionButtonPrefab.GetComponent<Button>(), selectionParent, i_Capacity: 30);
         clauseButtonPool = new ObjectPoolService<Button>(ClausesButtonPrefab.GetComponent<Button>(), clausesParent, 5, 20);
     }
@@ -100,7 +98,7 @@ public class QueryUIRenderer : MonoBehaviour
             index++;
         }
     }
-    
+
     public void populateSelectionButtons<T>(
         IEnumerable<T> i_Items,
         Action<T> i_OnItemDropped,
@@ -148,7 +146,7 @@ public class QueryUIRenderer : MonoBehaviour
                     Debug.LogError($"Missing label on button for: {labelText}");
                 }
 
-        CheckForHighlight(item, button);
+                CheckForHighlight(item, button);
 
                 // ✅ Setup draggable
                 var draggableItem = button.GetComponent<DraggableItem>();
@@ -200,7 +198,7 @@ public class QueryUIRenderer : MonoBehaviour
         button.transform.SetSiblingIndex(insertIndex);
     }
 
-//TODO pass to another class 
+    //TODO pass to another class 
     private void SetButtonPreferredSize(Button button, float padding = 20f, float fixedHeight = 60f)
     {
         var label = button.GetComponentInChildren<TextMeshProUGUI>();
@@ -224,7 +222,7 @@ public class QueryUIRenderer : MonoBehaviour
     public void ShowInputField(
         Func<string, bool> validateInput,
         Func<string, string> formatInput,
-        Action<string> onConfirm,
+        Action<string> onValueSelected,
         Func<string, bool> canRemove,
         Action<string> onRemove,
         Transform clauseSection)
@@ -290,7 +288,7 @@ public class QueryUIRenderer : MonoBehaviour
 
             populateSelectionButtons(
                 i_Items: new List<string> { formatted },
-                i_OnItemDropped: val => GameManager.Instance.CurrentQuery.SetConditionValue(parsedValue),  // Same value reused
+                i_OnItemDropped: val => onValueSelected?.Invoke(formatted),
                 i_GetLabel: val => formatted,
                 i_ParentTransform: selectionParent,
                 i_ButtonPrefab: selectionButtonPrefab.GetComponent<Button>(),
@@ -307,38 +305,46 @@ public class QueryUIRenderer : MonoBehaviour
         List<T> values,
         Action<T> onValueSelected,
         Func<T, bool> canRemove,
-        Transform clauseSection
+        Transform clauseSection,
+        Action<T> onRemove = null
     )
     {
-        ShowInputField(
-            validateInput: raw => {
+        ShowInputField
+        (
+            validateInput: raw =>
+            {
                 if (string.IsNullOrWhiteSpace(raw)) return false;
                 return int.TryParse(raw, out _);
             },
             formatInput: raw => raw.Trim(),
-            onConfirm: formatted => {
+            onValueSelected: formatted =>
+            {
                 if (!int.TryParse(formatted, out int parsed)) return;
+                T typedValue = (T)(object)parsed;
 
-
- T typedValue = (T)(object)parsed; 
-
+                onValueSelected(typedValue);
 
                 // add custom entered number as if it was part of the list
                 populateSelectionButtons(
-                    i_Items: new List<int> { parsed },
-                    i_OnItemDropped: val => onValueSelected((T)(object)parsed),
+                    i_Items: new List<T> { typedValue },
+                    i_OnItemDropped: onValueSelected, //val => onValueSelected((T)(object)parsed),
                     i_GetLabel: val => val.ToString(),
                     i_ParentTransform: selectionParent,
-                    i_ButtonPrefab: selectionButtonPrefab.GetComponent<Button>(), 
+                    i_ButtonPrefab: selectionButtonPrefab.GetComponent<Button>(),
                     i_AssignedSection: val => clauseSection,
                     i_ClearSelectionPanel: false,
-                    i_RemovalCondition: val => canRemove((T)(object)parsed),
-                    i_OnItemRemoved: val => { /* optional cleanup */ }
+                    i_RemovalCondition: canRemove,//val => canRemove((T)(object)parsed),
+                    i_OnItemRemoved: onRemove //val => { /* optional cleanup */ }
                 );
             },
-            canRemove: null,  /// this line !!!
-            onRemove: val => { /* optional removal logic */ },
-            clauseSection: clauseSection);
+            canRemove: raw => int.TryParse(raw, out int parsed) && canRemove((T)(object)parsed),
+            onRemove: raw =>
+            {
+                if (int.TryParse(raw, out int parsed))
+                    onRemove((T)(object)parsed);
+            },
+            clauseSection: clauseSection
+        );
 
 
         populateSelectionButtons(
@@ -346,10 +352,11 @@ public class QueryUIRenderer : MonoBehaviour
             i_OnItemDropped: onValueSelected,
             i_GetLabel: val => val.ToString(),
             i_ParentTransform: selectionParent,
-            i_ButtonPrefab: selectionButtonPrefab.GetComponent<Button>(), 
+            i_ButtonPrefab: selectionButtonPrefab.GetComponent<Button>(),
             i_AssignedSection: val => clauseSection,
             i_ClearSelectionPanel: false,
-            i_RemovalCondition: canRemove
+            i_RemovalCondition: canRemove,
+            i_OnItemRemoved: onRemove
         );
 
         selectionParent.GetChild(selectionParent.childCount - 2).SetAsFirstSibling();
@@ -469,32 +476,32 @@ public class QueryUIRenderer : MonoBehaviour
     }
 
 
-public void ClearClauseSections(Transform[] clauseSections)
-{
-    foreach (Transform section in clauseSections)
+    public void ClearClauseSections(Transform[] clauseSections)
     {
-        foreach (Transform child in section)
+        foreach (Transform section in clauseSections)
         {
-            if (child.TryGetComponent<Button>(out var btn))
+            foreach (Transform child in section)
             {
-                // This ensures we're only destroying buttons that are not part of the pool
-                Destroy(btn.gameObject);
+                if (child.TryGetComponent<Button>(out var btn))
+                {
+                    // This ensures we're only destroying buttons that are not part of the pool
+                    Destroy(btn.gameObject);
+                }
             }
         }
-    }
 
-    if (currentInputField != null)
-    {
-        Destroy(currentInputField);
-        currentInputField = null;
-    }
+        if (currentInputField != null)
+        {
+            Destroy(currentInputField);
+            currentInputField = null;
+        }
 
-    if (currentConfirmButton != null)
-    {
-        Destroy(currentConfirmButton);
-        currentConfirmButton = null;
+        if (currentConfirmButton != null)
+        {
+            Destroy(currentConfirmButton);
+            currentConfirmButton = null;
+        }
     }
-}
 
 
 

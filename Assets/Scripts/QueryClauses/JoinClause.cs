@@ -40,15 +40,10 @@ public class JoinClause : IQueryClause
         throw new System.NotImplementedException();
     }
 
-    public void OnQueryUpdated(Query query)
+    public bool CheckAvailableClause(Query query)
     {
-        throw new System.NotImplementedException();
-    }
-
-    public List<object> GetOrderedElements()
-    {
-        throw new System.NotImplementedException();
-    }
+        return isAvailable;
+    } 
 
     public bool IsValid()
     {

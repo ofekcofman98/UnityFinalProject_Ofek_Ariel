@@ -13,10 +13,6 @@ public enum eQueryState
 public class QueryState
 {
     public eQueryState CurrentState { get; set; } = eQueryState.None;
-    // public void Update(Query query)
-    // {
-    //     CurrentState = GetState(query);
-    // }
 
     public void UpdateState(Query i_Query)
     {
@@ -42,9 +38,6 @@ public class QueryState
 
         if (i_Query.selectClause.IsEmpty())
         {
-            // Debug.Log("!i_Query.selectClause.NotEmpty()");
-
-            // i_Query.whereClause.Reset();
             CurrentState = eQueryState.SelectingColumns;
             return;
         }
@@ -61,21 +54,4 @@ public class QueryState
         Debug.Log($"[QueryState] State updated to: {CurrentState}");
     }
     
-    // public eQueryState GetState(Query query)
-    // {
-    //     if (!query.fromClause.isClicked)
-    //         return eQueryState.None;
-
-    //     if (query.fromClause.table == null)
-    //         return eQueryState.SelectingTable;
-
-    //     if (query.selectClause.IsEmpty() && !query.selectClause.isClicked)
-    //         return eQueryState.SelectingColumns;
-
-    //     if (query.whereClause.isAvailable && query.whereClause.NeedsCondition())
-    //         return eQueryState.SelectingConditions;
-
-    //     return eQueryState.None;
-    // }
-
 }

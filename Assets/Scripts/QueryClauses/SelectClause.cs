@@ -17,19 +17,6 @@ public class SelectClause : IQueryClause
         Columns = new List<Column>();
     }
 
-    // public void Toggle()
-    // {
-    //     isClicked = !isClicked;
-
-    //     if (!isClicked)
-    //     {
-    //         ClearColumns();
-    //     }
-
-    //     UpdateString();
-    //     // onSelectChanged?.Invoke();
-    // }
-
     public void Activate()
     {
         isClicked = true;
@@ -55,11 +42,13 @@ public class SelectClause : IQueryClause
             UpdateString();
         }
     }
+    
     public void RemoveColumn(Column i_ColumnToRemove)
     {
         if (Columns.Remove(i_ColumnToRemove))
         {
-            Columns.Remove(i_ColumnToRemove);
+            // Columns.Remove(i_ColumnToRemove);
+            
             UpdateString();
         }
     }
@@ -106,29 +95,10 @@ public class SelectClause : IQueryClause
         return !IsEmpty();
     }
 
-    public void OnQueryUpdated(Query query)
+    public bool CheckAvailableClause(Query query)
     {
-        if (query.fromClause.GetTable() == null)
-        {
-            ClearColumns();
-            UpdateString();
-        }
-
-    }
-
-    public List<object> GetOrderedElements()
-    {
-        List<object> elements = new List<object>();
-
-        if (isClicked)
-        {
-            elements.Add(this); // SELECT clause first
-            elements.AddRange(Columns); // Then all selected columns
-        }
-
-        return elements;
-    }
-
+        return isAvailable;
+    } 
 
     public void Reset()
     {

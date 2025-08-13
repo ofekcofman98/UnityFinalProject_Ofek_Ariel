@@ -27,16 +27,19 @@ public class AndClause : IQueryClause
     public void UpdateString() { }
     public void Reset()        { isClicked = false; isAvailable = false; }
     public bool IsValid()      { return true; }
-    public void OnQueryUpdated(Query query)
+
+
+    public bool CheckAvailableClause(Query query)
     {
         // Show AND only when WHERE is active and user can add another condition
         WhereClause wc = query.whereClause;
         bool hasCompleted = wc.Conditions.Count > 0;
         isAvailable = wc.isClicked && hasCompleted;
-    }
-    
+
+        return isAvailable;
+    } 
+
     public string ToSQL() { return QueryConstants.Empty; }     // never prints
     public string ToSupabase() { return QueryConstants.Empty; } // never prints
-    public List<object> GetOrderedElements() => new();
 }
 

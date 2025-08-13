@@ -15,6 +15,5 @@ public interface IQueryClause
     void UpdateString();
     void Reset();
     bool IsValid();
-    void OnQueryUpdated(Query query); 
-    List<object> GetOrderedElements();
+    public bool CheckAvailableClause(Query query);
 }
