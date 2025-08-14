@@ -25,6 +25,7 @@ public class DraggableItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private Vector3 originalPosition;
     private Transform canvasTransform;
     private int originalSiblingIndex;
+    public int? ConditionIndex { get; set; } // for knowing which condition the button is 
 
     [SerializeField] private AudioCue dragCue;
     [SerializeField] private AudioCue dropCueCorrect;

@@ -255,6 +255,15 @@ public class QueryBuilder : MonoBehaviour
                                           !query.whereClause.isClicked ||
                                           query.selectClause.IsEmpty()
             , i_OnItemRemoved: col => query.RemoveConditionColumn(col)
+            // ,i_OnItemRemoved: col =>
+            // {
+            //     // Get the condition index by finding the matching column
+            //     int conditionIndex = query.GetConditionIndexByColumn(col);
+            //     // Now remove the condition by index (not by column)
+            //     query.RemoveConditionByIndex(conditionIndex);
+            // }
+
+            , i_ConditionIndexGetter: _ => query.whereClause.CurrentEditingConditionIndex
         );
         
     }
@@ -262,21 +271,21 @@ public class QueryBuilder : MonoBehaviour
     private void PopulateOperatorSelection()
     {
 
-        // Column column;
-        // Condition last = query.whereClause.FindLastCondition();
-        // if (last == null) return;
-        // column = last.Column;
+        Column column;
+        Condition last = query.whereClause.FindLastCondition();
+        if (last == null) return;
+        column = last.Column;
 
-int targetIndex = query.whereClause.CurrentEditingConditionIndex;
-    if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
-    {
-        Debug.LogError("Invalid condition index.");
-        return;
-    }
+// int targetIndex = query.whereClause.CurrentEditingConditionIndex;
+//     if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
+//     {
+//         Debug.LogError("Invalid condition index.");
+//         return;
+//     }
 
-    Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
-    Column column = targetCondition.Column;
-    if (column == null) return;
+//     Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
+//     Column column = targetCondition.Column;
+//     if (column == null) return;
 
 
         uiRenderer.populateSelectionButtons
@@ -292,8 +301,7 @@ int targetIndex = query.whereClause.CurrentEditingConditionIndex;
             i_AssignedSection: op => whereSection,
             // i_ButtonPool: uiRenderer.selectionButtonPool,
             i_ButtonPrefab: uiRenderer.selectionButtonPrefab.GetComponent<Button>(),
-            i_RemovalCondition: _ => targetCondition.Column == null || targetCondition.Operator == null,
-//op => !query.whereClause.IsValidForOperator()
+            i_RemovalCondition:op => !query.whereClause.IsValidForOperator(), //_ => targetCondition.Column == null || targetCondition.Operator == null,
             i_OnItemRemoved: op => 
             {
                 query.RemoveConditionOperator();
@@ -305,33 +313,30 @@ int targetIndex = query.whereClause.CurrentEditingConditionIndex;
     private void PopulateValueSelection()
     {
 
-        // if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
-        // {
-        //     Debug.LogError("PopulateValueSelection() - No condition column selected!");
-        //     return;
-        // }
+        if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
+        {
+            Debug.LogError("PopulateValueSelection() - No condition column selected!");
+            return;
+        }
 
-        // ClearSelectionPanel();
+        ClearSelectionPanel();
 
-        // Column column = query.whereClause.newCondition.Column;
-        // Transform clauseSection = whereSection;
+        Column column = query.whereClause.newCondition.Column;
+        Transform clauseSection = whereSection;
         
+    // int targetIndex = query.whereClause.CurrentEditingConditionIndex;
+    // if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
+    // {
+    //     Debug.LogError("Invalid condition index.");
+    //     return;
+    // }
 
-    int targetIndex = query.whereClause.CurrentEditingConditionIndex;
-    if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
-    {
-        Debug.LogError("Invalid condition index.");
-        return;
-    }
+    // Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
+    // if (targetCondition == null || targetCondition.Column == null) return;
 
-    Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
-    if (targetCondition == null || targetCondition.Column == null) return;
-
-    ClearSelectionPanel();
-    Column column = targetCondition.Column;
-    Transform clauseSection = whereSection;
-
-
+    // ClearSelectionPanel();
+    // Column column = targetCondition.Column;
+    // Transform clauseSection = whereSection;
 
         switch (column.DataType)
         {
@@ -339,8 +344,7 @@ int targetIndex = query.whereClause.CurrentEditingConditionIndex;
                 uiRenderer.ShowNumberInputOptions(
                 values: new List<int> { 10, 20, 30, 40, 50, 60, 100 },
                 onValueSelected: val => query.SetConditionValue(val),
-                canRemove: val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
-                //val => !query.whereClause.IsValidForValue(),
+                canRemove: val => !query.whereClause.IsValidForValue(),//val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
                 onRemove: val =>
                 {
                     query.clearConditionValue();
@@ -354,8 +358,7 @@ int targetIndex = query.whereClause.CurrentEditingConditionIndex;
                 validateInput: input => { return !string.IsNullOrWhiteSpace(input); },
                 formatInput: input => input.Trim('"'),
                 onValueSelected: formatted => query.SetConditionValue(formatted),
-                canRemove: val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
-                //val => !query.whereClause.IsValidForValue(),
+                canRemove: val => !query.whereClause.IsValidForValue(), //val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
                 onRemove: val =>
                 {
                     query.clearConditionValue();

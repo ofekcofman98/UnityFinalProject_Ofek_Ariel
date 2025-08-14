@@ -109,7 +109,8 @@ public class QueryUIRenderer : MonoBehaviour
         Button i_ButtonPrefab,
         bool i_ClearSelectionPanel = true,
         Func<T, bool> i_RemovalCondition = null,
-        Action<T> i_OnItemRemoved = null)
+        Action<T> i_OnItemRemoved = null,
+        Func<T, int> i_ConditionIndexGetter = null) //! ofek 15.8 
     {
         if (i_Items == null || !i_Items.Any())
         {
@@ -168,6 +169,9 @@ public class QueryUIRenderer : MonoBehaviour
 
                 if (i_RemovalCondition != null)
                     removalConditions[button] = (() => i_RemovalCondition(item), () => i_OnItemRemoved?.Invoke(item));
+
+                if (i_ConditionIndexGetter != null)                             //! ofek 15.8 
+                    draggableItem.ConditionIndex = i_ConditionIndexGetter(item);//! ofek 15.8 
             }
             catch (Exception ex)
             {

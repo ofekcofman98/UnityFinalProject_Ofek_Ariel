@@ -217,7 +217,7 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         }
     }
 
-    public void RemoveOperator()
+    public void RemoveOperator(/*int conditionIndex*/)
     {
         Condition condition = FindLastCondition();
 
@@ -311,5 +311,39 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         return Conditions.Last().IsComplete;
 
         // return false;
+    }
+
+    internal int GetConditionIndexByColumn(Column col)
+    {
+        for (int i = 0; i < Conditions.Count; i++)
+        {
+            if (Conditions[i].Column == col)
+            {
+                Debug.Log($"[GetConditionIndexByColumn]: {i}"); 
+                return i;
+            }
+        }
+
+        if (newCondition?.Column == col)
+        {
+            Debug.Log($"[GetConditionIndexByColumn]: {-1}"); 
+            return -1; // Special index for newCondition
+        }
+
+        Debug.Log($"[GetConditionIndexByColumn]: {-2}"); 
+        return -2; // Not found
+    }
+
+    public void RemoveConditionByIndex(int conditionIndex)
+    {
+        if (conditionIndex == -1)
+        {
+            newCondition = null;
+        }
+        else if (conditionIndex >= 0 && conditionIndex < Conditions.Count)
+        {
+            Conditions.RemoveAt(conditionIndex);
+        }
+
     }
 }

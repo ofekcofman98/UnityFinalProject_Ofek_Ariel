@@ -132,8 +132,6 @@ public class Query
         }
 
         Recompute();
-        // clause.UpdateString();
-        // updateQueryString();
     }
 
     public void SetTable(Table i_Table)
@@ -143,8 +141,6 @@ public class Query
             fromClause.SetTable(i_Table);
         }
         Recompute();
-        // NotifyClauses();
-        // updateQueryString();
     }
 
     public void RemoveTable()
@@ -152,8 +148,6 @@ public class Query
         fromClause.RemoveTable();
         selectClause.ClearColumns();
         Recompute();
-        // NotifyClauses();
-        // updateQueryString();
     }
 
 
@@ -161,17 +155,12 @@ public class Query
     {
         selectClause.AddColumn(i_ColumnToAdd);
         Recompute();
-        // NotifyClauses();
-        // updateQueryString();
     }
 
     public void RemoveColumn(Column i_ColumnToRemove)
     {
         selectClause.RemoveColumn(i_ColumnToRemove);
         Recompute();
-        // NotifyClauses();
-        // UpdateQueryState();
-        // updateQueryString();
     }
 
     public void ClearColumns()
@@ -181,16 +170,12 @@ public class Query
             selectClause.ClearColumns();
         }
         Recompute();
-        // NotifyClauses();
-        // updateQueryString();
     }
 
     public void AddCondition()
     {
         whereClause.AddCondition();
         Recompute();
-        // NotifyClauses();
-        // updateQueryString();
     }
 
 
@@ -198,9 +183,6 @@ public class Query
     {
         whereClause.CreateNewCondition(i_Column);
         Recompute();
-        // NotifyClauses();
-        // UpdateQueryState();
-        // updateQueryString();
     }
 
     public void RemoveConditionColumn(Column i_Column)
@@ -225,30 +207,12 @@ public class Query
     {
         whereClause.SetValue(i_Value);
         Recompute();
-        // if (whereClause.newCondition != null)
-        // {
-        //     whereClause.newCondition.Value = i_Value;
-        //     AddCondition();
-        //     Recompute();
-        //     // updateQueryString();
-        // }
     }
 
     public void clearConditionValue()
     {
         whereClause.RemoveValue();
         Recompute();
-
-        // if (whereClause.Conditions.Count > 0)
-        // {
-        //     Condition last = whereClause.Conditions.Last();
-        //     whereClause.Conditions.Remove(last);
-        //     whereClause.CreateNewCondition(last.Column);
-        //     whereClause.newCondition.Operator = last.Operator;
-        //     Recompute();
-        //     // NotifyClauses();
-        //     // updateQueryString();
-        // }
     }
 
     public bool CompletedCondition()
@@ -292,18 +256,6 @@ public class Query
         Recompute();
     }
 
-    // public void NotifyClauses()
-    // {
-    //     // foreach (IQueryClause clause in Clauses)
-    //     // {
-    //     //     // Debug.Log($"[NotifyClauses] Updating: {clause.DisplayName}");
-    //     //     clause.OnQueryUpdated(this);
-    //     // }
-
-    //     // andClause.OnQueryUpdated(this);
-    //     // CheckAvailableClause();
-    // }
-
     public void PostDeserialize()
     {
         if (whereClause != null && whereClause.Conditions != null && whereClause.Conditions.Count > 0)
@@ -321,5 +273,14 @@ public class Query
         updateQueryString();
     }
 
+    public int GetConditionIndexByColumn(Column col)
+    {
+        return whereClause.GetConditionIndexByColumn(col);
+    }
+
+    public void RemoveConditionByIndex(int conditionIndex)
+    {
+        whereClause.RemoveConditionByIndex(conditionIndex);
+    }
 }
 
