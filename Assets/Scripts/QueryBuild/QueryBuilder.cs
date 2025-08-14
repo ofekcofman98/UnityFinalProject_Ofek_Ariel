@@ -132,6 +132,37 @@ public class QueryBuilder : MonoBehaviour
         BuildQuery();
     }
 
+    private void ShowNextSelectionOptions()
+    {
+        ClearSelectionPanel();
+
+        Debug.Log($"state is: {query.queryState.CurrentState}");
+
+
+        switch (query.queryState.CurrentState)
+        {
+            case eQueryState.SelectingTable:
+                PopulateTableSelection();
+                break;
+
+            case eQueryState.SelectingColumns:
+                if (query.fromClause.table != null)
+                {
+                    PopulateColumnSelection(query.fromClause.table);
+                }
+                break;
+
+            case eQueryState.SelectingConditions:
+                PopulateConditionColumnSelection();
+                break;
+
+            case eQueryState.None:
+                ClearSelectionPanel();
+                break;
+        }
+
+        // uiRenderer.RefreshPanelButtons(); 
+    }
 
     private void updateAvailableClauses()
     {
@@ -200,46 +231,53 @@ public class QueryBuilder : MonoBehaviour
 
     private void PopulateConditionColumnSelection()
     {
-        if (query.fromClause.table != null)
-        {
-            uiRenderer.populateSelectionButtons
-            (
-                 i_Items: query.fromClause.table.Columns
-                , i_OnItemDropped: col =>
-                {
-                    query.CreateNewCondition(col);
-                    PopulateOperatorSelection();
-                }
-                , i_GetLabel: column => column.Name
-                , i_ParentTransform: selectionParent
-                , i_AssignedSection: col => whereSection
-                // ,i_ButtonPool: uiRenderer.selectionButtonPool
-                , i_ButtonPrefab: uiRenderer.selectionButtonPrefab.GetComponent<Button>()
+        if (query.fromClause.table == null) return;
 
-                , i_RemovalCondition: column => query.fromClause.table == null ||
-                                              !query.whereClause.isClicked ||
-                                              query.selectClause.IsEmpty()
-                , i_OnItemRemoved: col => query.RemoveConditionColumn(col)
-            );
-        }
+        if (query.whereClause.Conditions.Count >= WhereClause.k_MaxConditions
+            && query.whereClause.newCondition == null)
+            return;
+
+        uiRenderer.populateSelectionButtons
+        (
+             i_Items: query.fromClause.table.Columns
+            , i_OnItemDropped: col =>
+            {
+                query.CreateNewCondition(col);
+                PopulateOperatorSelection();
+            }
+            , i_GetLabel: column => column.Name
+            , i_ParentTransform: selectionParent
+            , i_AssignedSection: col => whereSection
+            // ,i_ButtonPool: uiRenderer.selectionButtonPool
+            , i_ButtonPrefab: uiRenderer.selectionButtonPrefab.GetComponent<Button>()
+
+            , i_RemovalCondition: column => query.fromClause.table == null ||
+                                          !query.whereClause.isClicked ||
+                                          query.selectClause.IsEmpty()
+            , i_OnItemRemoved: col => query.RemoveConditionColumn(col)
+        );
+        
     }
 
     private void PopulateOperatorSelection()
     {
 
-        // Column column = query.whereClause.newCondition?.Column;
+        // Column column;
+        // Condition last = query.whereClause.FindLastCondition();
+        // if (last == null) return;
+        // column = last.Column;
 
-        // if (column == null)
-        // {
-        //     if (!query.whereClause.IsEmpty())
-        //     {
-        //         column = query.whereClause.Conditions.Last().Column;
-        //     }
-        // }
-        Column column;
-        Condition last = query.whereClause.FindLastCondition();
-        if (last == null) return;
-        column = last.Column;
+int targetIndex = query.whereClause.CurrentEditingConditionIndex;
+    if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
+    {
+        Debug.LogError("Invalid condition index.");
+        return;
+    }
+
+    Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
+    Column column = targetCondition.Column;
+    if (column == null) return;
+
 
         uiRenderer.populateSelectionButtons
         (
@@ -254,8 +292,9 @@ public class QueryBuilder : MonoBehaviour
             i_AssignedSection: op => whereSection,
             // i_ButtonPool: uiRenderer.selectionButtonPool,
             i_ButtonPrefab: uiRenderer.selectionButtonPrefab.GetComponent<Button>(),
-            i_RemovalCondition: op => !query.whereClause.IsValidForOperator()
-            ,i_OnItemRemoved: op => 
+            i_RemovalCondition: _ => targetCondition.Column == null || targetCondition.Operator == null,
+//op => !query.whereClause.IsValidForOperator()
+            i_OnItemRemoved: op => 
             {
                 query.RemoveConditionOperator();
                 PopulateOperatorSelection();
@@ -263,50 +302,36 @@ public class QueryBuilder : MonoBehaviour
         );
     }
 
-    private void ShowNextSelectionOptions()
-    {
-        ClearSelectionPanel();
-
-        Debug.Log($"state is: {query.queryState.CurrentState}");
-
-        switch (query.queryState.CurrentState)
-        {
-            case eQueryState.SelectingTable:
-                PopulateTableSelection();
-                break;
-
-            case eQueryState.SelectingColumns:
-                if (query.fromClause.table != null)
-                {
-                    PopulateColumnSelection(query.fromClause.table);
-                }
-                break;
-
-            case eQueryState.SelectingConditions:
-                PopulateConditionColumnSelection();
-                break;
-
-            case eQueryState.None:
-                ClearSelectionPanel();
-                break;
-        }
-
-        // uiRenderer.RefreshPanelButtons(); 
-    }
-
     private void PopulateValueSelection()
     {
 
-        if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
-        {
-            Debug.LogError("PopulateValueSelection() - No condition column selected!");
-            return;
-        }
+        // if (query.whereClause.newCondition == null || query.whereClause.newCondition.Column == null)
+        // {
+        //     Debug.LogError("PopulateValueSelection() - No condition column selected!");
+        //     return;
+        // }
 
-        ClearSelectionPanel();
+        // ClearSelectionPanel();
+
+        // Column column = query.whereClause.newCondition.Column;
+        // Transform clauseSection = whereSection;
         
-        Column column = query.whereClause.newCondition.Column;
-        Transform clauseSection = whereSection;
+
+    int targetIndex = query.whereClause.CurrentEditingConditionIndex;
+    if (targetIndex < 0 || targetIndex >= WhereClause.k_MaxConditions)
+    {
+        Debug.LogError("Invalid condition index.");
+        return;
+    }
+
+    Condition targetCondition = query.whereClause.newCondition ?? query.whereClause.Conditions[targetIndex];
+    if (targetCondition == null || targetCondition.Column == null) return;
+
+    ClearSelectionPanel();
+    Column column = targetCondition.Column;
+    Transform clauseSection = whereSection;
+
+
 
         switch (column.DataType)
         {
@@ -314,8 +339,9 @@ public class QueryBuilder : MonoBehaviour
                 uiRenderer.ShowNumberInputOptions(
                 values: new List<int> { 10, 20, 30, 40, 50, 60, 100 },
                 onValueSelected: val => query.SetConditionValue(val),
-                canRemove: val => !query.whereClause.IsValidForValue(),
-                onRemove:  val =>
+                canRemove: val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
+                //val => !query.whereClause.IsValidForValue(),
+                onRemove: val =>
                 {
                     query.clearConditionValue();
                     PopulateValueSelection();
@@ -325,10 +351,11 @@ public class QueryBuilder : MonoBehaviour
 
             case eDataType.String:
                 uiRenderer.ShowInputField(
-                validateInput: input => {return !string.IsNullOrWhiteSpace(input);},
+                validateInput: input => { return !string.IsNullOrWhiteSpace(input); },
                 formatInput: input => input.Trim('"'),
                 onValueSelected: formatted => query.SetConditionValue(formatted),
-                canRemove: val => !query.whereClause.IsValidForValue(),
+                canRemove: val => targetCondition.Value == null || targetCondition.Operator == null || targetCondition.Column == null,
+                //val => !query.whereClause.IsValidForValue(),
                 onRemove: val =>
                 {
                     query.clearConditionValue();
@@ -395,6 +422,22 @@ public class QueryBuilder : MonoBehaviour
                 Destroy(button.gameObject); 
             }
         }
+
+        if (uiRenderer != null)
+        {
+            if (uiRenderer.currentInputField != null)
+            {
+                GameObject.Destroy(uiRenderer.currentInputField);
+                uiRenderer.currentInputField = null;
+            }
+
+            if (uiRenderer.currentConfirmButton != null)
+            {
+                GameObject.Destroy(uiRenderer.currentConfirmButton);
+                uiRenderer.currentConfirmButton = null;
+            }
+        }
+
 
         // ✅ Now release safely
         foreach (var button in buttonsToRelease)

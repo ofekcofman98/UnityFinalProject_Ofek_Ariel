@@ -44,11 +44,25 @@ public class QueryState
 
         if (i_Query.whereClause.isClicked)
         {
-            CurrentState = eQueryState.SelectingConditions;
+            // if (!i_Query.whereClause.CompletedCondition())  // where is clicked but didnt finish condition yet
+if (i_Query.whereClause.HasActiveEditingCondition() ||
+        !i_Query.whereClause.IsValid())
+            {
+                CurrentState = eQueryState.SelectingConditions;
+            }
+            else                                            // where is clicked and condition is finished
+            {
+                CurrentState = eQueryState.None;
+            }
         }
         else
         {
             CurrentState = eQueryState.SelectingColumns;
+        }
+
+        if (i_Query.andClause.isClicked)
+        {
+            CurrentState = eQueryState.SelectingConditions;
         }
 
         Debug.Log($"[QueryState] State updated to: {CurrentState}");

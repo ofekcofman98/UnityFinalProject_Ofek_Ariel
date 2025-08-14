@@ -33,9 +33,11 @@ public class AndClause : IQueryClause
     {
         // Show AND only when WHERE is active and user can add another condition
         WhereClause wc = query.whereClause;
-        bool hasCompleted = wc.Conditions.Count > 0;
-        isAvailable = wc.isClicked && hasCompleted;
-
+        isAvailable = wc.isClicked
+                   && wc.Conditions.Count >= 1
+                   && wc.Conditions[0].IsComplete
+                //    && wc.newCondition == null
+                   && wc.Conditions.Count <= WhereClause.k_MaxConditions;
         return isAvailable;
     } 
 

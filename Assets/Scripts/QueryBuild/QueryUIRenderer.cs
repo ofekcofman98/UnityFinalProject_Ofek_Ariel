@@ -23,8 +23,8 @@ public class QueryUIRenderer : MonoBehaviour
     [SerializeField] private GameObject confirmButtonPrefab;
     public Button executeButton;
 
-    private GameObject currentInputField;
-    private GameObject currentConfirmButton;
+    public GameObject currentInputField;
+    public GameObject currentConfirmButton;
 
     public TextMeshProUGUI queryPreviewText;
     private Dictionary<Button, (Func<bool> condition, Action removeAction)> removalConditions

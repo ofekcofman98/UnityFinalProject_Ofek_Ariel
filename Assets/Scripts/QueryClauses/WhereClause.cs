@@ -11,6 +11,9 @@ public class WhereClause : IQueryClause
     public string WherePart { get; private set; } = QueryConstants.Empty;
     public List<Condition> Conditions;
     public Condition newCondition { get; set; }
+    public const int k_MaxConditions = 2;
+    public int CurrentEditingConditionIndex { get; private set; } = -1;
+
     public bool isClicked { get; private set; } = false;
     public bool isAvailable { get; set; } = false;
 
@@ -34,9 +37,22 @@ public class WhereClause : IQueryClause
 
         isClicked = false;
     }
+    public bool CanStartAnotherCondition()
+        => isClicked && (Conditions.Count < k_MaxConditions) && CompletedCondition(); // first is complete
+
+    public bool HasActiveEditingCondition()
+        => newCondition != null && !newCondition.IsComplete;
+
 
     public void StartNewCondition()
     {
+        if (Conditions.Count >= k_MaxConditions)
+        {
+            Debug.Log("Max 2 conditions reached.");
+            return;
+        }
+
+CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         newCondition = new Condition();
         newCondition.OnConditionUpdated += UpdateString;
         UpdateString();
@@ -53,14 +69,22 @@ public class WhereClause : IQueryClause
 
     public void AddCondition()
     {
-        if (newCondition == null || newCondition.Value == null)
+        if (newCondition == null || !newCondition.IsComplete)
         {
             Debug.LogWarning("Cannot add condition: Condition or Value is null.");
+            return;
+        }
+        if (Conditions.Count >= k_MaxConditions)
+        {
+            Debug.Log("Max 2 conditions reached.");
+            newCondition = null; // drop it
+            UpdateString();
             return;
         }
 
         Conditions.Add(newCondition);
         newCondition = null;
+        ResetIndex();
         UpdateString();
     }
 
@@ -114,25 +138,24 @@ public class WhereClause : IQueryClause
 
         isAvailable = newlyAvailable;
         return isAvailable;
-    } 
+    }
 
 
     public bool IsValid()
     {
-        return !isClicked || (Conditions.Count > 0 &&
-                              Conditions.All(c => c.Column != null && c.Operator != null && c.Value != null));
+        // return !isClicked || (Conditions.Count > 0 && Conditions.All(c => c.Column != null && c.Operator != null && c.Value != null));
+
+        if (!isClicked) return true;
+        if (newCondition != null) return false;           // editing → not valid
+        if (Conditions.Count == 0) return false;
+        if (Conditions.Count == 1) return Conditions[0].IsComplete;
+        if (Conditions.Count == 2) return Conditions[0].IsComplete && Conditions[1].IsComplete;
+
+        return false;
     }
 
     public bool IsValidForOperator()
     {
-        // if (newCondition != null)
-        // {
-        //     return newCondition.Column != null;
-        // }
-        // else if (Conditions.Count > 0)
-        // {
-        //     return Conditions.Last().Column != null;
-        // }
         bool res = false;
         Condition condition = FindLastCondition();
         if (condition != null)
@@ -146,18 +169,6 @@ public class WhereClause : IQueryClause
     public bool IsValidForValue()
     {
         bool res = false;
-
-        // if (newCondition != null)
-        // {
-        //     res = newCondition.Operator != null;
-        //     Debug.Log($"[IsValidForValue] newCondition.Operator != null = {res}");
-        // }
-
-        // else if (Conditions.Count > 0)
-        // {
-        //     res = Conditions.Last().Operator != null;
-        //     Debug.Log($"[IsValidForValue] Conditions.Last().Operator != null = {res}");
-        // }
 
         Condition condition = FindLastCondition();
         if (condition != null)
@@ -198,14 +209,6 @@ public class WhereClause : IQueryClause
 
     public void SetOperator(IOperatorStrategy i_operator)
     {
-        // if (newCondition != null)
-        // {
-        //     newCondition.Operator = i_Operator;
-        // }
-        // else if (whereClause.Conditions.Count > 0)
-        // {
-        //     whereClause.Conditions.Last().Operator = i_Operator;
-        // }
         Condition condition = FindLastCondition();
 
         if (condition != null)
@@ -280,8 +283,33 @@ public class WhereClause : IQueryClause
         clearConditions();
     }
 
+    private void ResetIndex()
+    {
+        CurrentEditingConditionIndex = -1;
+    }
+
     public bool IsEmpty()
     {
         return Conditions.Count == 0;
+    }
+
+    public bool CompletedCondition()
+    {
+        // if (!IsEmpty())
+        // {
+        //     Debug.Log("!IsEmpty()");
+
+        //     if (newCondition == null)
+        //     {
+        //         Debug.Log("newCondition == null");
+        //         return true;
+        //     }
+        // }
+
+        if (newCondition != null) return false;
+        if (Conditions.Count == 0) return false;
+        return Conditions.Last().IsComplete;
+
+        // return false;
     }
 }

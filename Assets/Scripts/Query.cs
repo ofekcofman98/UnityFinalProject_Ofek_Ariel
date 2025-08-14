@@ -16,9 +16,8 @@ public class Query
     public SelectClause selectClause;
     public FromClause fromClause;
     public WhereClause whereClause;
-    private AndClause andClause;
+    public AndClause andClause;
 
-private readonly IQueryClause[] _clauses; // ofek
     [JsonIgnore] public List<IQueryClause> Clauses => new() { selectClause, fromClause, whereClause };
     [JsonIgnore] public List<IQueryClause> availableClauses;
 
@@ -46,6 +45,7 @@ private readonly IQueryClause[] _clauses; // ofek
         {
             // Ensure WHERE is active and move UI state to pick another condition
             whereClause.Activate();
+            whereClause.StartNewCondition();   
             UpdateQueryState();
             // nothing to change in SQL string now; user will pick column -> operator -> value
         });
@@ -251,6 +251,10 @@ private readonly IQueryClause[] _clauses; // ofek
         // }
     }
 
+    public bool CompletedCondition()
+    {
+        return whereClause.CompletedCondition();
+    }
 
     public void UpdateClausesStrings()
     {
@@ -316,7 +320,6 @@ private readonly IQueryClause[] _clauses; // ofek
 
         updateQueryString();
     }
-
 
 }
 
