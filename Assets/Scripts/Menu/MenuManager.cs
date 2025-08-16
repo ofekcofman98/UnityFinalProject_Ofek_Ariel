@@ -9,6 +9,8 @@ public class MenuManager : Singleton<MenuManager>
     [SerializeField] private GameObject menuUI;
     // [SerializeField] private GameObject gameUI;
     [SerializeField] private GameObject pauseMenuUI;
+    [SerializeField] private GameObject loadMenuUI;
+    // private LoadMenu loadMenu;
     // [SerializeField] private GameObject winPanelUI;
     // [SerializeField] private GameObject losePanelUI;
 
@@ -53,7 +55,7 @@ public class MenuManager : Singleton<MenuManager>
 
     public void OnLoadSavedGameClicked()
     {
-        GameManager.Instance.StartSavedGame();
+        ShowLoadMenu();
     }
 
     public void OnSaveCurrentGame()
@@ -74,7 +76,7 @@ public class MenuManager : Singleton<MenuManager>
         pauseMenuUI.SetActive(false);
         // gameUI.SetActive(true);
     }
-    
+
     public void OnQuitToMainMenuClicked()
     {
         Time.timeScale = 1f;
@@ -83,6 +85,16 @@ public class MenuManager : Singleton<MenuManager>
         ShowMainMenu(); // finally show the main menu
     }
 
+    public void ShowLoadMenu()
+    {
+        loadMenuUI.SetActive(true);
+        menuUI.SetActive(false);
+    }
+
+    public void OnLoadClicked()
+    {
+        GameManager.Instance.StartSavedGame();
+    }
 
     // public void ShowWinPanel()
     // {

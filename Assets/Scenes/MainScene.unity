@@ -1737,7 +1737,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1150915944}
         m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: ResumeGame
+        m_MethodName: OnLoadClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7109,9 +7109,9 @@ RectTransform:
   - {fileID: 180634995}
   m_Father: {fileID: 1324763935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 1181.606, y: 0}
   m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &489182195
@@ -15855,7 +15855,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 561.3115, y: -82.228485}
+  m_AnchoredPosition: {x: 554.3115, y: -152.72849}
   m_SizeDelta: {x: 225.4857, y: 158.56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1000442539
@@ -16322,7 +16322,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1033464751}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1150915944}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: OnLoadSavedGameClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1033464751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17908,7 +17920,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000043340293}
+  m_AnchoredPosition: {x: 0, y: 0.00004394516}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1111810308
@@ -18727,6 +18739,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuUI: {fileID: 550234131}
   pauseMenuUI: {fileID: 1629533587}
+  loadMenuUI: {fileID: 2127914211}
 --- !u!1 &1152350945 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8445581528613803804, guid: d0486cf451fe1174199f4ff6d412299e, type: 3}
@@ -18981,9 +18994,9 @@ RectTransform:
   - {fileID: 1284978111}
   m_Father: {fileID: 1324763935}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 828.686, y: 0}
   m_SizeDelta: {x: 350, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1157078194
@@ -20493,7 +20506,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 561.3115, y: -287.4915}
+  m_AnchoredPosition: {x: 554.3115, y: -357.9915}
   m_SizeDelta: {x: 142.8872, y: 214.366}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1256157659
@@ -21843,7 +21856,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000043340293}
+  m_AnchoredPosition: {x: 0, y: 0.00004394516}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1314768726
@@ -34528,7 +34541,6 @@ GameObject:
   - component: {fileID: 2127914212}
   - component: {fileID: 2127914217}
   - component: {fileID: 2127914216}
-  - component: {fileID: 2127914215}
   - component: {fileID: 2127914214}
   - component: {fileID: 2127914213}
   m_Layer: 5
@@ -34600,20 +34612,6 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: 2}
   m_UseGraphicAlpha: 1
---- !u!114 &2127914215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2127914211}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dd2e48df56059b4429f588b4aff4f37e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  closeButtonPrefab: {fileID: 1042460493463040079, guid: 459419b2b5e40a3438194a94835b9711, type: 3}
-  tutorialStepIdOnClose: 
 --- !u!114 &2127914216
 MonoBehaviour:
   m_ObjectHideFlags: 0
