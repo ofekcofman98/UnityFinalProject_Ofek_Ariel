@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TutorialPopupUI : MonoBehaviour, IPopup
+public class TutorialPopupUI : Popup
 {
     [SerializeField] private TextMeshProUGUI popupTitle;
     [SerializeField] private TextMeshProUGUI popupText;
@@ -13,10 +13,12 @@ public class TutorialPopupUI : MonoBehaviour, IPopup
 
     private Action onContinue;
     public bool IsOpen { get; private set; }
+    public override bool ShouldShowCloseButton => false;
 
-
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         continueButton.onClick.AddListener(() =>
         {
             Close();
@@ -26,7 +28,11 @@ public class TutorialPopupUI : MonoBehaviour, IPopup
 
     public void Show(string title, string message, Action onContinueCallback)
     {
-        Time.timeScale = 0f;
+        if (IsOpen)
+        {
+            Debug.LogWarning($"[TutorialPopupUI] Show() called while already open — ignoring.");
+            return;
+        }
         popupTitle.text = title;
         popupText.text = message;
         onContinue = onContinueCallback;
@@ -34,12 +40,21 @@ public class TutorialPopupUI : MonoBehaviour, IPopup
         Open();
     }
 
-    public void Open() => gameObject.SetActive(true);
-
-    public void Close()
+    public override void Close()
     {
-        Time.timeScale = 1f;
+        if (!IsOpen) return;
         IsOpen = false;
-        gameObject.SetActive(false);
+        Debug.Log($"[TutorialPopupUI] Close() called");
+
+        base.Close(); // Call base to trigger unregister
     }
+
+    // public void Open() => gameObject.SetActive(true);
+
+    // public void Close()
+    // {
+    //     Time.timeScale = 1f;
+    //     IsOpen = false;
+    //     gameObject.SetActive(false);
+    // }
 }

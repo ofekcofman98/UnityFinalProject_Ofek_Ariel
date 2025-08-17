@@ -9,29 +9,36 @@ public class Popup : MonoBehaviour, IPopup
 {
 
     [SerializeField] private GameObject closeButtonPrefab;
+    [SerializeField] protected bool shouldFreezeTime = true;
     private GameObject closeButtonInstance;
-    public string tutorialStepIdOnClose; 
-    public Action OnPopupOpened; 
+    public string tutorialStepIdOnClose;
+    public Action OnPopupOpened;
     public Action OnPopupClosed;
+    public virtual bool ShouldFreezeTime => shouldFreezeTime;
+    public virtual bool ShouldShowCloseButton => true; 
+    private void OnEnable() => EnsureCloseButton();
 
-    private void OnEnable()
-    {
-        EnsureCloseButton();
-    }
-
-
+    protected virtual void Awake() {}
 
     public void Open()
     {
-        Time.timeScale = 0f;
-        gameObject.SetActive(true);
-        EnsureCloseButton();
-        OnPopupOpened?.Invoke(); 
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+            EnsureCloseButton();
+            OnPopupOpened?.Invoke();
+            PopupManager.Instance.Register(this);
+        }
+        else
+        {
+            Debug.LogWarning($"[Popup] Tried to Open() an already active popup: {name}");
+        }
+
     }
 
     private void EnsureCloseButton()
     {
-        if (closeButtonPrefab == null || closeButtonInstance != null)
+        if (!ShouldShowCloseButton || closeButtonPrefab == null || closeButtonInstance != null)
             return;
 
         closeButtonInstance = Instantiate(closeButtonPrefab, transform);
@@ -42,19 +49,19 @@ public class Popup : MonoBehaviour, IPopup
 
         Button btn = closeButtonInstance.GetComponent<Button>();
         btn.onClick.AddListener(Close);
-
     }
-    public void Close()
+
+    public virtual void Close()
     {
-        Time.timeScale = 1f;
         OnPopupClosed?.Invoke();
         gameObject.SetActive(false);
+        PopupManager.Instance.Unregister(this);
 
         if (!string.IsNullOrEmpty(tutorialStepIdOnClose))
         {
             Debug.Log($"📘 Popup closed: reporting tutorial step '{tutorialStepIdOnClose}'");
             MissionsManager.Instance.ReportTutorialStep(tutorialStepIdOnClose);
         }
-
     }
+    
 }

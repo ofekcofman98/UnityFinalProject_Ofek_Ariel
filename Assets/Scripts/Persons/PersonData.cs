@@ -18,19 +18,3 @@ public class PersonData // or PersonData
     [NonSerialized] public GameObject characterPrefab;
     [NonSerialized] public Texture2D portrait;
 }
-
-public static class PersonFactory
-{
-    public static PersonData FromRow(JObject row)
-    {
-        return new PersonData
-        {
-            id = row["person_id"]?.ToString(),
-            first_name = row["first_name"]?.ToString(),
-            last_name = row["last_name"]?.ToString(),
-            description = row["description"]?.ToString(),
-            photo_url = row["photo_url"]?.ToString(),
-            prefab_id = row["prefab_id"]?.ToString()
-        };
-    }
-}

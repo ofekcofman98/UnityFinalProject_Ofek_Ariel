@@ -50,7 +50,11 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public void SetStatsFromLoadedGame(int i_seqIndex, int i_lives, int i_levelIndex)
     {
-        GameManager.Instance.sequenceNumber = i_seqIndex;
+        //! removed (ofek 17.8)
+        // GameManager.Instance.sequenceNumber = i_seqIndex;
+        //! added (ofek 17.8)
+        SequenceManager.Instance.SetSequence(i_seqIndex);
+
         LivesManager.Instance.SetLives(i_lives);
         currentMissionIndex = i_levelIndex;
         // SuspectsManager.Instance.initLivesFromMissiomsManager();

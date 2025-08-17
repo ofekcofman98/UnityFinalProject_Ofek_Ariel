@@ -5,14 +5,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LocationsMenu : MonoBehaviour
+public class LocationsMenu : Popup//MonoBehaviour
 {
     [SerializeField] private GameObject cardPrefab; // LocationCard prefab
     [SerializeField] private Transform contentParent; // Horizontal layout group
 
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         Table.OnTableUnlocked += HandleTableUnlocked;
     }
 
@@ -34,7 +35,7 @@ public class LocationsMenu : MonoBehaviour
 
     public void Show(List<Location> locations)
     {
-        Time.timeScale = 0f;
+        // Time.timeScale = 0f;
 
         foreach (Transform child in contentParent)
         {
@@ -67,12 +68,14 @@ public class LocationsMenu : MonoBehaviour
             }
         }
 
-        gameObject.SetActive(true);
+        Open(); 
+        // gameObject.SetActive(true);
     }
 
     public void Hide()
     {
-        Time.timeScale = 1f;
-        gameObject.SetActive(false);
+        Close();
+        // Time.timeScale = 1f;
+        // gameObject.SetActive(false);
     }
 }

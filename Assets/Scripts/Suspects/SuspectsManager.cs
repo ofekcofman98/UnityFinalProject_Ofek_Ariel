@@ -7,24 +7,15 @@ using UnityEngine;
 
 public class SuspectsManager : Singleton<SuspectsManager>
 {
-    // public int Lives { get; set; }
     public event Action<int> OnLivesChanged;
     public event Action<bool, AudioCue> OnGuessResult;
     public event Action OnSuspectsChanged;
-    // public List<SuspectData> Suspects = new();
     public List<PersonData> Suspects = new();
     public string FinalAnswerSuspectId { get; private set; }
 
     [SerializeField] private AudioCue guessCorrectCue;
     [SerializeField] private AudioCue guessWrongCue;
 
-
-
-    // public void initLivesFromMissiomsManager()
-    // {
-    //     Lives = MissionsManager.Instance.m_Lives;
-    //     OnLivesChanged?.Invoke(Lives);
-    // }
 
     public void AddSuspect(PersonData suspect)
     {
@@ -53,18 +44,18 @@ public class SuspectsManager : Singleton<SuspectsManager>
     {
         if (!row.TryGetValue("person_id", out var idToken)) return;
 
-        var id = idToken?.ToString();
+        string id = idToken?.ToString();
         if (string.IsNullOrEmpty(id)) return;
 
         // Check if already added
         if (Suspects.Any(s => s.id == id)) return;
 
-        var firstName = row.TryGetValue("first_name", out var f) ? f?.ToString() : "";
-        var lastName = row.TryGetValue("last_name", out var l) ? l?.ToString() : "";
-        var pictureUrl = row.TryGetValue("profile_picture_url", out var p) ? p?.ToString() : null;
-        var description = row.TryGetValue("description", out var d) ? d?.ToString() : null;
+        string firstName = row.TryGetValue("first_name", out var f) ? f?.ToString() : "";
+        string lastName = row.TryGetValue("last_name", out var l) ? l?.ToString() : "";
+        string pictureUrl = row.TryGetValue("profile_picture_url", out var p) ? p?.ToString() : null;
+        string description = row.TryGetValue("description", out var d) ? d?.ToString() : null;
 
-        var suspect = new PersonData
+        PersonData suspect = new PersonData
         {
             id = id,
             first_name = firstName,
@@ -107,43 +98,19 @@ public class SuspectsManager : Singleton<SuspectsManager>
         }
         else
         {
-            int remaining = LivesManager.Instance.Decrement();
             Debug.Log("❌ Wrong guess");
-            OnGuessResult?.Invoke(false, guessWrongCue);
+            int remaining = LivesManager.Instance.Decrement();
 
-            // Critical: check AFTER decrement to catch the 1→0 edge case
             if (remaining <= 0)
             {
                 Debug.Log("💀 Game Over — no lives remaining.");
-                GameManager.Instance.ResetGame();
+                MenuManager.Instance.ShowMenu(eMenuType.Lose);
+            }
+            else
+            {
+                OnGuessResult?.Invoke(false, guessWrongCue);
             }
         }
-
-
-
-        // if(Lives > 0)
-        // {
-        //     if (correct)
-        //     {
-        //         Debug.Log("🎉 Correct suspect guessed!");
-        //         OnGuessResult?.Invoke(true, guessCorrectCue);
-        //         MissionsManager.Instance.MarkMissionAsCompleted(); // final win
-        //     }
-        //     else
-        //     {
-        //         Lives--;
-        //         Debug.Log($"❌ Wrong guess");
-        //         OnGuessResult?.Invoke(false, guessWrongCue);
-        //         OnLivesChanged?.Invoke(Lives);
-        //     }
-        // }    
-        // else 
-        // {
-        //     Debug.Log("💀 Game Over — no lives remaining.");
-        //     // TODO: Trigger actual game-over screen / logic here
-        // }     
-
-
     }
     
     public void SetFinalAnswerFromMissionSequence(MissionSequence sequence)
@@ -159,37 +126,10 @@ public class SuspectsManager : Singleton<SuspectsManager>
         }
     }
 
-    // public JArray GetSuspectsAsJArray()
-    // {
-    //     var array = new JArray();
-
-    //     foreach (var suspect in Suspects)
-    //     {
-    //         JObject row = new JObject
-    //         {
-    //             ["person_id"] = suspect.Id,
-    //             ["first_name"] = suspect.FirstName,
-    //             ["last_name"] = suspect.LastName,
-    //             ["description"] = suspect.Description,
-    //             // ["profile_picture_url"] = suspect.ProfilePictureUrl
-    //         };
-
-    //         array.Add(row);
-    //     }
-
-    //     return array;
-    // }
-
+    internal void ResetSuspects()
+    {
+        Suspects.Clear();
+        FinalAnswerSuspectId = null;
+        OnSuspectsChanged?.Invoke();
+    }
 }
-
-// public class SuspectData
-// {
-//     public string Id;
-//     public string FirstName;
-//     public string LastName;
-//     public string Name;
-//     public string Description;
-//     public string FullName => $"{FirstName} {LastName}".Trim();
-
-// }
-

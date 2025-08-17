@@ -29,4 +29,16 @@ public class MouseLook : MonoBehaviour
             playerBody.Rotate(Vector3.up * mouseX);
         }
     }
+
+    public void ResetLook(Quaternion spawnRotation)
+    {
+        xRotation = 0f;
+
+        // Reset vertical camera rotation
+        transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+
+        // Set horizontal player body rotation based on spawn
+        playerBody.rotation = Quaternion.Euler(0f, spawnRotation.eulerAngles.y, 0f);
+    }
+
 }

@@ -9,10 +9,12 @@ public class LocationManager : Singleton<LocationManager>
     [SerializeField] private GameObject player;
     [SerializeField] private List<Location> allLocations;
     [SerializeField] private LocationsMenu locationsMenu;
-
+    [SerializeField] private Transform officeSpawnPoint;
     [SerializeField] private Transform privateHomeSpawnPoint;
     [SerializeField] private Texture defaultHomePreview;
     private List<PrivateHomeLocation> privateHomes = new();
+    public Transform OfficeSpawnPoint => officeSpawnPoint;
+
 
 
     private IEnumerator Start()
@@ -75,7 +77,7 @@ public class LocationManager : Singleton<LocationManager>
     public void TeleportTo(Transform spawnPoint)
     {
 
-        // Debug.Log($"🟣 Teleporting player to {spawnPoint.position}");
+        Debug.Log($"🟣 Teleporting player to {spawnPoint.position}");
 
         CharacterController controller = player.GetComponent<CharacterController>();
         if (controller != null)
@@ -90,5 +92,7 @@ public class LocationManager : Singleton<LocationManager>
         {
             controller.enabled = true; // ✅ Re-enable after setting position
         }
+        
+        FindObjectOfType<MouseLook>()?.ResetLook(spawnPoint.rotation);
     }
 }

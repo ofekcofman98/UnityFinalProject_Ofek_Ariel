@@ -304,4 +304,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb034439535035489ce841383cd30c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clickCue: {fileID: 0}
+  clickCue: {fileID: 11400000, guid: 3c02d1ac2243e16469d58357c32a6b3c, type: 2}

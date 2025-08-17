@@ -27,7 +27,10 @@ namespace Assets.Scripts.ServerIntegration
             {
                 var payload = new Dictionary<string, int>
                  {
-                    { "seqNumber", GameManager.Instance.sequenceNumber } ,
+                    //! removed (ofek 17.8)
+                    // { "seqNumber", GameManager.Instance.sequenceNumber } ,
+                    //! added (ofek 17.8)
+                    { "seqNumber", SequenceManager.Instance.GetCurrentIndex() } ,
                     { "currentLevelIndex", MissionsManager.Instance.currentMissionIndex }
                  };
 

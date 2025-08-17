@@ -187,5 +187,8 @@ public class SchemeDisplayer : MonoBehaviour
         lineRT.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg);
     }
 
-
+    internal void ResetSchema()
+    {
+        throw new NotImplementedException();
+    }
 }

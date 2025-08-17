@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum eSequence
+{
+    Tutorials = 0,
+    Main = 1
+}
+
 [CreateAssetMenu(fileName = "Mission Sequence", menuName = "SQL Detective/Mission Sequence")]
 public class MissionSequence : ScriptableObject
 {

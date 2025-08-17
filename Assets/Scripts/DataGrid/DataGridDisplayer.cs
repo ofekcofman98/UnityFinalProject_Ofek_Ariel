@@ -207,7 +207,7 @@ public class DataGridDisplayer : MonoBehaviour
         return size.x + 20f; // padding for safety
     }
 
-    private void ClearResults()
+    public void ClearResults()
     {
         foreach (Transform child in resultsContainer)
         {

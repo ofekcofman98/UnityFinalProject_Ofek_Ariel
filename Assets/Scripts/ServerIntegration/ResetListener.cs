@@ -82,8 +82,13 @@ namespace Assets.Scripts.ServerIntegration
                                 settings.Converters.Add(new OperatorConverter());
 
                                 Dictionary<string, int> result = JsonConvert.DeserializeObject<Dictionary<string, int>>(receivedJson, settings);
-                                GameManager.Instance.sequenceNumber = result["seqNumber"];
-                                CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
+                                //! removed (ofek 17.8)
+                                // GameManager.Instance.sequenceNumber = result["seqNumber"];
+                                // CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
+                                //! added (ofek 17.8)
+                                SequenceManager.Instance.SetSequence(result["seqNumber"]);
+                                CoroutineRunner.Instance.StartCoroutine(SequenceManager.Instance.RestartSequence());
+
                             }
                             else if ((int)request.responseCode == 204)
                             {

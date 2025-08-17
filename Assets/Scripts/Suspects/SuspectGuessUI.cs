@@ -52,7 +52,7 @@ public class SuspectGuessUI : MonoBehaviour
         columnNames,
         columnWidths,
         suspects,
-        new PersonRowAdapter(),
+        new PersonRowAdapter(columnNames),
         new List<IDataGridAction<PersonData>>
         {
         new GuessSuspectAction(),
@@ -66,7 +66,8 @@ public class SuspectGuessUI : MonoBehaviour
     {
         if (correct)
         {
-            messagePopup.ShowMessage("Correct! You caught the criminal!");
+            // messagePopup.ShowMessage("Correct! You caught the criminal!");
+            MenuManager.Instance.ShowMenu(eMenuType.Win);
         }
         else
         {
@@ -80,7 +81,8 @@ public class SuspectGuessUI : MonoBehaviour
     {
         if (lives <= 0)
         {
-            messagePopup.ShowMessage("Game Over. No lives left.");
+            // messagePopup.ShowMessage("Game Over. No lives left.");
+            MenuManager.Instance.ShowMenu(eMenuType.Lose);
         }
     }
 

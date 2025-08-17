@@ -207,11 +207,15 @@ namespace Assets.Scripts.ServerIntegration
                                 int serverLevelIndex = result.TryGetValue("currentLevelIndex", out var s) ? s : -1;
                                 int mobileIndex = MissionsManager.Instance.currentMissionIndex;
 
-                                if(MissionsManager.Instance.MissionSequence == null)
+                                if (MissionsManager.Instance.MissionSequence == null)
                                 {
-                                    Debug.Log($"Loading sequence number {seqNumber}");
-                                    MissionsManager.Instance.LoadMissionSequence(seqNumber == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
-
+                                    //! removed (ofek 17.8)
+                                    // Debug.Log($"Loading sequence number {seqNumber}");
+                                    // MissionsManager.Instance.LoadMissionSequence(seqNumber == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+                                    //! added (ofek 17.8)
+                                    Debug.Log($"📦 Loading sequence index {seqNumber}");
+                                    SequenceManager.Instance.SetSequence(seqNumber);
+                                    MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
                                 }
                                 if (isLevelDone == 1 && mobileIndex == serverLevelIndex)
                                 {

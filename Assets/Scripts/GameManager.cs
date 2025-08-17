@@ -16,47 +16,36 @@ using UnityEngine.SceneManagement;
 public class GameManager : Singleton<GameManager>
 {
     public bool SqlMode {get; set;} 
+
+    [Header("Canvases")]
     [SerializeField] private GameObject pcGameCanvas;
     [SerializeField] private GameObject mobileCanvas;
     [SerializeField] private GameObject mobileScreensaverCanvas;
     public ScreensaverController screensaverController { get; private set; }
 
 
-    public Query CurrentQuery {get; set;}
-
+    [Header("System")]
     [SerializeField] public QueryBuilder queryBuilder;
     [SerializeField] private QueryExecutor queryExecutor;
     [SerializeField] private DataGridDisplayer tableDisplayer;
     [SerializeField] public SchemeDisplayer schemeDisplayer;
-
-
     [SerializeField] private QuerySender querySender;
     public QuerySender QuerySender => querySender;
-
     [SerializeField] private QueryListener queryReceiver;
-
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionUIManager MissionUIManager;
-
-    [SerializeField] private MissionSequence mainGameSequence;
-    [SerializeField] private MissionSequence tutorialSequence;
-    public MissionSequence MainGameSequence => mainGameSequence;
-    public MissionSequence TutorialSequence => tutorialSequence;
-    public int sequenceNumber;
+    [SerializeField] public ResultsUI resultsUI;
 
 
-    [SerializeField] private ResultsUI resultsUI;
+
+    public Query CurrentQuery { get; set; }
     public string UniqueMobileKey { get; private set; }
-
     public event Action<bool> OnQueryIsCorrect;
-
-
     private bool isQueryUIVisible = false;
 
 
     protected override void Awake()
     {
-
         // DontDestroyOnLoad(this.gameObject);
         // SceneManager.sceneLoaded += OnSceneLoaded;
         base.Awake();
@@ -95,7 +84,6 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         Application.targetFrameRate = 60;
-        ShowMainMenu();
 
         if (!Application.isMobilePlatform)
         {
@@ -133,41 +121,29 @@ public class GameManager : Singleton<GameManager>
     public void ShowMainMenu()
     {
         Time.timeScale = 0f;
-        MenuManager.Instance.ShowMainMenu();
+        MenuManager.Instance.ShowMenu(eMenuType.Main);
     }
 
-    public void StartGameFromMenu()
+    public void StartSequence(eSequence sequence)
     {
-        Time.timeScale = 1f;
-        MenuManager.Instance.HideMainMenu(); // ✅ UI-only
-        sequenceNumber = 1;
-        MissionsManager.Instance.LoadMissionSequence(MainGameSequence); // dynamically chosen
-        StartMissions();
-        ResetSender.Instance.SendResetToPhone();
+        SequenceManager.Instance.StartSequence(sequence);
     }
-
-    public void StartTutorial()
+    
+    public void StartMissions()
     {
-        Time.timeScale = 1f;
-        MenuManager.Instance.HideMainMenu();
-        sequenceNumber = 0;
-        MissionsManager.Instance.LoadMissionSequence(TutorialSequence); // dynamically chosen
-        StartMissions();
-        ResetSender.Instance.SendResetToPhone();
+        MissionUIManager.ShowUI(); // This will handle popup or normal mission
     }
 
     public void StartSavedGame()
     {
         Time.timeScale = 1f;
-        MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        // MenuManager.Instance.HideMainMenu(); // ✅ UI-only
+        MenuManager.Instance.HideMenu(eMenuType.Main);
         GameProgressSender gps = new GameProgressSender();
         StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer());
-       
+
     }
-    public void StartMissions()
-    {
-        MissionUIManager.ShowUI(); // This will handle popup or normal mission
-    }
+
 
     // public void SwitchMobileCanvas(bool i_sqlMode)
     // {
@@ -325,9 +301,6 @@ public class GameManager : Singleton<GameManager>
             jsonResponse,
             CurrentQuery.selectClause.Columns,
             CurrentQuery.GetTable().Name);
-                  
- 
-
     }
 
 
@@ -369,15 +342,23 @@ public class GameManager : Singleton<GameManager>
         CurrentQuery = null;
         SqlMode = false;
 
-        Debug.Log("Inside condition, before ResetMissions");
-        MissionsManager.Instance.LoadMissionSequence(sequenceNumber == 1 ? mainGameSequence : tutorialSequence);
+        if (LocationManager.Instance.OfficeSpawnPoint == null)
+            Debug.Log($"LocationManager.Instance.OfficeSpawnPoint is null");  
+        LocationManager.Instance.TeleportTo(LocationManager.Instance.OfficeSpawnPoint);
+        // FindObjectOfType<MouseLook>()?.ResetLook();
+        SuspectsManager.Instance?.ResetSuspects();
+        resultsUI.ResetResults();
+        // schemeDisplayer.ResetSchema();   // TODO
+        // TableUnlocker.Instance?.Reset();           // TODO
+
         yield return MissionsManager.Instance.ResetMissions();
 
-        if (queryBuilder != null)
-        {
-            queryBuilder.ResetQuery();
-        }
+        //! removed (ofek 17.8)
+        // MissionsManager.Instance.LoadMissionSequence(CurrentMissionSequence);
+        //! added (ofek 17.8)
+        MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
 
+        queryBuilder?.ResetQuery();
         querySender?.ResetQuerySendFlag();
 
         yield return null;

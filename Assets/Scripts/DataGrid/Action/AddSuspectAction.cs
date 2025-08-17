@@ -8,7 +8,18 @@ public class AddSuspectAction : IDataGridAction<JObject>
     public string Label => "Add Suspect";
     public void Execute(JObject rowData)
     {
-        PersonData person = PersonFactory.FromRow(rowData);
-        SuspectsManager.Instance.AddSuspect(person);
+        string id = rowData["person_id"]?.ToString();
+        if (string.IsNullOrEmpty(id))
+        {
+            return;
+        }
+        PersonData fullPerson = PersonDataManager.Instance.GetById(id);
+        if (fullPerson == null)
+        {
+            Debug.LogWarning($"⚠️ No PersonData found for ID {id}");
+            return;
+        }
+
+        SuspectsManager.Instance.AddSuspect(fullPerson);
     }
 }

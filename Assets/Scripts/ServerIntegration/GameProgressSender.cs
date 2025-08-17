@@ -121,7 +121,12 @@ namespace Assets.Scripts.ServerIntegration
         {
             if (m_progressContainer != null)
             {
-                MissionsManager.Instance.LoadMissionSequence(m_progressContainer.sequenceIndex == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+                //! removed (ofek 17.8)
+                // MissionsManager.Instance.LoadMissionSequence(m_progressContainer.sequenceIndex == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
+                //! added (ofek 17.8)
+                SequenceManager.Instance.SetSequence(m_progressContainer.sequenceIndex);
+                MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
+
                 MissionsManager.Instance.SetStatsFromLoadedGame(m_progressContainer.sequenceIndex, m_progressContainer.Lives, m_progressContainer.currentMissionIndex);
                 GameManager.Instance.StartMissions();
                 StateSender.Instance.UpdatePhone();

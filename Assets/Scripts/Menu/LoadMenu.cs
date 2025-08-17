@@ -1,15 +1,44 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class LoadMenu : IMenu
+public class LoadMenu : MenuBase
 {
-    public void Show()
+    [SerializeField] private Button loadButton;
+    [SerializeField] private GameObject input;
+    [SerializeField] private Button returnButton; // return back to main menu
+    [SerializeField] private TextMeshProUGUI loadComment; // says if load succeed ot not 
+
+    private void Awake()
     {
-        throw new System.NotImplementedException();
+        loadButton.onClick.AddListener(OnLoadClicked);
+        returnButton.onClick.AddListener(OnReturnClicked);
+
+        if (loadComment != null)
+        {
+            loadComment.text = ""; // clear comment at start
+        }
     }
-    public void Hide()
+
+    private void OnLoadClicked()
     {
-        throw new System.NotImplementedException();
+        // add here "if saved game is legal": hide PauseMenu
+        MenuManager.Instance.HideMenu(eMenuType.Load); //TODO only if game number is legal, add "if" block
+        LoadSavedGame();
+    }
+
+    private void LoadSavedGame()
+    {
+        GameManager.Instance.StartSavedGame();
+    }
+
+    private void OnReturnClicked()
+    {
+        MenuManager.Instance.HideMenu(eMenuType.Load);
+        MenuManager.Instance.ShowMenu(eMenuType.Main);
     }
 }
+

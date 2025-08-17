@@ -8,10 +8,18 @@ public class PlayerController : MonoBehaviour
 {
     private bool sqlMode;
     private bool isMoving;
+
+    private Vector3 _initialPosition;
+    private Quaternion _initialRotation;
+
     void Start()
     {
         sqlMode = false;
         isMoving = true;
+
+        _initialPosition = transform.position;
+        _initialRotation = transform.rotation;
+
     }
 
     // Update is called once per frame
@@ -31,4 +39,18 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+
+    public void ResetToStart()
+    {
+        CharacterController cc = GetComponent<CharacterController>();
+
+        // Disable before moving to avoid physics glitches
+        if (cc != null) cc.enabled = false;
+
+        transform.position = _initialPosition;
+        transform.rotation = _initialRotation;
+
+        if (cc != null) cc.enabled = true;
+    }
+
 }
