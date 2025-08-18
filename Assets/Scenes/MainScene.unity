@@ -1689,7 +1689,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: -112.0289}
+  m_AnchoredPosition: {x: 156.58331, y: -109.328896}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &65411865
@@ -6669,7 +6669,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: -239.3302}
+  m_AnchoredPosition: {x: 156.58331, y: -233.03021}
   m_SizeDelta: {x: 299.95, y: 52.153}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &409727140
@@ -9261,6 +9261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 543530492}
   - component: {fileID: 543530493}
+  - component: {fileID: 543530494}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -9345,6 +9346,29 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &543530494
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 543530491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1001 &543744044
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10415,7 +10439,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: -170.1413}
+  m_AnchoredPosition: {x: 156.58331, y: -165.6413}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &618424862
@@ -11470,7 +11494,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 8567824}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -13453,7 +13477,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: -43.151352}
+  m_AnchoredPosition: {x: 156.58331, y: -42.25135}
   m_SizeDelta: {x: 299.9471, y: 51.5303}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &784615176
@@ -22786,6 +22810,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1273843121}
   - component: {fileID: 1273843122}
+  - component: {fileID: 1273843123}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -22870,6 +22895,29 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &1273843123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1273843120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &1278025204
 GameObject:
   m_ObjectHideFlags: 0
@@ -23455,8 +23503,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: -353.5653}
-  m_SizeDelta: {x: 369.16663, y: 282.7929}
+  m_AnchoredPosition: {x: 156.58331, y: -344.5653}
+  m_SizeDelta: {x: 313.16663, y: 275.5929}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1291211285
 MonoBehaviour:
@@ -34388,8 +34436,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 184.58331, y: 0}
-  m_SizeDelta: {x: 369.16663, y: 70.7724}
+  m_AnchoredPosition: {x: 156.58331, y: 0}
+  m_SizeDelta: {x: 313.16663, y: 68.972404}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1915085272
 MonoBehaviour:
@@ -37215,6 +37263,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2127085146}
   - component: {fileID: 2127085147}
+  - component: {fileID: 2127085148}
   m_Layer: 0
   m_Name: Point Light
   m_TagString: Untagged
@@ -37299,6 +37348,29 @@ Light:
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &2127085148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2127085145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &2127914211
 GameObject:
   m_ObjectHideFlags: 0
@@ -37434,7 +37506,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   menuType: 2
   loadButton: {fileID: 65411865}
-  input: {fileID: 784615174}
+  loadGameInput: {fileID: 784615176}
   returnButton: {fileID: 618424864}
   loadComment: {fileID: 409727140}
 --- !u!1 &2147014968

@@ -134,14 +134,10 @@ public class GameManager : Singleton<GameManager>
         MissionUIManager.ShowUI(); // This will handle popup or normal mission
     }
 
-    public void StartSavedGame()
+    public void StartSavedGame(string key)
     {
-        Time.timeScale = 1f;
-        // MenuManager.Instance.HideMainMenu(); // ✅ UI-only
-        MenuManager.Instance.HideMenu(eMenuType.Main);
         GameProgressSender gps = new GameProgressSender();
-        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer());
-
+        StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer(key));
     }
 
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.ServerIntegration;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 public class LoadMenu : MenuBase
 {
     [SerializeField] private Button loadButton;
-    [SerializeField] private GameObject input;
+    [SerializeField] private TMP_InputField loadGameInput;
     [SerializeField] private Button returnButton; // return back to main menu
     [SerializeField] private TextMeshProUGUI loadComment; // says if load succeed ot not 
 
@@ -26,13 +27,42 @@ public class LoadMenu : MenuBase
     private void OnLoadClicked()
     {
         // add here "if saved game is legal": hide PauseMenu
-        MenuManager.Instance.HideMenu(eMenuType.Load); //TODO only if game number is legal, add "if" block
+        // MenuManager.Instance.HideMenu(eMenuType.Load); //TODO only if game number is legal, add "if" block
         LoadSavedGame();
     }
 
     private void LoadSavedGame()
     {
-        GameManager.Instance.StartSavedGame();
+        string key = loadGameInput.text;
+
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            loadComment.text = "❌ Please enter a game key.";
+            return;
+        }
+
+        if (key.Length != 6 || !int.TryParse(key, out int _))
+        {
+            loadComment.text = "❌ Key must be 6 digits.";
+            return;
+        }
+
+        // Show loading...
+        loadComment.text = "⏳ Validating key...";
+
+        GameProgressSender.Instance.ValidateKeyAndLoadGame(key, (isValid) =>
+        {
+            if (isValid)
+            {
+                loadComment.text = "✅ Game loaded!";
+                MenuManager.Instance.HideMenu(eMenuType.Load);
+                GameManager.Instance.StartSavedGame(key);
+            }
+            else
+            {
+                loadComment.text = "❌ Invalid or expired key.";
+            }
+        });
     }
 
     private void OnReturnClicked()

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.ServerIntegration;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,18 +28,24 @@ public class PauseMenu : MenuBase
 
     private void OnSaveClicked()
     {
-        // TODO
+        SaveGame();
     }
 
     private void OnSyncClicked()
     {
-        // TODO
+        StateSender.Instance.UpdatePhone();
     }
 
     private void OnQuitClicked()
     {
         MenuManager.Instance.HideMenu(eMenuType.Pause);
         MenuManager.Instance.QuitToMainMenu();
+    }
+
+    public void SaveGame()
+    {
+        GameProgressContainer gpc = new GameProgressContainer(SequenceManager.Instance.CurrentSequenceIndex, MissionsManager.Instance.currentMissionIndex, LivesManager.Instance.Lives);
+        StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));        
     }
 
     public override void Show()
