@@ -9,6 +9,7 @@ public class PauseMenu : MenuBase
     [SerializeField] private Button saveButton;
     [SerializeField] private Button syncButton;
     [SerializeField] private Button quitButton;
+    [SerializeField] private GameObject blockerPanel;
 
 
     private void Awake()
@@ -39,4 +40,17 @@ public class PauseMenu : MenuBase
         MenuManager.Instance.HideMenu(eMenuType.Pause);
         MenuManager.Instance.QuitToMainMenu();
     }
+
+    public override void Show()
+    {
+        base.Show();
+        blockerPanel.SetActive(true);
+    }
+
+    public override void Hide()
+    {
+        base.Hide();
+        blockerPanel.SetActive(false);
+    }
+
 }
