@@ -11,28 +11,12 @@ public class SchemeDisplayer : MonoBehaviour
     [SerializeField] private GameObject linePrefab;
     [SerializeField] private Transform lineContainerTransform;
     [SerializeField] private float lineWidth = 20f;
-    // [SerializeField] private NewTablePopup newTablePopup;
     [SerializeField] private TextMeshProUGUI SchemaText;
     [SerializeField] private Popup popup;
     
-
     public SchemeLayoutManager layoutManager;
-    // private bool isVisible = false;
     private bool alreadyDrawn = false;
 
-    // [Obsolete("ToggleScheme is obsolete. Use Popup.Open() / Popup.Close() instead.")]
-    //     public void ToggleScheme() //! dont use it!
-    //     {
-    //         isVisible = !isVisible;
-    //         layoutManager.layoutParent.gameObject.SetActive(isVisible);
-    //         lineContainerTransform.gameObject.SetActive(isVisible);
-
-    //         if (isVisible)
-    //         {
-    //             StartCoroutine(RedrawArrowsNextFrame());
-    //         }
-
-    //     }
 
     public void Awake()
     {
@@ -40,11 +24,11 @@ public class SchemeDisplayer : MonoBehaviour
         popup.OnPopupClosed += OnPopupClosed;
         Table.OnTableUnlocked += HandleTableUnlocked;
     }
+
     private void OnDestroy()
     {
         Table.OnTableUnlocked -= HandleTableUnlocked;
     }
-
 
     public void OnPopupOpened()
     {
@@ -79,38 +63,20 @@ public class SchemeDisplayer : MonoBehaviour
     public void DisplaySchema()
     {
         layoutManager.LayoutTables(SupabaseManager.Instance.Tables);
-        // Canvas.ForceUpdateCanvases();
-        // HandleForeignKeys();
         SchemaText.text = "Schema";
         StartCoroutine(WaitThenDrawArrows()); 
 
     }
-    
+
     private IEnumerator WaitThenDrawArrows()
-{
-    // Let Unity fully apply layout
-    yield return new WaitForEndOfFrame();
-    Canvas.ForceUpdateCanvases();
-    yield return null; // Give another frame just to be safe
+    {
+        // Let Unity fully apply layout
+        yield return new WaitForEndOfFrame();
+        Canvas.ForceUpdateCanvases();
+        yield return null; // Give another frame just to be safe
 
-    HandleForeignKeys(); // ✅ now draw lines only when positions are finalized
-}
-
-    // public void ShowSchemaWithNewUnlock(string i_TableName)
-    // {
-    //     // layoutManager.layoutParent.gameObject.SetActive(true);
-    //     // lineContainerTransform.gameObject.SetActive(true);
-
-    //     // DisplaySchema(); // always redraw
-
-    //     // // newTablePopup.SetActive(true);
-
-    //     newTablePopup.Open(i_TableName);
-    //     // popup.Open();
-    //     SchemaText.text = $"New table unlocked: {i_TableName}";
-    // }
-
-
+        HandleForeignKeys(); // ✅ now draw lines only when positions are finalized
+    }
 
     private void HandleForeignKeys()
     {

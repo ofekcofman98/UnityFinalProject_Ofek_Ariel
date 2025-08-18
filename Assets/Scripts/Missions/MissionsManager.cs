@@ -56,10 +56,38 @@ public class MissionsManager : Singleton<MissionsManager>
         SequenceManager.Instance.SetSequence(i_seqIndex);
 
         LivesManager.Instance.SetLives(i_lives);
-        currentMissionIndex = i_levelIndex;
-        // SuspectsManager.Instance.initLivesFromMissiomsManager();
+        int safeIndex = GetNearestLegalMissionIndex(i_levelIndex);
+        currentMissionIndex = safeIndex;
+
         UnlockTablesForSavedGame();
     }
+
+    private int FindLegalMissionIndexFrom(int startIndex)
+    {
+        for (int i = startIndex; i >= 0; i--)
+        {
+            MissionData mission = missionSequence.Missions[i];
+            if (mission is SQLMissionData || mission is InteractableMissionData)
+                return i;
+        }
+        return 0;
+    }
+
+    public int GetLastValidMissionIndex() // For Saving
+    {
+        return FindLegalMissionIndexFrom(currentMissionIndex);
+    }
+
+    public int GetNearestLegalMissionIndex(int startIndex) // For Loading
+    {
+        return FindLegalMissionIndexFrom(startIndex);
+    }
+
+    internal MissionData GetLastLegalMission()
+    {
+        return missionSequence.Missions[GetLastValidMissionIndex()];
+    }
+
 
     public void LoadMissionSequence(MissionSequence sequence)
     {
@@ -334,4 +362,5 @@ public class MissionsManager : Singleton<MissionsManager>
 
         yield return null;
     }
+
 }

@@ -25,6 +25,7 @@ public class MainMenu : MenuBase
 
     private void OnLoadClicked()
     {
+        MenuManager.Instance.HideMenu(eMenuType.Main);
         MenuManager.Instance.ShowMenu(eMenuType.Load);
     }
 

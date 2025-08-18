@@ -47,13 +47,6 @@ public class SchemeLayoutManager : MonoBehaviour
         }
     }
 
-    // private void getPrefabLength()
-    // {
-    //     var prefabRect = tableBoxPrefab.GetComponent<RectTransform>();
-    //     cellWidth = prefabRect.sizeDelta.x;
-    //     cellHeight = prefabRect.sizeDelta.y;
-    // }
-
     private Vector2 getOffset()
     {
         Vector2 topLeftOffset = new Vector2(0, 0); // default fallback

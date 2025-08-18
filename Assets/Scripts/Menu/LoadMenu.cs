@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.ServerIntegration;
 using TMPro;
+using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -37,30 +38,36 @@ public class LoadMenu : MenuBase
 
         if (string.IsNullOrWhiteSpace(key))
         {
-            loadComment.text = "❌ Please enter a game key.";
+            loadComment.color = Color.red;
+            loadComment.text = "Please enter a game key.";
             return;
         }
 
         if (key.Length != 6 || !int.TryParse(key, out int _))
         {
-            loadComment.text = "❌ Key must be 6 digits.";
+            loadComment.color = Color.red;
+            loadComment.text = "Key must be 6 digits.";
             return;
         }
 
-        // Show loading...
-        loadComment.text = "⏳ Validating key...";
+        loadComment.color = Color.white;
+        loadComment.text = "Validating key...";
+
 
         GameProgressSender.Instance.ValidateKeyAndLoadGame(key, (isValid) =>
         {
             if (isValid)
             {
-                loadComment.text = "✅ Game loaded!";
+                loadComment.color = Color.green;
+                loadComment.text = "Game loaded!";
+
                 MenuManager.Instance.HideMenu(eMenuType.Load);
                 GameManager.Instance.StartSavedGame(key);
             }
             else
             {
-                loadComment.text = "❌ Invalid or expired key.";
+                loadComment.color = Color.red;
+                loadComment.text = "Invalid or expired key.";
             }
         });
     }

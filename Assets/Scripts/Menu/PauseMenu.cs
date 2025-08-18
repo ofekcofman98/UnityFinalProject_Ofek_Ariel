@@ -44,7 +44,11 @@ public class PauseMenu : MenuBase
 
     public void SaveGame()
     {
-        GameProgressContainer gpc = new GameProgressContainer(SequenceManager.Instance.CurrentSequenceIndex, MissionsManager.Instance.currentMissionIndex, LivesManager.Instance.Lives);
+        int lastValidMissionIndex = MissionsManager.Instance.GetLastValidMissionIndex();
+        int sequenceIndex = SequenceManager.Instance.CurrentSequenceIndex;
+        int lives = LivesManager.Instance.Lives;
+        
+        GameProgressContainer gpc = new GameProgressContainer(lastValidMissionIndex, sequenceIndex, lives);
         StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));        
     }
 

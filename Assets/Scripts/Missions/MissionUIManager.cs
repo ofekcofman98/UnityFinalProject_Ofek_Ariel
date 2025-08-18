@@ -45,13 +45,24 @@ public class MissionUIManager : MonoBehaviour
 
     public void DisplayStandardMission(MissionData mission)
     {
-        if (_resultFlashActive)
-        {
-            return;
-        }    
+        // if (_resultFlashActive)
+        // {
+        //     return;
+        // }    
 
-        bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
-        string missionNumberText = isTutorial ? "Tutorial" : MissionsManager.Instance.GetCurrentMissionNumber().ToString();
+        // bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
+        // string missionNumberText = isTutorial ? "Tutorial" : MissionsManager.Instance.GetCurrentMissionNumber().ToString();
+
+    if (_resultFlashActive) return;
+
+    bool isTutorial = MissionsManager.Instance.MissionSequence.isTutorial;
+    string missionNumberText = isTutorial ? "Tutorial" : MissionsManager.Instance.GetCurrentMissionNumber().ToString();
+
+    // 🔐 Use last valid SQL/Interaction mission for title/description if needed
+    MissionData contentToShow = (mission is SQLMissionData or InteractableMissionData)
+        ? mission
+        : MissionsManager.Instance.GetLastLegalMission();
+
 
         MobileMissionNumber.text = missionNumberText;
         MobileMissionTitle.text = mission.missionTitle;
