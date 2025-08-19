@@ -9,8 +9,10 @@ public class Popup : MonoBehaviour, IPopup
 {
 
     [SerializeField] private GameObject closeButtonPrefab;
+    [SerializeField] private GameObject HeaderPanel;
     [SerializeField] protected bool shouldFreezeTime = true;
     private GameObject closeButtonInstance;
+
     public string tutorialStepIdOnClose;
     public Action OnPopupOpened;
     public Action OnPopupClosed;
@@ -41,7 +43,11 @@ public class Popup : MonoBehaviour, IPopup
         if (!ShouldShowCloseButton || closeButtonPrefab == null || closeButtonInstance != null)
             return;
 
-        closeButtonInstance = Instantiate(closeButtonPrefab, transform);
+        if (HeaderPanel != null)
+            closeButtonInstance = Instantiate(closeButtonPrefab, HeaderPanel.transform);
+        else
+            closeButtonInstance = Instantiate(closeButtonPrefab, transform);
+    
         RectTransform rt = closeButtonInstance.GetComponent<RectTransform>();
         rt.anchorMin = rt.anchorMax = new Vector2(1, 1);
         rt.pivot = new Vector2(1, 1);
