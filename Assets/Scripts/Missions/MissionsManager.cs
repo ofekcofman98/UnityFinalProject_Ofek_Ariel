@@ -16,38 +16,6 @@ public class MissionsManager : Singleton<MissionsManager>
     public MissionData CurrentMission => missionSequence.Missions[currentMissionIndex];
     public event Action<bool> OnMissionValidated;
 
-    public int m_Lives
-    {
-        get => LivesManager.Instance.Lives;
-        set => LivesManager.Instance.SetLives(value);
-    }
-
-    private void Start()
-    {
-
-        //StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer((gpc) =>
-        //{
-        //    if (gpc != null)
-        //    {
-        //        Debug.Log($"the gpc values are : lives {gpc.Lives}, currentMissionindex {gpc.currentMissionIndex}, SQLmode {gpc.SqlMode}");
-        //        //m_Lives = gpc.Lives;
-        //        m_Lives = 2;
-        //        currentMissionIndex = gpc.currentMissionIndex;
-        //        GameManager.Instance.SqlMode = gpc.SqlMode;
-        //        SuspectsManager.Instance.initLivesFromMissiomsManager();
-        //        UnlockTablesForSavedGame();
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("⚠️ Could not load saved game from server.");
-        //    }
-        //}));
-
-        // SuspectsManager.Instance.Lives = m_Lives;
-        // SuspectsManager.Instance.invokeLivesChanged();
-        // SuspectsManager.Instance.SetFinalAnswerFromMissionSequence(missionSequence);
-    }
-
     public void SetStatsFromLoadedGame(int i_seqIndex, int i_lives, int i_levelIndex)
     {
         //! removed (ofek 17.8)
@@ -285,7 +253,22 @@ public class MissionsManager : Singleton<MissionsManager>
         }
         else
         {
-            Debug.Log("🏁 All missions completed! Game over.");
+            if (missionSequence.isTutorial)
+            {
+                Debug.Log("🎓 Tutorial sequence complete. Returning to main menu.");
+                GameManager.Instance.ShowMainMenu();
+            }
+            else if (SequenceManager.Instance.HasNext)
+            {
+                Debug.Log("➡️ Loading next sequence...");
+                SequenceManager.Instance.LoadNextSequence();
+            }
+            else
+            {
+                Debug.Log("🎉 Game fully completed!");
+                // You may show a Game Over or Victory menu here:
+                MenuManager.Instance.ShowMenu(eMenuType.Main); // Or create a Victory menu if not exists
+            }
         }
     }
 
@@ -320,16 +303,11 @@ public class MissionsManager : Singleton<MissionsManager>
 
     public IEnumerator DelayedAdvance()
     {
-        // if (CurrentMission is SQLMissionData)  // <<< guard: only SQL missions
-        // {
-        //     yield return new WaitForSecondsRealtime(2f);  // <<< add this line
-        // }
-
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
         checkUnlocking();
-        // Debug.Log("✅ checkUnlocking passed");
 
         GoToNextMission();
+
         if (currentMissionIndex >= missionSequence.Missions.Count)
         {
             Debug.Log("🏁 Reached end of mission sequence — skipping mission update.");
@@ -337,8 +315,6 @@ public class MissionsManager : Singleton<MissionsManager>
         }
 
         GameManager.Instance.QuerySender?.ResetQuerySendFlag();
-        // Debug.Log("✅ ResetQuerySendFlag passed");
-
         Debug.Log($"🆕 mission number {GetCurrentMissionNumber()} started: " + CurrentMission.missionTitle);
 
         GameManager.Instance.queryBuilder.ResetQuery();
@@ -357,9 +333,6 @@ public class MissionsManager : Singleton<MissionsManager>
         {
             table.LockTable();
         }
-
-        // GameManager.Instance.MissionUIManager.ShowUI(); //! check if needed
-
         yield return null;
     }
 

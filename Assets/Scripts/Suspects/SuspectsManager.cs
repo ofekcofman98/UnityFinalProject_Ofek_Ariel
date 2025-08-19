@@ -90,26 +90,54 @@ public class SuspectsManager : Singleton<SuspectsManager>
 
         if (correct)
         {
-            Debug.Log("🎉 Correct suspect guessed!");
-            OnGuessResult?.Invoke(true, guessCorrectCue);
-
-            // Move to the next MissionSequence / end-game flow.
-            // GameManager.Instance.AdvanceToNextSequence();
+            HandleCorrectGuess();
         }
         else
         {
-            Debug.Log("❌ Wrong guess");
-            int remaining = LivesManager.Instance.Decrement();
+            HandleWrongGuess();
+        }
+    }
 
-            if (remaining <= 0)
-            {
-                Debug.Log("💀 Game Over — no lives remaining.");
-                MenuManager.Instance.ShowMenu(eMenuType.Lose);
-            }
-            else
-            {
-                OnGuessResult?.Invoke(false, guessWrongCue);
-            }
+    private void HandleCorrectGuess()
+    {
+        Debug.Log("🎉 Correct suspect guessed!");
+        OnGuessResult?.Invoke(true, guessCorrectCue);
+
+
+        if (SequenceManager.Instance.Current.isTutorial)
+        {
+            Debug.Log("🏁 Tutorial complete — returning to main menu.");
+            GameManager.Instance.ShowMainMenu();
+        }
+        else if (SequenceManager.Instance.HasNext)
+        {
+            Debug.Log("➡️ Correct guess — advancing to next sequence.");
+            SequenceManager.Instance.LoadNextSequence();
+        }
+        else
+        {
+            Debug.Log("🏆 Final suspect found — game complete!");
+            MenuManager.Instance.ShowMenu(eMenuType.Main); // Make sure this menu exists
+        }
+
+        // Move to the next MissionSequence / end-game flow.
+        // GameManager.Instance.AdvanceToNextSequence();
+
+    }
+
+    private void HandleWrongGuess()
+    {
+        Debug.Log("❌ Wrong guess");
+        int remaining = LivesManager.Instance.Decrement();
+
+        if (remaining <= 0)
+        {
+            Debug.Log("💀 Game Over — no lives remaining.");
+            MenuManager.Instance.ShowMenu(eMenuType.Lose);
+        }
+        else
+        {
+            OnGuessResult?.Invoke(false, guessWrongCue);
         }
     }
     

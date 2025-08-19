@@ -10,8 +10,8 @@ public class SequenceManager : Singleton<SequenceManager>
     public int CurrentSequenceIndex { get; private set; } = 0;
     public MissionSequence Current => allSequences[CurrentSequenceIndex];
     public bool HasNext => CurrentSequenceIndex < allSequences.Count - 1;
-public MissionSequence MainGameSequence => allSequences[(int)eSequence.Main];
-public MissionSequence TutorialSequence => allSequences[(int)eSequence.Tutorials];
+    public MissionSequence MainGameSequence => allSequences[(int)eSequence.Main];
+    public MissionSequence TutorialSequence => allSequences[(int)eSequence.Tutorials];
 
     public void StartSequence(eSequence sequence)
     {
