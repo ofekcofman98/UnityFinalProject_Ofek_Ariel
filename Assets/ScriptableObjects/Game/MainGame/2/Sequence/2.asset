@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f9bd0c18431b824ea0e61e824014f39, type: 3}
+  m_Name: 2
+  m_EditorClassIdentifier: 
+  isTutorial: 0
+  Missions:
+  - {fileID: 11400000, guid: d3de70493b6b6a04f80f5166aeb39924, type: 2}
+  - {fileID: 11400000, guid: 9739e9f086bc71d4ab1b51c783223b32, type: 2}
+  - {fileID: 11400000, guid: a228de6138334ea4eba70e4c07c829f5, type: 2}
+  - {fileID: 11400000, guid: 7d455be5ac6e9ae4197710fdded81fd2, type: 2}
+  case_id: 1
+  PersonDialogues:
+  - {fileID: 11400000, guid: 07a379b4a68bd284e9bad0aef265d0a1, type: 2}
+  - {fileID: 11400000, guid: dc33f7717e4ce144792a9545c1e906e0, type: 2}
+  FinalAnswerPersonId: 008

@@ -8,12 +8,19 @@ public class ClauseDropZoneStrategy : MonoBehaviour, IDropZoneStrategy
 {
     public void HandleDrop(DraggableItem draggable, DropZone zone)
     {
+
+        if (!IsValidDrop(draggable))
+        {
+            Debug.LogWarning($"[ClauseDropZoneStrategy] Invalid drop for {draggable.name} — skipping parent change.");
+            return;
+        }
+
         draggable.SetParentAndPosition(zone.transform);
         // draggable.OnRemoved?.Invoke();
-    if (IsNewDrop(draggable.OriginalParent))
-    {
-        draggable.OnRemoved?.Invoke();
-    }
+        if (IsNewDrop(draggable.OriginalParent))
+        {
+            draggable.OnRemoved?.Invoke();
+        }
 
     }
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AndClause : IQueryClause
@@ -20,26 +22,42 @@ public class AndClause : IQueryClause
     {
         isClicked = true;
         _onActivate?.Invoke();  // 👈 start a new condition flow
-        Deactivate();           // auto-reset so it behaves like a button
+        // Deactivate();           // auto-reset so it behaves like a button
     }
 
-    public void Deactivate()   { isClicked = false; }
+    public void Deactivate() { isClicked = false; }
     public void UpdateString() { }
-    public void Reset()        { isClicked = false; isAvailable = false; }
-    public bool IsValid()      { return true; }
+    public void Reset() { isClicked = false; isAvailable = false; }
+    public bool IsValid() { return true; }
 
 
     public bool CheckAvailableClause(Query query)
     {
-        // Show AND only when WHERE is active and user can add another condition
+        bool wasAvailable = isAvailable;
+
         WhereClause wc = query.whereClause;
-        isAvailable = wc.isClicked
-                   && wc.Conditions.Count >= 1
-                   && wc.Conditions[0].IsComplete
-                //    && wc.newCondition == null
-                   && wc.Conditions.Count <= WhereClause.k_MaxConditions;
-        return isAvailable;
-    } 
+        isAvailable =
+            wc.isClicked &&
+            !wc.firstConditionWasRemoved &&
+            wc.Conditions.Count >= 1 &&
+            wc.Conditions[0].IsComplete &&
+            wc.Conditions.Count <= WhereClause.k_MaxConditions;
+
+        wc.firstConditionWasRemoved = false;
+
+
+        if (!isAvailable)
+        {
+            Deactivate();
+            // if (wasAvailable)
+            //     query.RemoveSecondCondition();
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 
     public string ToSQL() { return QueryConstants.Empty; }     // never prints
     public string ToSupabase() { return QueryConstants.Empty; } // never prints

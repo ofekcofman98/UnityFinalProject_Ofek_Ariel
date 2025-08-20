@@ -64,6 +64,13 @@ if (i_Query.whereClause.HasActiveEditingCondition() ||
         {
             CurrentState = eQueryState.SelectingConditions;
         }
+        else
+        {
+            if (i_Query.andClause.isAvailable)
+            {
+                CurrentState = eQueryState.None;
+            }
+        }
 
         Debug.Log($"[QueryState] State updated to: {CurrentState}");
     }

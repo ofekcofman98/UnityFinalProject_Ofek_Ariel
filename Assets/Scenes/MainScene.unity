@@ -10250,6 +10250,9 @@ MonoBehaviour:
   inputFieldPrefab: {fileID: 1191306454125046729, guid: 046839cbe1c7d974c8175e3981858a42, type: 3}
   confirmButtonPrefab: {fileID: 813939451708066866, guid: e25b02819326667428bb52351910eee5, type: 3}
   executeButton: {fileID: 1157078194}
+  selectSection: {fileID: 1091105435}
+  fromSection: {fileID: 971172619}
+  whereSection: {fileID: 1278025205}
   currentInputField: {fileID: 0}
   currentConfirmButton: {fileID: 0}
   queryPreviewText: {fileID: 404205925}
@@ -17395,6 +17398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allSequences:
   - {fileID: 11400000, guid: 43189a94977779440aab1b2a37bba068, type: 2}
+  - {fileID: 11400000, guid: b00a19fde581b4741adbd397a2bf881a, type: 2}
   - {fileID: 11400000, guid: 28be72455013e534281eedffe7d73d25, type: 2}
 --- !u!1 &999063848
 GameObject:
@@ -33232,8 +33236,8 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 314601652}
-  - {fileID: 1207621688}
   - {fileID: 626713693}
+  - {fileID: 1207621688}
   - {fileID: 1989647651}
   - {fileID: 196743693}
   m_Father: {fileID: 1016293440}
@@ -34945,11 +34949,7 @@ MonoBehaviour:
   missionUIManager: {fileID: 1829252718}
   uiRenderer: {fileID: 592983016}
   QueryPanel: {fileID: 1614230819}
-  selectSection: {fileID: 1091105435}
-  fromSection: {fileID: 971172619}
-  whereSection: {fileID: 1278025205}
   selectionParent: {fileID: 1111810307}
-  clausesParent: {fileID: 1314768725}
 --- !u!4 &1894173747
 Transform:
   m_ObjectHideFlags: 0

@@ -45,7 +45,7 @@ public class Query
         {
             // Ensure WHERE is active and move UI state to pick another condition
             whereClause.Activate();
-            whereClause.StartNewCondition();   
+            whereClause.StartNewCondition();
             UpdateQueryState();
             // nothing to change in SQL string now; user will pick column -> operator -> value
         });
@@ -53,13 +53,13 @@ public class Query
         availableClauses = new List<IQueryClause> { selectClause, fromClause };
         queryState = new QueryState();
 
-        Recompute();    
+        Recompute();
     }
 
     public string QueryString
     {
-        get => m_QueryString; 
-        private set { m_QueryString = value; } 
+        get => m_QueryString;
+        private set { m_QueryString = value; }
         // set
         // {
         //     m_QueryString = value;
@@ -89,13 +89,10 @@ public class Query
 
         if (fireEvents)
         {
-            Debug.Log("[Recompute] [fireEvents]");
             // OnAvailableClausesChanged?.Invoke();
             OnQueryUpdated?.Invoke();
         }
     }
-
-
 
 
     public void CheckAvailableClause()
@@ -129,6 +126,12 @@ public class Query
         else
         {
             clause.Deactivate();
+
+            if (clause == andClause)
+            {
+                RemoveSecondCondition();
+            }
+
         }
 
         Recompute();
@@ -185,11 +188,17 @@ public class Query
         Recompute();
     }
 
-    public void RemoveConditionColumn(Column i_Column)
+    // public void RemoveConditionColumn(Column i_Column)
+    // {
+    //     whereClause.RemoveConditionsByColumn(i_Column);
+    //     Recompute();
+    // }
+    public void RemoveConditionByIndex(int conditionIndex)
     {
-        whereClause.RemoveConditionsByColumn(i_Column);
+        whereClause.RemoveConditionByIndex(conditionIndex);
         Recompute();
     }
+
 
     public void SetConditionOperator(IOperatorStrategy i_Operator)
     {
@@ -197,11 +206,17 @@ public class Query
         Recompute();
     }
 
-    public void RemoveConditionOperator()
+    public void RemoveSecondCondition()
     {
-        whereClause.RemoveOperator();
+        whereClause.RemoveSecondCondition();
         Recompute();
     }
+
+    public void RemoveConditionOperatorByIndex(int index)
+    {
+        whereClause.RemoveOperatorByIndex(index);
+        Recompute();
+    }    
 
     public void SetConditionValue(object i_Value)
     {
@@ -209,9 +224,10 @@ public class Query
         Recompute();
     }
 
-    public void clearConditionValue()
+
+    public void RemoveConditionValueByIndex(int index)
     {
-        whereClause.RemoveValue();
+        whereClause.RemoveValueByIndex(index);
         Recompute();
     }
 
@@ -278,9 +294,5 @@ public class Query
         return whereClause.GetConditionIndexByColumn(col);
     }
 
-    public void RemoveConditionByIndex(int conditionIndex)
-    {
-        whereClause.RemoveConditionByIndex(conditionIndex);
-    }
 }
 

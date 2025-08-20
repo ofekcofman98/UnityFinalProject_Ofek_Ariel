@@ -12,7 +12,10 @@ public class WhereClause : IQueryClause
     public List<Condition> Conditions;
     public Condition newCondition { get; set; }
     public const int k_MaxConditions = 2;
-    public int CurrentEditingConditionIndex { get; private set; } = -1;
+    // public int CurrentEditingConditionIndex { get; private set; } = -1;
+
+    public int NewConditionIndex => Conditions.Count;
+    public bool firstConditionWasRemoved = false;
 
     public bool isClicked { get; private set; } = false;
     public bool isAvailable { get; set; } = false;
@@ -37,6 +40,7 @@ public class WhereClause : IQueryClause
 
         isClicked = false;
     }
+
     public bool CanStartAnotherCondition()
         => isClicked && (Conditions.Count < k_MaxConditions) && CompletedCondition(); // first is complete
 
@@ -52,7 +56,7 @@ public class WhereClause : IQueryClause
             return;
         }
 
-CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
+// CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         newCondition = new Condition();
         newCondition.OnConditionUpdated += UpdateString;
         UpdateString();
@@ -84,7 +88,7 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
 
         Conditions.Add(newCondition);
         newCondition = null;
-        ResetIndex();
+        // ResetIndex();
         UpdateString();
     }
 
@@ -154,58 +158,55 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         return false;
     }
 
-    public bool IsValidForOperator()
+
+    public bool IsValidForConditionColumn(int conditionIndex)
     {
-        bool res = false;
-        Condition condition = FindLastCondition();
-        if (condition != null)
+        if (!isClicked)
+            return false;
+
+        if (conditionIndex == 0)
         {
-            res = condition.Column != null;
+            return true;
         }
 
-        return res;
+        if (conditionIndex == 1)
+        {
+            return GameManager.Instance.CurrentQuery.andClause.isClicked &&
+                   Conditions.Count > 0 &&
+                   Conditions[0].IsComplete &&
+                   Conditions.Count <= k_MaxConditions;
+        }
+
+        return false;
     }
 
-    public bool IsValidForValue()
+    public bool IsValidForOperator(int conditionIndex)
     {
-        bool res = false;
+        Condition cond = GetConditionByIndex(conditionIndex);
 
-        Condition condition = FindLastCondition();
-        if (condition != null)
+        // Debug.Log($"[IsValidForOperator] conditionIndex: {conditionIndex}");        
+        // Debug.Log($"[IsValidForOperator] cond?.Column != null: {cond?.Column != null}");
+        if (cond?.Column != null)
         {
-            res = condition.Operator != null;
+            // Debug.Log($"[IsValidForOperator] Column: {cond?.Column.Name}");
+            return true;
         }
-        return res;
+        return false;
     }
 
-
-    public void RemoveConditionsByColumn(Column columnToRemove)
+    public bool IsValidForValue(int conditionIndex)
     {
-        if (columnToRemove == null) return;
-
-        // Check how many conditions use this column
-        int count = Conditions.Count(cond => cond.Column == columnToRemove);
-
-        if (count == 1)
+        Condition cond = GetConditionByIndex(conditionIndex);
+        // Debug.Log($"[IsValidForValue] conditionIndex: {conditionIndex}");        
+        // Debug.Log($"[IsValidForValue] cond?.Operator != null: {cond?.Operator != null}");
+        if (cond?.Operator != null)
         {
-            // Remove the only one using this column
-            Conditions.RemoveAll(cond => cond.Column == columnToRemove);
+            // Debug.Log($"[IsValidForValue] Op: {cond?.Operator.GetSQLRepresentation()}");
+            return true;
         }
-        else if (count > 1)
-        {
-            // ⚠️ Smart choice: removing this column breaks a range (e.g., age ≥ 30 AND age ≤ 40)
-            // In this case, better to clear all conditions using that column
-            Conditions.RemoveAll(cond => cond.Column == columnToRemove);
-        }
-
-        // Always remove `newCondition` if it references the column
-        if (newCondition?.Column == columnToRemove)
-        {
-            newCondition = null;
-        }
-
-        UpdateString();
+        return false;
     }
+
 
     public void SetOperator(IOperatorStrategy i_operator)
     {
@@ -217,14 +218,24 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         }
     }
 
-    public void RemoveOperator(/*int conditionIndex*/)
+    public void RemoveOperatorByIndex(int index)
     {
-        Condition condition = FindLastCondition();
-
-        if (condition != null)
+        if (index == -1 && newCondition != null)
         {
-            Conditions.Remove(condition);
-            CreateNewCondition(condition.Column);
+            newCondition = null;
+            return;
+        }
+
+        if (index >= 0 && index < Conditions.Count)
+        {
+            if (index == 0)
+            {
+                firstConditionWasRemoved = true;
+            }
+
+            Condition old = Conditions[index];
+            Conditions.RemoveAt(index);
+            CreateNewCondition(old.Column);
         }
     }
 
@@ -238,21 +249,71 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         }
     }
 
-    public void RemoveValue()
+    public void RemoveValueByIndex(int index)
     {
-        Condition last = FindLastCondition();
-        if (last != null)
+        if (index == -1 && newCondition != null)
         {
-            Conditions.Remove(last);
-            CreateNewCondition(last.Column);
-            SetOperator(last.Operator);
+            Column col = newCondition.Column;
+            IOperatorStrategy op = newCondition.Operator;
+            newCondition = null;
+            CreateNewCondition(col);
+            SetOperator(op);
+            return;
+        }
+
+        if (index >= 0 && index < Conditions.Count)
+        {
+            if (index == 0)
+            {
+                firstConditionWasRemoved = true;
+            }
+
+            Condition old = Conditions[index];
+            old.Value = null;
+            Conditions.RemoveAt(index);
+            CreateNewCondition(old.Column);
+            SetOperator(old.Operator);
         }
     }
+    public void RemoveSecondCondition()
+    {
+        Debug.Log($"[RemoveSecondCondition] Conditions.Count = {Conditions.Count}");
+        if (Conditions.Count > 1)
+        {
+            RemoveConditionByIndex(1);
+            Debug.Log($"[RemoveSecondCondition] removed the sceond condition");
+        }
+        // Case 2: In-progress (newCondition is being edited as second)
+        else if (newCondition != null && NewConditionIndex == 1)
+        {
+            Debug.Log($"[RemoveSecondCondition] im here");
+            RemoveConditionByIndex(-1);
+        }
+
+        Debug.Log($"[RemoveSecondCondition] Conditions.Count: {Conditions.Count}]");
+
+        if (newCondition == null)
+        {
+            newCondition = Conditions.FirstOrDefault();
+        }
+    }
+
 
     private void clearConditions()
     {
         Conditions.Clear();
         newCondition = null;
+    }
+
+    private Condition GetConditionByIndex(int index)
+    {
+        if (index == -1 || index == Conditions.Count)
+            return newCondition;
+
+        if (index >= 0 && index < Conditions.Count)
+            return Conditions[index];
+
+        return null;
     }
 
     public Condition FindLastCondition()
@@ -283,10 +344,10 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         clearConditions();
     }
 
-    private void ResetIndex()
-    {
-        CurrentEditingConditionIndex = -1;
-    }
+    // private void ResetIndex()
+    // {
+    //     CurrentEditingConditionIndex = -1;
+    // }
 
     public bool IsEmpty()
     {
@@ -295,16 +356,6 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
 
     public bool CompletedCondition()
     {
-        // if (!IsEmpty())
-        // {
-        //     Debug.Log("!IsEmpty()");
-
-        //     if (newCondition == null)
-        //     {
-        //         Debug.Log("newCondition == null");
-        //         return true;
-        //     }
-        // }
 
         if (newCondition != null) return false;
         if (Conditions.Count == 0) return false;
@@ -342,8 +393,10 @@ CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         }
         else if (conditionIndex >= 0 && conditionIndex < Conditions.Count)
         {
+            if (conditionIndex == 0)
+                firstConditionWasRemoved = true;
+
             Conditions.RemoveAt(conditionIndex);
         }
-
     }
 }
