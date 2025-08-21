@@ -1,5 +1,5 @@
 
-public enum eMenuType
+    public enum eMenuType
 {
     Main,
     Pause,
@@ -8,3 +8,4 @@ public enum eMenuType
     Lose,
     None
 }
+

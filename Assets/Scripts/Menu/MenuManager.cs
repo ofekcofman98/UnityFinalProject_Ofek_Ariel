@@ -5,83 +5,85 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MenuManager : Singleton<MenuManager>
-{
-    private Dictionary<eMenuType, IMenu> menus;
 
-    public void Start()
+    public class MenuManager : Singleton<MenuManager>
     {
-        menus = new();
-        MenuBase[] allMenus = FindObjectsOfType<MenuBase>(true); 
+        private Dictionary<eMenuType, IMenu> menus;
 
-        
-        foreach (MenuBase menu in allMenus)
+        public void Start()
         {
-            if (menus.ContainsKey(menu.MenuType))
+            menus = new();
+            MenuBase[] allMenus = FindObjectsOfType<MenuBase>(true);
+
+
+            foreach (MenuBase menu in allMenus)
             {
-                Debug.LogWarning($"❗ Duplicate menu type: {menu.MenuType}");
-                continue;
+                if (menus.ContainsKey(menu.MenuType))
+                {
+                    Debug.LogWarning($"❗ Duplicate menu type: {menu.MenuType}");
+                    continue;
+                }
+
+                menus[menu.MenuType] = menu;
+                menu.Hide();
             }
 
-            menus[menu.MenuType] = menu;
-            menu.Hide();
+            ShowMenu(eMenuType.Main);
         }
 
-        ShowMenu(eMenuType.Main);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) && !IsMenuOpen(eMenuType.Main))
+        private void Update()
         {
-            if (!IsMenuOpen(eMenuType.Pause))
-                PauseGame();
-            else
-                ResumeGame();
+            if (Input.GetKeyDown(KeyCode.Escape) && !IsMenuOpen(eMenuType.Main))
+            {
+                if (!IsMenuOpen(eMenuType.Pause))
+                    PauseGame();
+                else
+                    ResumeGame();
+            }
         }
-    }
 
-    public void ShowMenu(eMenuType type)
-    {
-        if (type != eMenuType.Pause)
+        public void ShowMenu(eMenuType type)
         {
-            PopupManager.Instance.CloseAllPopups();
+            if (type != eMenuType.Pause)
+            {
+                PopupManager.Instance.CloseAllPopups();
+            }
+
+            Time.timeScale = 0f;
+            if (menus.TryGetValue(type, out IMenu menu))
+            {
+                menu.Show();
+            }
         }
-        
-        Time.timeScale = 0f;
-        if (menus.TryGetValue(type, out IMenu menu))
+
+        public void HideMenu(eMenuType type)
         {
-            menu.Show();
+            Time.timeScale = 1f;
+            if (menus.TryGetValue(type, out IMenu menu))
+            {
+                menu.Hide();
+            }
         }
-    }
 
-    public void HideMenu(eMenuType type)
-    {
-        Time.timeScale = 1f;
-        if (menus.TryGetValue(type, out IMenu menu))
+        public bool IsMenuOpen(eMenuType type)
         {
-            menu.Hide();
+            return menus.TryGetValue(type, out IMenu menu) && ((MonoBehaviour)menu).gameObject.activeSelf;
+        }
+
+        public void PauseGame()
+        {
+            ShowMenu(eMenuType.Pause);
+        }
+
+        public void ResumeGame()
+        {
+            HideMenu(eMenuType.Pause);
+        }
+
+        public void QuitToMainMenu()
+        {
+            StartCoroutine(GameManager.Instance.resetAction());
+            ShowMenu(eMenuType.Main);
         }
     }
 
-    public bool IsMenuOpen(eMenuType type)
-    {
-        return menus.TryGetValue(type, out IMenu menu) && ((MonoBehaviour)menu).gameObject.activeSelf;
-    }
-
-    public void PauseGame()
-    {
-        ShowMenu(eMenuType.Pause);
-    }
-
-    public void ResumeGame()
-    {
-        HideMenu(eMenuType.Pause);
-    }
-
-    public void QuitToMainMenu()
-    {
-        StartCoroutine(GameManager.Instance.resetAction());
-        ShowMenu(eMenuType.Main);
-    }
-}

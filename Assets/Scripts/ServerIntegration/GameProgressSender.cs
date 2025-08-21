@@ -29,7 +29,7 @@ namespace Assets.Scripts.ServerIntegration
         }
 
 
-        private IEnumerator getUniqueKey()
+        public IEnumerator getUniqueKey()
         {
             UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.GenerateKey).ServerUrl);
 
