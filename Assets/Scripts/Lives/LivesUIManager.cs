@@ -16,10 +16,11 @@ public class LivesUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (SuspectsManager.HasInstance)
+        if (LivesManager.HasInstance)
         {
-            SuspectsManager.Instance.OnLivesChanged -= UpdateHearts;
+            LivesManager.Instance.OnLivesChanged -= UpdateHearts;
         }
+
     }
 
     private void UpdateHearts(int lives)

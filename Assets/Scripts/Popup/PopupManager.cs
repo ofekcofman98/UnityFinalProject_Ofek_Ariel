@@ -7,7 +7,6 @@ public class PopupManager : Singleton<PopupManager>
 {
     [SerializeField] private MessagePopup messagePopup;
     [SerializeField] private GameObject PopupBlockerPanel;
-    [SerializeField] private CanvasGroup persistentUICanvasGroup;
 
     private List<Popup> activePopups = new();
     private int freezeCounter = 0;
@@ -24,13 +23,6 @@ public class PopupManager : Singleton<PopupManager>
             Time.timeScale = 0f;
             PopupBlockerPanel.SetActive(true);
             PopupBlockerPanel.transform.SetSiblingIndex(0);
-
-            if (persistentUICanvasGroup != null)
-            {
-                persistentUICanvasGroup.interactable = false;
-                persistentUICanvasGroup.blocksRaycasts = false;
-            }
-
         }
 
         Debug.Log($"[PopupManager] ✅ Registered: {popup.name}, FreezeCounter = {freezeCounter}");
@@ -48,13 +40,6 @@ public class PopupManager : Singleton<PopupManager>
             {
                 Time.timeScale = 1f;
                 PopupBlockerPanel.SetActive(false);
-
-                if (persistentUICanvasGroup != null)
-                {
-                    persistentUICanvasGroup.interactable = true;
-                    persistentUICanvasGroup.blocksRaycasts = true;
-                }
-
             }
         }
     }
