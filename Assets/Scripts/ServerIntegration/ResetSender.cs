@@ -15,7 +15,7 @@ namespace Assets.Scripts.ServerIntegration
     {
         private ServerCommunicator m_communicator;
 
-        public ResetSender()
+        private void Awake()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendReset);
         }
@@ -28,13 +28,8 @@ namespace Assets.Scripts.ServerIntegration
                 // Construct the payload with the correct key and value
                 var payload = new Dictionary<string, int>
                  {
-                    { "reset", 1 },
-                    //! removed (ofek 17.8)
-                    // { "seqNumber", GameManager.Instance.sequenceNumber}
-                    //! added (ofek 17.8)
                     { "seqNumber", SequenceManager.Instance.GetCurrentIndex() }
-
-                 };
+                 }; 
 
                 string jsonPayload = JsonConvert.SerializeObject(payload);
                 Debug.Log($"📤 JSON Payload: {jsonPayload}");

@@ -126,6 +126,7 @@ public class GameManager : Singleton<GameManager>
 
     public void StartSequence(eSequence sequence)
     {
+        UniqueKeyManager.Instance.GenerateGameKey();
         SequenceManager.Instance.StartSequence(sequence);
     }
     
