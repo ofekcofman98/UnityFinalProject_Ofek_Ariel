@@ -34,9 +34,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 041925aa3713dc143a50afa0a8f78dc5, type: 2}
   - {fileID: 11400000, guid: ebbd7c2600ec0fb4e83d2a643aca0f22, type: 2}
   - {fileID: 11400000, guid: 0115d4e38c7163d4480dcdfa903244db, type: 2}
+  - {fileID: 11400000, guid: a51d0c6b091bce24fa7a1848ba19dbc6, type: 2}
+  - {fileID: 11400000, guid: 57e74d6c0fc59b544bd7c3f533fbb3c3, type: 2}
   - {fileID: 11400000, guid: fb7899bd5876d5147af231e04de4ece6, type: 2}
   - {fileID: 11400000, guid: 04fe229a07a89ff479089e6e12cdffe8, type: 2}
   - {fileID: 11400000, guid: e49e0663b5d66b440b9b6d481978a812, type: 2}
+  - {fileID: 11400000, guid: bfb03c9a8dc3ec241b32fb75382f0f63, type: 2}
+  - {fileID: 11400000, guid: d3a9fce31309c7347920338a367af2ad, type: 2}
   case_id: 1
   PersonDialogues: []
   FinalAnswerPersonId: 008

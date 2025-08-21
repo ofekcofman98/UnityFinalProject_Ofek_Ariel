@@ -10,17 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 56
+  m_Name: 65
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Find suspects in their 30s
-  missionDescription: (age >= 30 and age <=40)
+  missionTitle: Find the first and last name of the witness
+  missionDescription: use the ID number.
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
   requiredTable: Persons
   requiredColumns:
-  - age
+  - first_name
+  - last_name
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

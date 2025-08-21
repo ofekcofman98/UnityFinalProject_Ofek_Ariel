@@ -13,15 +13,16 @@ MonoBehaviour:
   m_Name: Mission 23 SQL
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: SQL!
-  missionDescription: Drag the Blue Buttons into the upper panel
+  missionTitle: Drag the Buttons into the upper panel
+  missionDescription: 'SELECT first_name
+
+    FROM Persons'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1
   requiredTable: Persons
   requiredColumns:
   - first_name
-  - last_name
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

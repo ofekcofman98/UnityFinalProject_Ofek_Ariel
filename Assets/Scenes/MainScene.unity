@@ -14090,7 +14090,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 48.187}
+  m_SizeDelta: {x: 0, y: 37.0861}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &804023645
 MonoBehaviour:
@@ -17473,7 +17473,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   allSequences:
   - {fileID: 11400000, guid: 43189a94977779440aab1b2a37bba068, type: 2}
-  - {fileID: 11400000, guid: b00a19fde581b4741adbd397a2bf881a, type: 2}
   - {fileID: 11400000, guid: 28be72455013e534281eedffe7d73d25, type: 2}
 --- !u!1 &999063848
 GameObject:

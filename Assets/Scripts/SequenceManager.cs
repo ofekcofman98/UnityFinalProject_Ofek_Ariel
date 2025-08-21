@@ -17,11 +17,19 @@ public class SequenceManager : Singleton<SequenceManager>
     {
         Time.timeScale = 1f;
         MenuManager.Instance.HideMenu(eMenuType.Main);
+        StartCoroutine(StartSequenceRoutine(sequence));
+    }
+
+    private IEnumerator StartSequenceRoutine(eSequence sequence)
+    {
+        yield return MissionsManager.Instance.ResetMissions();
+
         CurrentSequenceIndex = (int)sequence;
         MissionsManager.Instance.LoadMissionSequence(Current);
-        GameManager.Instance.StartMissions(); // keep mission UI there
+        GameManager.Instance.StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
+
 
     public void LoadNextSequence()
     {

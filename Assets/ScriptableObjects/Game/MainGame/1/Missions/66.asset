@@ -9,18 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 56
+  m_Script: {fileID: 11500000, guid: 06bb6e5f1c7014d448c5052ced5c3ec9, type: 3}
+  m_Name: 66
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Find suspects in their 30s
-  missionDescription: (age >= 30 and age <=40)
+  missionTitle: 
+  missionDescription: 
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
-  requiredTable: Persons
-  requiredColumns:
-  - age
-  requiredCondition: 
-  expectedPrimaryKeyField: 
-  expectedRowIdValue: 
+  requiredStepId: CloseResults

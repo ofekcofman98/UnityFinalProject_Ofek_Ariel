@@ -14,14 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Witnesses
-  missionDescription: Select the testimoneis and the persons from Witnesses
+  missionDescription: Select the testimoneis from Witnesses table.
   unlocksTable: 0
   tableToUnlock: Persons
   isTutorial: 0
   requiredTable: Witnesses
   requiredColumns:
   - testimony
-  - person_id
   requiredCondition: 
   expectedPrimaryKeyField: 
   expectedRowIdValue: 

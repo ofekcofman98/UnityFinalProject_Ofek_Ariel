@@ -29,8 +29,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6fe167fc20407f24086b75826d6e6ccf, type: 2}
   - {fileID: 11400000, guid: f1fadd3d5264e874d8b6446bdc244b88, type: 2}
   - {fileID: 11400000, guid: 3c3b7fd3a534e564cb8f00cbc6dca874, type: 2}
+  - {fileID: 11400000, guid: eeae9111eb739934eae3e33d3f794324, type: 2}
+  - {fileID: 11400000, guid: 87ed562f2b4197d4c9e45f0ed49a214e, type: 2}
+  - {fileID: 11400000, guid: 1b8246b4879ad934bbc6f75e28237031, type: 2}
   - {fileID: 11400000, guid: cd5f0c9b72604434589b6f50a08d8d90, type: 2}
   - {fileID: 11400000, guid: 5d4b501da941b4b489833ac20e0ebea4, type: 2}
+  - {fileID: 11400000, guid: 2350c9f66aea4144897cfb1067d51116, type: 2}
+  - {fileID: 11400000, guid: 17774095bd4a93a4088cb99205bbba67, type: 2}
   - {fileID: 11400000, guid: 143f5cf782f03ab4c840b84c06607e12, type: 2}
   - {fileID: 11400000, guid: d31b82b7e93b0494f916fb606658e4d0, type: 2}
   - {fileID: 11400000, guid: 29bae704d7cf2964a9a3683576221c70, type: 2}
@@ -40,4 +45,5 @@ MonoBehaviour:
   PersonDialogues:
   - {fileID: 11400000, guid: 07a379b4a68bd284e9bad0aef265d0a1, type: 2}
   - {fileID: 11400000, guid: dc33f7717e4ce144792a9545c1e906e0, type: 2}
+  - {fileID: 11400000, guid: 76f9c2375ce18f04d861247c15ee18a4, type: 2}
   FinalAnswerPersonId: 008

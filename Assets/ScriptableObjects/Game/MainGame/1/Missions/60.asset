@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: 60
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Persons
-  missionDescription: Find the names of all witnesses
+  missionTitle: Witnesses
+  missionDescription: Find the ID of the witness (person_id)
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
-  requiredTable: Persons
+  requiredTable: Witnesses
   requiredColumns:
-  - first_name
-  - last_name
+  - person_id
   requiredCondition: 
   expectedPrimaryKeyField: first_name
   expectedRowIdValue: Michelle

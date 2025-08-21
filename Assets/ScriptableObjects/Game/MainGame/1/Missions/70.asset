@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: 
-  missionDescription: Great, now let's go to their private home and see what they
-    know.
+  missionDescription: Great, now let's go to their his private home and see what
+    they know.
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
