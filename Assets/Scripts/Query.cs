@@ -208,7 +208,7 @@ public class Query
 
     public void RemoveSecondCondition()
     {
-        whereClause.RemoveSecondCondition();
+        whereClause.RemoveConditionByIndex(1);
         Recompute();
     }
 

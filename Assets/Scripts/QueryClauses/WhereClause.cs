@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Il2Cpp;
 using UnityEngine;
 
 public class WhereClause : IQueryClause
@@ -56,7 +57,7 @@ public class WhereClause : IQueryClause
             return;
         }
 
-// CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
+        // CurrentEditingConditionIndex = Conditions.Count; // 0 if it's first, 1 if second
         newCondition = new Condition();
         newCondition.OnConditionUpdated += UpdateString;
         UpdateString();
@@ -147,8 +148,6 @@ public class WhereClause : IQueryClause
 
     public bool IsValid()
     {
-        // return !isClicked || (Conditions.Count > 0 && Conditions.All(c => c.Column != null && c.Operator != null && c.Value != null));
-
         if (!isClicked) return true;
         if (newCondition != null) return false;           // editing → not valid
         if (Conditions.Count == 0) return false;
@@ -184,7 +183,7 @@ public class WhereClause : IQueryClause
     {
         Condition cond = GetConditionByIndex(conditionIndex);
 
-        // Debug.Log($"[IsValidForOperator] conditionIndex: {conditionIndex}");        
+        // Debug.Log($"[IsValidForOperator] conditionIndex: {conditionIndex}");
         // Debug.Log($"[IsValidForOperator] cond?.Column != null: {cond?.Column != null}");
         if (cond?.Column != null)
         {
@@ -197,7 +196,7 @@ public class WhereClause : IQueryClause
     public bool IsValidForValue(int conditionIndex)
     {
         Condition cond = GetConditionByIndex(conditionIndex);
-        // Debug.Log($"[IsValidForValue] conditionIndex: {conditionIndex}");        
+        // Debug.Log($"[IsValidForValue] conditionIndex: {conditionIndex}");
         // Debug.Log($"[IsValidForValue] cond?.Operator != null: {cond?.Operator != null}");
         if (cond?.Operator != null)
         {
@@ -218,26 +217,6 @@ public class WhereClause : IQueryClause
         }
     }
 
-    public void RemoveOperatorByIndex(int index)
-    {
-        if (index == -1 && newCondition != null)
-        {
-            newCondition = null;
-            return;
-        }
-
-        if (index >= 0 && index < Conditions.Count)
-        {
-            if (index == 0)
-            {
-                firstConditionWasRemoved = true;
-            }
-
-            Condition old = Conditions[index];
-            Conditions.RemoveAt(index);
-            CreateNewCondition(old.Column);
-        }
-    }
 
     public void SetValue(object i_Value)
     {
@@ -248,56 +227,6 @@ public class WhereClause : IQueryClause
             AddCondition();
         }
     }
-
-    public void RemoveValueByIndex(int index)
-    {
-        if (index == -1 && newCondition != null)
-        {
-            Column col = newCondition.Column;
-            IOperatorStrategy op = newCondition.Operator;
-            newCondition = null;
-            CreateNewCondition(col);
-            SetOperator(op);
-            return;
-        }
-
-        if (index >= 0 && index < Conditions.Count)
-        {
-            if (index == 0)
-            {
-                firstConditionWasRemoved = true;
-            }
-
-            Condition old = Conditions[index];
-            old.Value = null;
-            Conditions.RemoveAt(index);
-            CreateNewCondition(old.Column);
-            SetOperator(old.Operator);
-        }
-    }
-    public void RemoveSecondCondition()
-    {
-        Debug.Log($"[RemoveSecondCondition] Conditions.Count = {Conditions.Count}");
-        if (Conditions.Count > 1)
-        {
-            RemoveConditionByIndex(1);
-            Debug.Log($"[RemoveSecondCondition] removed the sceond condition");
-        }
-        // Case 2: In-progress (newCondition is being edited as second)
-        else if (newCondition != null && NewConditionIndex == 1)
-        {
-            Debug.Log($"[RemoveSecondCondition] im here");
-            RemoveConditionByIndex(-1);
-        }
-
-        Debug.Log($"[RemoveSecondCondition] Conditions.Count: {Conditions.Count}]");
-
-        if (newCondition == null)
-        {
-            newCondition = Conditions.FirstOrDefault();
-        }
-    }
-
 
     private void clearConditions()
     {
@@ -344,11 +273,6 @@ public class WhereClause : IQueryClause
         clearConditions();
     }
 
-    // private void ResetIndex()
-    // {
-    //     CurrentEditingConditionIndex = -1;
-    // }
-
     public bool IsEmpty()
     {
         return Conditions.Count == 0;
@@ -356,7 +280,6 @@ public class WhereClause : IQueryClause
 
     public bool CompletedCondition()
     {
-
         if (newCondition != null) return false;
         if (Conditions.Count == 0) return false;
         return Conditions.Last().IsComplete;
@@ -370,33 +293,272 @@ public class WhereClause : IQueryClause
         {
             if (Conditions[i].Column == col)
             {
-                Debug.Log($"[GetConditionIndexByColumn]: {i}"); 
+                // Debug.Log($"[GetConditionIndexByColumn]: {i}");
                 return i;
             }
         }
 
         if (newCondition?.Column == col)
         {
-            Debug.Log($"[GetConditionIndexByColumn]: {-1}"); 
+            // Debug.Log($"[GetConditionIndexByColumn]: {-1}");
             return -1; // Special index for newCondition
         }
 
-        Debug.Log($"[GetConditionIndexByColumn]: {-2}"); 
+        // Debug.Log($"[GetConditionIndexByColumn]: {-2}");
         return -2; // Not found
+    }
+
+    public void RemoveSecondCondition()
+    {
+        // Debug.Log($"[RemoveSecondCondition] Conditions.Count = {Conditions.Count}");
+        if (Conditions.Count > 1)
+        {
+            RemoveConditionByIndex(1);
+            // Debug.Log($"[RemoveSecondCondition] removed the sceond condition");
+        }
+        // Case 2: In-progress (newCondition is being edited as second)
+        else if (newCondition != null && NewConditionIndex == 1)
+        {
+            // Debug.Log($"[RemoveSecondCondition] im here");
+            RemoveConditionByIndex(-1);
+        }
+
+        // Debug.Log($"[RemoveSecondCondition] Conditions.Count: {Conditions.Count}]");
+
+        if (newCondition == null)
+        {
+            newCondition = Conditions.FirstOrDefault();
+        }
     }
 
     public void RemoveConditionByIndex(int conditionIndex)
     {
         if (conditionIndex == -1)
         {
+            // Debug.Log("[RemoveConditionByIndex]: Removing newCondition (-1)");
             newCondition = null;
+            return;
         }
-        else if (conditionIndex >= 0 && conditionIndex < Conditions.Count)
-        {
-            if (conditionIndex == 0)
-                firstConditionWasRemoved = true;
 
-            Conditions.RemoveAt(conditionIndex);
+        if (conditionIndex == 0)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing first condition (0)");
+            firstConditionWasRemoved = true;
+
+            if (Conditions.Count == 0)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 0");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    newCondition = null;
+                }
+            }
+            else if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 1");
+                Conditions.RemoveAt(0);
+
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    newCondition = null;
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 2");
+                Conditions.Clear();
+            }
+
+            return;
         }
+        else if (conditionIndex == 1)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing second condition (1)");
+            if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: its probably newCondition");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    newCondition = null;
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: they're both completed");
+                Conditions.RemoveAt(1);
+            }
+
+            return;
+        }
+
+        // Debug.Log("[RemoveConditionByIndex]: wtf");
     }
+
+
+    public void RemoveOperatorByIndex(int index)
+    {
+        Condition old;
+        if (index == -1)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing newCondition (-1)");
+            newCondition = null;
+            return;
+        }
+
+        if (index == 0)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing first condition (0)");
+            firstConditionWasRemoved = true;
+
+            if (Conditions.Count == 0)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 0");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    old = newCondition;
+                    CreateNewCondition(old.Column);
+                }
+            }
+            else if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 1");
+
+                old = Conditions[0];
+                Conditions.RemoveAt(index);
+                CreateNewCondition(old.Column);
+
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    newCondition = null; // removing the second condition 
+                    CreateNewCondition(old.Column); // making the first condition -> newCondition
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 2");
+                old = Conditions[0];
+                Conditions.RemoveAt(1);
+                Conditions.RemoveAt(0);
+                CreateNewCondition(old.Column);
+            }
+
+            return;
+        }
+        else if (index == 1) // second condition
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing second condition (1)");
+            if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: its probably newCondition");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    old = newCondition;
+                    CreateNewCondition(old.Column);
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: they're both completed");
+                old = Conditions[1];
+                Conditions.RemoveAt(1);
+                CreateNewCondition(old.Column);
+            }
+
+            return;
+        }
+
+        // Debug.Log("[RemoveConditionByIndex]: wtf");
+    }
+
+
+    public void RemoveValueByIndex(int index)
+    {
+        Condition old;
+        if (index == -1)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing newCondition (-1)");
+            newCondition = null;
+            return;
+        }
+
+        if (index == 0)
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing first condition (0)");
+            firstConditionWasRemoved = true;
+
+            if (Conditions.Count == 0)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 0");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    old = newCondition;
+                    CreateNewCondition(old.Column);
+                    SetOperator(old.Operator);
+                }
+            }
+            else if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 1");
+
+                old = Conditions[0];
+                Conditions.RemoveAt(index);
+                CreateNewCondition(old.Column);
+                SetOperator(old.Operator);
+
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    newCondition = null; // removing the second condition 
+                    CreateNewCondition(old.Column); // making the first condition -> newCondition
+                    SetOperator(old.Operator);
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: Conditions.Count == 2");
+                old = Conditions[0];
+                Conditions.RemoveAt(1);
+                Conditions.RemoveAt(0);
+                CreateNewCondition(old.Column);
+                SetOperator(old.Operator);
+            }
+
+            return;
+        }
+        else if (index == 1) // second condition
+        {
+            // Debug.Log("[RemoveConditionByIndex]: Removing second condition (1)");
+            if (Conditions.Count == 1)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: its probably newCondition");
+                if (newCondition != null)
+                {
+                    // Debug.Log("[RemoveConditionByIndex]: newCondition != null");
+                    old = newCondition;
+                    CreateNewCondition(old.Column);
+                    SetOperator(old.Operator);
+                }
+            }
+            else if (Conditions.Count == 2)
+            {
+                // Debug.Log("[RemoveConditionByIndex]: they're both completed");
+                old = Conditions[1];
+                Conditions.RemoveAt(1);
+                CreateNewCondition(old.Column);
+                SetOperator(old.Operator);
+            }
+
+            return;
+        }
+
+        // Debug.Log("[RemoveConditionByIndex]: wtf");
+    }
+
 }
