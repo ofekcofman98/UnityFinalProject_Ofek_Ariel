@@ -253,6 +253,11 @@ public class MissionsManager : Singleton<MissionsManager>
         }
         else
         {
+    SuspectsManager.Instance?.ResetSuspects();
+    GameManager.Instance.resultsUI?.ResetResults();
+    GameManager.Instance.ClearCurrentQuery();
+
+
             if (missionSequence.isTutorial)
             {
                 Debug.Log("🎓 Tutorial sequence complete. Returning to main menu.");

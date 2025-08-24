@@ -42,6 +42,7 @@ public class MissionDataEditor : Editor
         // Shared fields
         baseMission.missionTitle = EditorGUILayout.TextField("Mission Title", baseMission.missionTitle);
         baseMission.missionDescription = EditorGUILayout.TextArea(baseMission.missionDescription, GUILayout.MinHeight(60));
+
         baseMission.isTutorial = EditorGUILayout.Toggle("Is Tutorial?", baseMission.isTutorial);
 
         EditorGUILayout.Space(10);
@@ -68,6 +69,11 @@ public class MissionDataEditor : Editor
         {
             DrawCustomTutorialStepSection(custom);
         }
+        else if (baseMission is TutorialPopupMissionData tutorial)
+        {
+            DrawTutorialPopupSection(tutorial);
+        }
+
 
 
         if (GUI.changed)
@@ -203,13 +209,24 @@ public class MissionDataEditor : Editor
             }
         }
     }
-    
+
     private void DrawCustomTutorialStepSection(CustomTutorialMissionData mission)
     {
         EditorGUILayout.LabelField("Custom Step", EditorStyles.boldLabel);
         EditorGUILayout.HelpBox("Define a unique ID for the tutorial step the player must trigger (e.g. ClickMap, OpenSQL, etc.)", MessageType.Info);
         mission.requiredStepId = EditorGUILayout.TextField("Required Step ID", mission.requiredStepId);
     }
+
+    private void DrawTutorialPopupSection(TutorialPopupMissionData mission)
+    {
+        // EditorGUILayout.LabelField("Popup Text", EditorStyles.boldLabel);
+        // mission.popupText = EditorGUILayout.TextArea(mission.popupText, GUILayout.MinHeight(60));
+
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Optional Popup Image", EditorStyles.boldLabel);
+        mission.popupImage = (Sprite)EditorGUILayout.ObjectField("Popup Image", mission.popupImage, typeof(Sprite), allowSceneObjects: false);
+    }
+
 
 
 

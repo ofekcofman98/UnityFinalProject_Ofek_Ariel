@@ -126,10 +126,15 @@ public class MissionUIManager : MonoBehaviour
         }
     }
 
-    public void ShowTutorialPopup(string title, string message, Action onContinue)
-    {
-        tutorialPopupUI.Show(title, message, onContinue);
-    }
+    // public void ShowTutorialPopup(string title, string message, Action onContinue)
+    // {
+    //     tutorialPopupUI.Show(title, message, onContinue);
+    // }
+
+public void ShowTutorialPopup(string title, string message, Sprite optionalImage, Action onContinue)
+{
+    tutorialPopupUI.Show(title, message, optionalImage, onContinue);
+}
 
     public bool IsPopupOpen()
     {

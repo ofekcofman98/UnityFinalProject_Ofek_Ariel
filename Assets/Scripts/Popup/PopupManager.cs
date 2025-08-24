@@ -42,6 +42,9 @@ public class PopupManager : Singleton<PopupManager>
                 PopupBlockerPanel.SetActive(false);
             }
         }
+
+        Debug.Log($"[PopupManager] ✅ Unregistered: {popup.name}, FreezeCounter = {freezeCounter}");
+
     }
 
     public void Show(string message)

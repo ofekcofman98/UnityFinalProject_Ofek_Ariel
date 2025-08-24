@@ -63,11 +63,20 @@ public class Popup : MonoBehaviour, IPopup
         gameObject.SetActive(false);
         PopupManager.Instance.Unregister(this);
 
-        if (!string.IsNullOrEmpty(tutorialStepIdOnClose))
+        // if (!string.IsNullOrEmpty(tutorialStepIdOnClose))
+        // {
+        //     Debug.Log($"📘 Popup closed: reporting tutorial step '{tutorialStepIdOnClose}'");
+        //     MissionsManager.Instance.ReportTutorialStep(tutorialStepIdOnClose);
+        // }
+        if (!string.IsNullOrEmpty(tutorialStepIdOnClose)
+            && MissionsManager.HasInstance
+            && MissionsManager.Instance.CurrentMission is CustomTutorialMissionData)
         {
             Debug.Log($"📘 Popup closed: reporting tutorial step '{tutorialStepIdOnClose}'");
             MissionsManager.Instance.ReportTutorialStep(tutorialStepIdOnClose);
         }
+
+
     }
     
 }

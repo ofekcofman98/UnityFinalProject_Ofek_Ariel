@@ -16,10 +16,10 @@ public class TutorialPopupMissionData : MissionData
     public override void ShowUI(MissionUIManager uiManager)
     {
         uiManager.DisplayStandardMission(this);
-        uiManager.ShowTutorialPopup(missionTitle, missionDescription, () =>
+        // uiManager.ShowTutorialPopup(missionTitle, missionDescription, () =>
+uiManager.ShowTutorialPopup(missionTitle, missionDescription, popupImage, () =>
         {
             MissionsManager.Instance.CheckPopupMission();
-            // Debug.Log("just clicked in TutorialPopupMissionData.ShowUI()");
         });
     }
 

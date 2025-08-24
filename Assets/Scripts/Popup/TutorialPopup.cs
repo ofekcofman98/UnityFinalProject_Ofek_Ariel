@@ -10,6 +10,9 @@ public class TutorialPopupUI : Popup
     [SerializeField] private TextMeshProUGUI popupTitle;
     [SerializeField] private TextMeshProUGUI popupText;
     [SerializeField] private Button continueButton;
+    [SerializeField] private GameObject imageContainer; // parent object to enable/disable
+    [SerializeField] private Image popupContentImage;    // actual image component
+
 
     private Action onContinue;
     public bool IsOpen { get; private set; }
@@ -26,7 +29,7 @@ public class TutorialPopupUI : Popup
         });
     }
 
-    public void Show(string title, string message, Action onContinueCallback)
+    public void Show(string title, string message, Sprite optionalImage, Action onContinueCallback)
     {
         if (IsOpen)
         {
@@ -36,6 +39,21 @@ public class TutorialPopupUI : Popup
         popupTitle.text = title;
         popupText.text = message;
         onContinue = onContinueCallback;
+
+
+    if (optionalImage != null)
+    {
+        imageContainer.SetActive(true);
+        popupContentImage.sprite = optionalImage;
+    }
+    else
+    {
+        imageContainer.SetActive(false); // Hide the container if no image
+    }
+
+
+
+
         IsOpen = true;
         Open();
     }

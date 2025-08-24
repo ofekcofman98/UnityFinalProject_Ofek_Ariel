@@ -26,6 +26,7 @@ public class SequenceManager : Singleton<SequenceManager>
 
         CurrentSequenceIndex = (int)sequence;
         MissionsManager.Instance.LoadMissionSequence(Current);
+
         GameManager.Instance.StartMissions();
         ResetSender.Instance.SendResetToPhone();
     }
@@ -36,6 +37,7 @@ public class SequenceManager : Singleton<SequenceManager>
         CurrentSequenceIndex++;
         if (CurrentSequenceIndex < allSequences.Count)
         {
+            
             MissionsManager.Instance.LoadMissionSequence(Current);
             GameManager.Instance.StartMissions();
         }

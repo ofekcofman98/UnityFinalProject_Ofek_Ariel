@@ -9,19 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
-  m_Name: Mission 20 2
+  m_Script: {fileID: 11500000, guid: 06bb6e5f1c7014d448c5052ced5c3ec9, type: 3}
+  m_Name: Mission 26 ClickSQL
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: What is Query?
-  missionDescription: 'Selet - what data you want?
-
-    From - from where the data?
-
-    Where
-    - in what conditions?'
+  missionTitle: SQL
+  missionDescription: 
   unlocksTable: 0
   tableToUnlock: 
-  isTutorial: 1
-  popupText: 
-  popupImage: {fileID: 0}
+  isTutorial: 0
+  requiredStepId: ClickSQL
