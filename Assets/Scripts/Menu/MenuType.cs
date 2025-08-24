@@ -6,5 +6,6 @@ public enum eMenuType
     Load,
     Win,
     Lose,
+    Key,
     None
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,7 +21,10 @@ public class MainMenu : MenuBase
 
     private void OnStartClicked()
     {
-        GameManager.Instance.StartSequence(eSequence.Main);
+        // GameManager.Instance.StartSequence(eSequence.Main);
+        MenuManager.Instance.HideMenu(eMenuType.Main);
+        GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSequence(eSequence.Main));
+
     }
 
     private void OnLoadClicked()
@@ -31,7 +35,10 @@ public class MainMenu : MenuBase
 
     private void OnTutorialsClicked()
     {
-        GameManager.Instance.StartSequence(eSequence.Tutorials);
+        // GameManager.Instance.StartSequence(eSequence.Tutorials);
+        MenuManager.Instance.HideMenu(eMenuType.Main);
+        GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSequence(eSequence.Tutorials));
+
     }
 
     private void OnQuitClicked()

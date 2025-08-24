@@ -26,8 +26,6 @@ public class LoadMenu : MenuBase
 
     private void OnLoadClicked()
     {
-        // add here "if saved game is legal": hide PauseMenu
-        // MenuManager.Instance.HideMenu(eMenuType.Load); //TODO only if game number is legal, add "if" block
         LoadSavedGame();
     }
 
@@ -61,7 +59,8 @@ public class LoadMenu : MenuBase
                 loadComment.text = "Game loaded!";
 
                 MenuManager.Instance.HideMenu(eMenuType.Load);
-                GameManager.Instance.StartSavedGame(key);
+                // GameManager.Instance.StartSavedGame(key);
+                GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSavedGame(key));
             }
             else
             {

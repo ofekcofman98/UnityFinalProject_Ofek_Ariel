@@ -42,6 +42,8 @@ public class GameManager : Singleton<GameManager>
     public string UniqueMobileKey { get; private set; }
     public event Action<bool> OnQueryIsCorrect;
     private bool isQueryUIVisible = false;
+    public bool SkipMobileWaiting { get; private set; } = false;
+    public bool MobileConnected { get; private set; } = false;
 
 
     protected override void Awake()
@@ -76,7 +78,7 @@ public class GameManager : Singleton<GameManager>
             };
 
         }
-        
+
         Debug.Log($"📦 mobileCanvas = {mobileCanvas}, screensaverCanvas = {mobileScreensaverCanvas}");
 
     }
@@ -112,6 +114,15 @@ public class GameManager : Singleton<GameManager>
         // }
     }
 
+    public void ForceStartGameFromPC()
+    {
+        SkipMobileWaiting = true;
+    }
+
+    public void TurnOffSkipOnMobile()
+    {
+        SkipMobileWaiting = false;
+    }
 
     public void StartGame()
     {
@@ -140,6 +151,38 @@ public class GameManager : Singleton<GameManager>
         GameProgressSender gps = new GameProgressSender();
         StartCoroutine(GameProgressSender.Instance.GetSavedGameFromServer(key));
     }
+
+    public void StartGameWithKeyMenu(Action onKeyAccepted)
+    {
+    if (SqlMode)
+    {
+        Debug.Log("📱 Mobile already connected — skipping UniqueKeyMenu");
+        onKeyAccepted?.Invoke(); // Start game immediately
+        return;
+    }
+        UniqueKeyMenu keyMenu = FindObjectOfType<UniqueKeyMenu>(true);
+        if (keyMenu == null)
+        {
+            Debug.LogError("❌ UniqueKeyMenu not found in scene.");
+            return;
+        }
+
+        keyMenu.Show(onKeyAccepted);
+
+    }
+
+    // private IEnumerator WaitForMobileAndThen(Action onKeyAccepted)
+    // {
+    //     MenuManager.Instance.ShowMenu(eMenuType.Key);
+    //     UniqueKeyManager.Instance.GenerateGameKey();
+
+    //     yield return new WaitUntil(() => !string.IsNullOrEmpty(UniqueKeyManager.Instance.gameKey));
+    //     yield return new WaitUntil(() => SqlMode || SkipMobileWaiting); // or IsMobileConnected
+
+    //     MenuManager.Instance.HideMenu(eMenuType.Key);
+    //     onKeyAccepted?.Invoke();
+    // }
+
 
 
     // public void SwitchMobileCanvas(bool i_sqlMode)
@@ -179,7 +222,7 @@ public class GameManager : Singleton<GameManager>
         // if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
         // if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
         if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
-        if (mobileCanvas != null &&  Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
+        if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
 
         HandleMovement();
 
