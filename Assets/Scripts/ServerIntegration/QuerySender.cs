@@ -66,6 +66,7 @@ public bool IsQuerySent { get; private set; } = false;
 
         if (request.result == UnityWebRequest.Result.Success)
         {
+            Debug.Log($"✅✅ Query Sent Successfully! serverlURL: {m_communicator.ServerUrl}");
             Debug.Log($"✅ Query Sent Successfully! Response: {request.downloadHandler.text}");
             IsQuerySent = true;
            
