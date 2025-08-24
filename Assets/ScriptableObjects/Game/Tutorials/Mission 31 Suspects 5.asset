@@ -1,22 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
-  m_Name: Mission 31 Suspects 5
-  m_EditorClassIdentifier: 
-  missionNumber: 0
-  missionTitle: Suspects
-  missionDescription: Let's see if Jack is the criminal.
-  unlocksTable: 0
-  tableToUnlock: 
-  isTutorial: 1
-  popupText: 
-  popupImage: {fileID: 0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4553e6a8532966e6b5dd5eb0259fc4ae02a1cde784d0c9490a5d08ab57e92f8c
+size 603

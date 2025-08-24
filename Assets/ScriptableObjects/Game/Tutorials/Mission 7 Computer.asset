@@ -1,21 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23cf98f2500b3fb4688f74f5ee1b17fa, type: 3}
-  m_Name: Mission 7 Computer
-  m_EditorClassIdentifier: 
-  missionNumber: 0
-  missionTitle: go to the computer
-  missionDescription: 
-  unlocksTable: 0
-  tableToUnlock: Persons
-  isTutorial: 1
-  requiredObjectId: computer01
+version https://git-lfs.github.com/spec/v1
+oid sha256:53968ea851e85fba9293639a447f657676964a5568a11dccfef4eee21cde030a
+size 574

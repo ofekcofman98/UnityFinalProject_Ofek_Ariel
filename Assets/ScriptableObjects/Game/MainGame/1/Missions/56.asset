@@ -1,26 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 56
-  m_EditorClassIdentifier: 
-  missionNumber: 0
-  missionTitle: Find suspects in their 30s
-  missionDescription: (age >= 30 and age <=40)
-  unlocksTable: 0
-  tableToUnlock: 
-  isTutorial: 0
-  requiredTable: Persons
-  requiredColumns:
-  - age
-  requiredCondition: 
-  expectedPrimaryKeyField: 
-  expectedRowIdValue: 
+version https://git-lfs.github.com/spec/v1
+oid sha256:74e2450a85e3167fe119b04d3437b33d35eb7158e6c60f2d60f9d7b3a859eb3a
+size 677

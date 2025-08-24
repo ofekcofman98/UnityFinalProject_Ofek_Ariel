@@ -1,22 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
-  m_Name: 22
-  m_EditorClassIdentifier: 
-  missionNumber: 0
-  missionTitle: 
-  missionDescription: "This is the victim, \nwe need to find who did the crime!"
-  unlocksTable: 0
-  tableToUnlock: 
-  isTutorial: 0
-  popupText: 
-  popupImage: {fileID: 0}
+version https://git-lfs.github.com/spec/v1
+oid sha256:f42fbecc73cb809f2f59e8bed0d11cbce5c1775415d0eb372fda031f5af92899
+size 600

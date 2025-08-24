@@ -1,28 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: Mission 23 SQL
-  m_EditorClassIdentifier: 
-  missionNumber: 0
-  missionTitle: Drag the Buttons into the upper panel
-  missionDescription: 'SELECT first_name
-
-    FROM Persons'
-  unlocksTable: 0
-  tableToUnlock: 
-  isTutorial: 1
-  requiredTable: Persons
-  requiredColumns:
-  - first_name
-  requiredCondition: 
-  expectedPrimaryKeyField: 
-  expectedRowIdValue: 
+version https://git-lfs.github.com/spec/v1
+oid sha256:7bac0c7f24629b6b47f875e1142b54d3d80c1f57ae274920b62f4644beb2b473
+size 720
