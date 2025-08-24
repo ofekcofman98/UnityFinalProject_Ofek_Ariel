@@ -34,6 +34,8 @@ namespace Assets.Scripts.ServerIntegration
             Debug.Log("📱 Screensaver active by default on mobile.");
         }
 
+        
+
         // void Start()
         // {
         //     // if (!Application.isMobilePlatform)

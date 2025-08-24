@@ -1,9 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class ScreensaverController
 {
+    [SerializeField] private Button ConnectButton;
+    [SerializeField] private Button BuildSQLButton;
+    [SerializeField] private TMP_InputField loadGameInput;
+    [SerializeField] private TextMeshProUGUI Comment; // says if load succeed ot not 
+
     private GameObject mobileCanvas;
     private GameObject screensaverCanvas;
 
@@ -13,21 +20,33 @@ public class ScreensaverController
         screensaverCanvas = i_screensaverCanvas;
     }
 
-    public void ShowScreensaver()
+
+    public void OnConnectClicked()
     {
-    if (screensaverCanvas == null)
-    {
-        Debug.LogError("❌ screensaverCanvas is NULL!");
+
     }
 
-    if (mobileCanvas == null)
+    public void OnStartClicked()
     {
-        Debug.LogError("❌ mobileCanvas is NULL!");
+
     }
+
+
+    public void ShowScreensaver()
+    {
+        if (screensaverCanvas == null)
+        {
+            Debug.LogError("❌ screensaverCanvas is NULL!");
+        }
+
+        if (mobileCanvas == null)
+        {
+            Debug.LogError("❌ mobileCanvas is NULL!");
+        }
 
         screensaverCanvas?.SetActive(true);
         mobileCanvas?.SetActive(false);
-        
+
         Debug.Log("📱 Screensaver shown by default.");
     }
 

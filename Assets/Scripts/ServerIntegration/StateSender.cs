@@ -16,7 +16,7 @@ namespace Assets.Scripts.ServerIntegration
     {
         private ServerCommunicator m_communicator;
         private CancellationTokenSource _cts;
-        public StateSender()
+        private void Awake()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendState);
         }
@@ -27,9 +27,6 @@ namespace Assets.Scripts.ServerIntegration
             {
                 var payload = new Dictionary<string, int>
                  {
-                    //! removed (ofek 17.8)
-                    // { "seqNumber", GameManager.Instance.sequenceNumber } ,
-                    //! added (ofek 17.8)
                     { "seqNumber", SequenceManager.Instance.GetCurrentIndex() } ,
                     { "currentLevelIndex", MissionsManager.Instance.currentMissionIndex }
                  };
