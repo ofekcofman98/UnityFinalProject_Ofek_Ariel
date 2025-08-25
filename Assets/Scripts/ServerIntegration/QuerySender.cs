@@ -21,10 +21,7 @@ public bool IsQuerySent { get; private set; } = false;
     {
         m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.SendQuery);
     }
-    //public QuerySender()
-    //{
-    //    m_communicator = new ServerCommunicator("/send-query");
-    //}
+   
     public void SendQueryToServer(Query query)
     {     
         query.PostDeserialize();
@@ -53,6 +50,7 @@ public bool IsQuerySent { get; private set; } = false;
         var encoding = new System.Text.UTF8Encoding();
         byte[] bodyRaw = encoding.GetBytes(jsonPayload);
 
+
         UnityWebRequest request = new UnityWebRequest(m_communicator.ServerUrl, "POST")
         {
             uploadHandler = new UploadHandlerRaw(bodyRaw),
@@ -68,6 +66,7 @@ public bool IsQuerySent { get; private set; } = false;
 
         if (request.result == UnityWebRequest.Result.Success)
         {
+            Debug.Log($"✅✅ Query Sent Successfully! serverlURL: {m_communicator.ServerUrl}");
             Debug.Log($"✅ Query Sent Successfully! Response: {request.downloadHandler.text}");
             IsQuerySent = true;
            

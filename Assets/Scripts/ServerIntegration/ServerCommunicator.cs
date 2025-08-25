@@ -28,6 +28,7 @@ namespace Assets.Scripts.ServerIntegration
             GenerateKey,
             AllKeys,
             ServerReset,
+            FullServerReset,
         }
 
 
@@ -36,21 +37,27 @@ namespace Assets.Scripts.ServerIntegration
         private bool m_isMobile = Application.isMobilePlatform;
         public bool m_isRunning { get; set; } = false;
         private string m_resource;
+        public string m_queryParameters { get; private set; }
         public int pollRateMilliSeconds { get; } = 500;
 
         public int screensaverDelayAfterQuery = 2000;
+        public string sessionID { get; set; }
 
         public ServerCommunicator(Endpoint endpoint)
         {
             m_resource = GetPathForEndpoint(endpoint);
             serverUrl = "https://" + k_pcIP + m_resource;
+            addGameKeyAsQueryParams();
         }
 
         public string ServerUrl => serverUrl;
         public string Resource => m_resource;
         public bool IsMobile => m_isMobile;
 
-
+        public void addGameKeyAsQueryParams()
+        {
+            serverUrl += $"?key={UniqueKeyManager.Instance.gameKey}";
+        }
         private string GetPathForEndpoint(Endpoint endpoint)
         {
             return endpoint switch
@@ -71,6 +78,7 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.GenerateKey => "/generate-key",
                 Endpoint.AllKeys => "/all-keys",
                 Endpoint.ServerReset => "/server-reset",
+                Endpoint.FullServerReset => "/full-server-reset",
                     _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }

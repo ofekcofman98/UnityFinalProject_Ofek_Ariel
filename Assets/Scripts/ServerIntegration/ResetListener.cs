@@ -17,12 +17,11 @@ namespace Assets.Scripts.ServerIntegration
         private CancellationTokenSource _cts;
 
 
-
-        public ResetListener()
+        private void Awake()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetReset);
         }
-     
+
         public void StartListening()
         {
             Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
