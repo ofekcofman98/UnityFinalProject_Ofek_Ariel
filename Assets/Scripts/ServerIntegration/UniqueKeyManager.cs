@@ -16,7 +16,7 @@ namespace Assets.Scripts.ServerIntegration
     public class UniqueKeyManager : Singleton<UniqueKeyManager>
     {
         private ServerCommunicator m_communicator;
-        public string gameKey { get; private set; } 
+        public string gameKey { get; private set; }
 
 
         private void Awake()
@@ -74,6 +74,14 @@ namespace Assets.Scripts.ServerIntegration
                 StartCoroutine(getUniqueKey());
             }
             Debug.Log($"gameKey : {gameKey}");
+        }
+
+        public bool CompareKeys(string i_Input)
+        {
+            Debug.Log($"i_Input: {i_Input}");
+            Debug.Log($"Key: {gameKey}");
+            
+            return i_Input == gameKey;
         }
     }
 }

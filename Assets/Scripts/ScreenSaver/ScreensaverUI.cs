@@ -34,7 +34,7 @@ public class ScreensaverUI : MonoBehaviour
             return;
         }
 
-        if (inputKey == UniqueKeyManager.Instance.gameKey)
+        if (UniqueKeyManager.Instance.CompareKeys(inputKey))
         {
             GameManager.Instance.ConnectMobile();
             GameManager.Instance.SetSqlMode(); // handles canvas switching + query init
