@@ -124,6 +124,11 @@ public class GameManager : Singleton<GameManager>
         SkipMobileWaiting = false;
     }
 
+    public void ConnectMobile()
+    {
+        MobileConnected = true;
+    }
+
     public void StartGame()
     {
         ShowMainMenu();

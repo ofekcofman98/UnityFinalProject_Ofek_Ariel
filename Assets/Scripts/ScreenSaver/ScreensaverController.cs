@@ -1,16 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.ServerIntegration;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ScreensaverController
 {
-    [SerializeField] private Button ConnectButton;
-    [SerializeField] private Button BuildSQLButton;
-    [SerializeField] private TMP_InputField loadGameInput;
-    [SerializeField] private TextMeshProUGUI Comment; // says if load succeed ot not 
-
     private GameObject mobileCanvas;
     private GameObject screensaverCanvas;
 
@@ -18,17 +14,6 @@ public class ScreensaverController
     {
         mobileCanvas = i_mobileCanvas;
         screensaverCanvas = i_screensaverCanvas;
-    }
-
-
-    public void OnConnectClicked()
-    {
-
-    }
-
-    public void OnStartClicked()
-    {
-
     }
 
 
