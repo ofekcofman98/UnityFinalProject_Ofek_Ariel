@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Net;
@@ -197,6 +197,11 @@ namespace Assets.Scripts.ServerIntegration
             }
 
             onValidationComplete?.Invoke(false);
+        }
+
+        internal IEnumerator GetSavedGameFromServer()
+        {
+            throw new NotImplementedException();
         }
     }
 }

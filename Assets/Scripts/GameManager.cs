@@ -219,10 +219,10 @@ public class GameManager : Singleton<GameManager>
     {
         SqlMode = !SqlMode;
 
-        // if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        // if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
-        if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
-        if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
+        if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+        if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        // if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
+        // if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
 
         HandleMovement();
 
