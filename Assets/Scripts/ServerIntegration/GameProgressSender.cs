@@ -85,10 +85,7 @@ namespace Assets.Scripts.ServerIntegration
         private void OnGameFetchCompleteAction()
         {
             if (m_progressContainer != null)
-            {
-                //! removed (ofek 17.8)
-                // MissionsManager.Instance.LoadMissionSequence(m_progressContainer.sequenceIndex == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
-                //! added (ofek 17.8)
+            {               
                 SequenceManager.Instance.SetSequence(m_progressContainer.sequenceIndex);
                 MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
 

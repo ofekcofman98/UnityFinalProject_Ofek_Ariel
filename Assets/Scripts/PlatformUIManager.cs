@@ -31,7 +31,7 @@ public class PlatformUIManager : MonoBehaviour
             DisableWorldInteraction();
 
             if (worldRoot != null) worldRoot.SetActive(false);
-            InitMobile();
+            //InitMobile();
         }
         else
         {
@@ -40,15 +40,15 @@ public class PlatformUIManager : MonoBehaviour
 
     }
 
-    private void InitMobile()
-    {
-        Debug.Log("🖥 Running on Mobile — inside the InitMobile method");
-        StateListener.Instance.StartListening();
-        Debug.Log("🖥 Running on Mobile — after StateListener listening and before ResetListener listening");
-        ResetListener.Instance.StartListening();
-        Debug.Log("🖥 Running on Mobile — after ResetListener listening and before ResetGame");
-        GameManager.Instance.ResetGame();
-    }
+    //public void InitMobile()
+    //{
+    //    Debug.Log("🖥 Running on Mobile — inside the InitMobile method");
+    //    StateListener.Instance.StartListening();
+    //    Debug.Log("🖥 Running on Mobile — after StateListener listening and before ResetListener listening");
+    //    ResetListener.Instance.StartListening();
+    //    Debug.Log("🖥 Running on Mobile — after ResetListener listening and before ResetGame");
+    //    GameManager.Instance.ResetGame();
+    //}
 
     private void DisableWorldInteraction()
     {

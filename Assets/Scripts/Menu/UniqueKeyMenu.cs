@@ -47,10 +47,12 @@ public class UniqueKeyMenu : MenuBase
 
         keyLabel.text = $"{UniqueKeyManager.Instance.gameKey}";
 
+        ConnectListener.Instance.StartListening();
         // Wait for mobile to connect (you need to call OnMobileConnected externally)
         yield return new WaitUntil(() => GameManager.Instance.MobileConnected ||
-                                         GameManager.Instance.SkipMobileWaiting); // or any other flag for mobile connection
+                                         GameManager.Instance.SkipMobileWaiting); // or any other flag for mobile connection  
 
+        GameManager.Instance.queryReceiver.StartListening();
         MenuManager.Instance.HideMenu(eMenuType.Key);
         GameManager.Instance.TurnOffSkipOnMobile();
 

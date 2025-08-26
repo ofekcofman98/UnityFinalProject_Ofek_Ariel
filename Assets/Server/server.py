@@ -51,7 +51,7 @@ def get_key_or_default():
         except Exception:
             sid = None
     sid = sid or request.args.get('key')
-    return sid or "default"
+    return sid or "0"
 
 
 ### DICTIONARIES DEFINITIONS TO HOLD DATA SEPARATELY ###
@@ -61,6 +61,8 @@ current_reset_by_key = defaultdict(lambda: 0)  # sid -> int
 current_level_by_key = defaultdict(int)  # sid -> int
 seq_by_key = defaultdict(lambda: 1)  # sid -> int
 query_ready_by_key = defaultdict(lambda: False)  # sid -> bool
+is_mobile_ready_by_key = defaultdict(lambda: False)  # sid -> bool
+waiting_keys = []
 
 
 ### BASIC HEALTH CHECKS ENDPOINTS ###
@@ -238,6 +240,7 @@ def server_reset_per_session():
     current_level_by_key[key] = 0
     seq_by_key[key] = 1
     query_ready_by_key[key] = False
+    is_mobile_ready_by_key[key] = False
 
     try:
         blob = bucket.blob(_query_blob_name(key))
@@ -252,15 +255,17 @@ def server_reset_per_session():
 
 @app.route('/full-server-reset', methods=['GET'])
 def server_reset_all():
-    global stored_data
+    global stored_data, waiting_keys
     is_Level_done_by_key.clear()
     current_reset_by_key.clear()
     current_level_by_key.clear()
     seq_by_key.clear()
     query_ready_by_key.clear()
+    is_mobile_ready_by_key.clear()
+    waiting_keys = []
     stored_data = []
     app.logger.info("Reset ALL keys to defaults")
-    return jsonify({'message': 'all sessions reset to defaults'}), 200
+    return jsonify({'message': 'all keys reset to defaults'}), 200
 
 
 ### SEND AND GET GAME-PROGRESS ENDPOINTS ###
@@ -307,6 +312,35 @@ def get_gameprogress():
         return jsonify({'error': str(e)}), 500
 
 
+### CONNECT SENDER AND LISTENER ENDPOINTS ###
+@app.route('/send-connect', methods=['POST'])
+def send_connect():
+    try:
+        data = request.get_json() or {}
+        given_key = data['key']
+        if given_key in is_mobile_ready_by_key.keys():
+            is_mobile_ready_by_key[given_key] = True
+            return jsonify({'message': 'key was in list, now removed ', 'key': given_key}), 200
+        else:
+            return jsonify({'message': 'key was not in list', 'key': given_key}), 404
+    except Exception as e:
+        app.logger.exception("send-connect failed")
+        return jsonify({'error': str(e)}), 500
+
+
+@app.route('/get-connect', methods=['GET'])
+def get_connect():
+    try:
+        key = get_key_or_default()
+        if key in is_mobile_ready_by_key.keys() and is_mobile_ready_by_key[key]:
+            return jsonify({'message': 'mobile is ready, updating PC', 'key': key}), 200
+        else:
+            return jsonify({'message': 'mobile is not ready', 'key': key}), 204
+    except Exception as e:
+        app.logger.exception("get-connect failed")
+        return jsonify({'error': str(e)}), 500
+
+
 ### KEYS RELATED ENDPOINTS ###
 
 def load_existing_keys():
@@ -331,6 +365,8 @@ def generate_unique_key():
         k = str(random.randint(100000, 999999))
         if k not in keys:
             append_key_to_store(k)
+            waiting_keys.append(k)
+            is_mobile_ready_by_key[k] = False
             return jsonify({'key': k}), 200
     return jsonify({'error': 'Unable to generate a unique key'}), 500
 
@@ -339,6 +375,21 @@ def generate_unique_key():
 def view_keys():
     keys = sorted(load_existing_keys())
     return jsonify({'keys': keys, 'count': len(keys)})
+
+
+@app.route('/compare-keys', methods=['POST'])
+def compare_keys():
+    try:
+        data = request.get_json() or {}
+        given_key = data['key']
+        if given_key in waiting_keys:
+            waiting_keys.remove(given_key)
+            return jsonify({'message': 'key was in list, now removed ', 'key': given_key}), 200
+        else:
+            return jsonify({'message': 'key was not in list', 'key': given_key}), 204
+    except Exception as e:
+        app.logger.exception("compare-keys failed")
+        return jsonify({'error': str(e)}), 500
 
 
 # ===== Launch =====

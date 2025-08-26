@@ -29,6 +29,9 @@ namespace Assets.Scripts.ServerIntegration
             AllKeys,
             ServerReset,
             FullServerReset,
+            GetConnect,
+            SendConnect,
+            CompareKeys,
         }
 
 
@@ -42,6 +45,7 @@ namespace Assets.Scripts.ServerIntegration
 
         public int screensaverDelayAfterQuery = 2000;
         public string sessionID { get; set; }
+        private bool KeyAsParamsAdded = false;
 
         public ServerCommunicator(Endpoint endpoint)
         {
@@ -56,7 +60,12 @@ namespace Assets.Scripts.ServerIntegration
 
         public void addGameKeyAsQueryParams()
         {
-            serverUrl += $"?key={UniqueKeyManager.Instance.gameKey}";
+            if (!string.IsNullOrEmpty(UniqueKeyManager.Instance.gameKey) && KeyAsParamsAdded == false)
+            {
+                serverUrl += $"?key={UniqueKeyManager.Instance.gameKey}";
+                KeyAsParamsAdded = true;
+            }
+           
         }
         private string GetPathForEndpoint(Endpoint endpoint)
         {
@@ -79,6 +88,9 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.AllKeys => "/all-keys",
                 Endpoint.ServerReset => "/server-reset",
                 Endpoint.FullServerReset => "/full-server-reset",
+                Endpoint.GetConnect => "/get-connect",
+                Endpoint.SendConnect => "/send-connect",
+                Endpoint.CompareKeys => "/compare-keys",
                     _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }

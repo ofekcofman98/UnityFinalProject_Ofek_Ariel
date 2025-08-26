@@ -18,12 +18,13 @@ namespace Assets.Scripts.ServerIntegration
         private ServerCommunicator m_communicator;
         public string gameKey { get; private set; }
 
+        private bool isKeyInWaitlist = false;
+
 
         private void Awake()
         {
             gameKey = "";
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GenerateKey);
-
         }
 
         private IEnumerator getUniqueKey()
@@ -76,12 +77,60 @@ namespace Assets.Scripts.ServerIntegration
             Debug.Log($"gameKey : {gameKey}");
         }
 
-        public bool CompareKeys(string i_Input)
+
+        public void CompareKeys(string key, Action<bool> onResult)
         {
-            Debug.Log($"i_Input: {i_Input}");
-            Debug.Log($"Key: {gameKey}");
-            
-            return i_Input == gameKey;
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.CompareKeys);
+            var payload = new Dictionary<string, string>
+            {
+                { "key", key }
+            };
+
+            string jsonPayload = JsonConvert.SerializeObject(payload);
+            Debug.Log($"📤 JSON Payload: {jsonPayload}");
+
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+
+            UnityWebRequest request = new UnityWebRequest(m_communicator.ServerUrl, "POST")
+            {
+                uploadHandler = new UploadHandlerRaw(bodyRaw),
+                downloadHandler = new DownloadHandlerBuffer()
+            };
+
+            request.disposeUploadHandlerOnDispose = true;
+            request.disposeDownloadHandlerOnDispose = true;
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Send request asynchronously
+            UnityWebRequestAsyncOperation operation = request.SendWebRequest();
+
+            operation.completed += _ =>
+            {
+                if (request.result == UnityWebRequest.Result.Success && request.responseCode == 200)
+                {
+                    Debug.Log($"✅ key {key} is in waitlist !");
+                    isKeyInWaitlist = true;
+                    gameKey = key;
+                    ConnectSender.Instance.SendConnectToPC(gameKey);
+                    GameManager.Instance.InitMobile();
+                    GameManager.Instance.SetSqlMode();
+
+                    onResult?.Invoke(true);   // 🔽 callback to UI
+                }
+                else if (request.responseCode == 204)
+                {
+                    Debug.Log($"✅ key {key} is not in waitlist");
+                    isKeyInWaitlist = false;
+                    onResult?.Invoke(false);  // 🔽 callback to UI
+                }
+                else
+                {
+                    Debug.LogError($"❌ Failed to send state: {request.responseCode} | {request.error}");
+                    Debug.LogError($"❌ Server Response: {request.downloadHandler.text}");
+                    onResult?.Invoke(false);  // treat as fail
+                }
+            };
         }
+
     }
 }

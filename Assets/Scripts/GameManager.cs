@@ -31,7 +31,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public SchemeDisplayer schemeDisplayer;
     [SerializeField] private QuerySender querySender;
     public QuerySender QuerySender => querySender;
-    [SerializeField] private QueryListener queryReceiver;
+    [SerializeField] public QueryListener queryReceiver;
     [SerializeField] private QueryValidator queryValidator;
     [SerializeField] public MissionUIManager MissionUIManager;
     [SerializeField] public ResultsUI resultsUI;
@@ -43,7 +43,7 @@ public class GameManager : Singleton<GameManager>
     public event Action<bool> OnQueryIsCorrect;
     private bool isQueryUIVisible = false;
     public bool SkipMobileWaiting { get; private set; } = false;
-    public bool MobileConnected { get; private set; } = false;
+    public bool MobileConnected { get; set; } = false;
 
 
     protected override void Awake()
@@ -93,7 +93,7 @@ public class GameManager : Singleton<GameManager>
             if (queryReceiver != null)
             {
                 Debug.Log("🖥 PC detected — starting QueryReceiver to listen for mobile queries.");
-                queryReceiver.StartListening();
+                //queryReceiver.StartListening();
             }
             else
             {
@@ -124,10 +124,6 @@ public class GameManager : Singleton<GameManager>
         SkipMobileWaiting = false;
     }
 
-    public void ConnectMobile()
-    {
-        MobileConnected = true;
-    }
 
     public void StartGame()
     {
@@ -159,6 +155,7 @@ public class GameManager : Singleton<GameManager>
 
     public void StartGameWithKeyMenu(Action onKeyAccepted)
     {
+
     if (SqlMode)
     {
         Debug.Log("📱 Mobile already connected — skipping UniqueKeyMenu");
@@ -219,6 +216,19 @@ public class GameManager : Singleton<GameManager>
     //     }
 
     // }
+    public void InitMobile()
+    {
+        if(Application.isMobilePlatform)
+        {
+            Debug.Log("🖥 Running on Mobile — inside the InitMobile method");
+            StateListener.Instance.StartListening();
+            Debug.Log("🖥 Running on Mobile — after StateListener listening and before ResetListener listening");
+            ResetListener.Instance.StartListening();
+            Debug.Log("🖥 Running on Mobile — after ResetListener listening and before ResetGame");
+            GameManager.Instance.ResetGame();
+        }
+        
+    }
 
     public void SetSqlMode()
     {

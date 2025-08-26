@@ -18,6 +18,8 @@ public class ScreensaverUI : MonoBehaviour
     {
         connectButton.onClick.AddListener(OnConnectClicked);
         buildSQLButton.onClick.AddListener(OnStartSQLClicked);
+        loadGameInput.text = "Enter game key..";
+        commentText.gameObject.SetActive(false);
 
         keyContainer.SetActive(true);
         buildSQLButton.gameObject.SetActive(false);
@@ -26,36 +28,46 @@ public class ScreensaverUI : MonoBehaviour
     private void OnConnectClicked()
     {
         string inputKey = loadGameInput.text.Trim();
+        commentText.gameObject.SetActive(true);
 
-        if (string.IsNullOrEmpty(inputKey))
+
+        if (string.IsNullOrEmpty(inputKey) || !int.TryParse(inputKey, out int intkey))
         {
             commentText.color = Color.white;
-            commentText.text = "Please enter a key.";
+            commentText.text = "Please enter a valid key.";
             return;
         }
 
-        if (UniqueKeyManager.Instance.CompareKeys(inputKey))
+        // ? Pass callback instead of relying on return value
+        UniqueKeyManager.Instance.CompareKeys(inputKey, success =>
         {
-            GameManager.Instance.ConnectMobile();
-            GameManager.Instance.SetSqlMode(); // handles canvas switching + query init
+            if (success)
+            {
+                keyContainer.SetActive(false);
+                connectButton.gameObject.SetActive(false);
+                loadGameInput.gameObject.SetActive(false);
+                commentText.gameObject.SetActive(false);
 
-            commentText.color = Color.green;
-            commentText.text = "Connected!";
+                commentText.color = Color.green;
+                commentText.text = "Connected!";
 
-            switchUI();
-        }
-        else
-        {
-            commentText.color = Color.red;
-            commentText.text = "Invalid key. Try again.";
-        }
+                switchUI();
+            }
+            else
+            {
+                commentText.color = Color.red;
+                commentText.text = "Invalid key. Try again.";
+            }
+        });
     }
+
 
     private void switchUI()
     {
         keyContainer.SetActive(false);
         buildSQLButton.gameObject.SetActive(true);
     }
+
 
     private void OnStartSQLClicked()
     {
