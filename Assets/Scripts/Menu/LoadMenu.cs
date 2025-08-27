@@ -55,12 +55,23 @@ public class LoadMenu : MenuBase
         {
             if (isValid)
             {
+                UniqueKeyMenu keyMenu = FindObjectOfType<UniqueKeyMenu>(true);
+                if (keyMenu == null)
+                {
+                    Debug.LogError("? UniqueKeyMenu not found in scene.");
+                    return;
+                }
+                keyMenu.registerExistingKey = true;
+                UniqueKeyManager.Instance.SetGameKeyFromSavedGame(key);
                 loadComment.color = Color.green;
                 loadComment.text = "Game loaded!";
 
                 MenuManager.Instance.HideMenu(eMenuType.Load);
+                MenuManager.Instance.ShowMenu(eMenuType.Key);
+                //GameManager.Instance.StartSavedGame(key);
                 // GameManager.Instance.StartSavedGame(key);
-                GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSavedGame(key));
+                //GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSavedGame(key));
+                //GameManager.Instance.StartSavedGame(key);
             }
             else
             {

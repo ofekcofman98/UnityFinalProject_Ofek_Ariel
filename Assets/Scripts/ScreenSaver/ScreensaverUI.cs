@@ -38,7 +38,6 @@ public class ScreensaverUI : MonoBehaviour
             return;
         }
 
-        // ? Pass callback instead of relying on return value
         UniqueKeyManager.Instance.CompareKeys(inputKey, success =>
         {
             if (success)

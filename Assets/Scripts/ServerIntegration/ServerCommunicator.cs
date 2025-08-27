@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace Assets.Scripts.ServerIntegration
             GetConnect,
             SendConnect,
             CompareKeys,
+            ValidateKey,
         }
 
 
@@ -91,6 +93,7 @@ namespace Assets.Scripts.ServerIntegration
                 Endpoint.GetConnect => "/get-connect",
                 Endpoint.SendConnect => "/send-connect",
                 Endpoint.CompareKeys => "/compare-keys",
+                Endpoint.ValidateKey => "/validate-key",
                     _ => throw new ArgumentOutOfRangeException(nameof(endpoint), $"Unsupported endpoint: {endpoint}")
             };
         }

@@ -13,6 +13,7 @@ public class UniqueKeyMenu : MenuBase
     [SerializeField] private GameObject waitingLabel;
     [SerializeField] private Button continueOnPcButton;
     private Action m_OnKeyAccepted;
+    public bool registerExistingKey = false;
 
 
     private void Awake()
@@ -29,7 +30,11 @@ public class UniqueKeyMenu : MenuBase
         waitingLabel.SetActive(true);
         keyLabel.text = "";
 
-        StartCoroutine(WaitForKeyGeneration());
+        if(registerExistingKey)
+            StartCoroutine(WaitForKeyRegistration());
+        else
+            StartCoroutine(WaitForKeyGeneration());
+
     }
 
     public void Show(Action onKeyAccepted)
@@ -58,5 +63,22 @@ public class UniqueKeyMenu : MenuBase
 
         m_OnKeyAccepted?.Invoke();
 
+    }
+
+    private IEnumerator WaitForKeyRegistration()
+    {
+        yield return new WaitUntil(() => !string.IsNullOrEmpty(UniqueKeyManager.Instance.gameKey));
+
+        keyLabel.text = $"{UniqueKeyManager.Instance.gameKey}";
+
+        ConnectListener.Instance.StartListening();
+        // Wait for mobile to connect (you need to call OnMobileConnected externally)
+        yield return new WaitUntil(() => GameManager.Instance.MobileConnected ||
+                                         GameManager.Instance.SkipMobileWaiting); // or any other flag for mobile connection  
+
+        GameManager.Instance.queryReceiver.StartListening();
+        MenuManager.Instance.HideMenu(eMenuType.Key);
+        GameManager.Instance.TurnOffSkipOnMobile();
+        GameManager.Instance.StartSavedGame(UniqueKeyManager.Instance.gameKey);
     }
 }

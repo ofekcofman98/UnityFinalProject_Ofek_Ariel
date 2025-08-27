@@ -156,12 +156,12 @@ public class GameManager : Singleton<GameManager>
     public void StartGameWithKeyMenu(Action onKeyAccepted)
     {
 
-    if (SqlMode)
-    {
-        Debug.Log("📱 Mobile already connected — skipping UniqueKeyMenu");
-        onKeyAccepted?.Invoke(); // Start game immediately
-        return;
-    }
+        if (SqlMode)
+        {
+            Debug.Log("📱 Mobile already connected — skipping UniqueKeyMenu");
+            onKeyAccepted?.Invoke(); // Start game immediately
+            return;
+        }
         UniqueKeyMenu keyMenu = FindObjectOfType<UniqueKeyMenu>(true);
         if (keyMenu == null)
         {

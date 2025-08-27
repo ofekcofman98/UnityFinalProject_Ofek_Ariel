@@ -38,12 +38,10 @@ namespace Assets.Scripts.ServerIntegration
 
             }
             m_progressContainer = gpc;
-            yield return StartCoroutine(UniqueKeyManager.Instance.gameKey);
             Debug.Log($"📤 m_gameKey value after function and before payload: {UniqueKeyManager.Instance.gameKey}");
             var payload = new Dictionary<string, object>
                  {
                     { "game", m_progressContainer },
-                    //{ "key" , UniqueKeyManager.Instance.gameKey }
                  };
 
             string jsonPayload = JsonConvert.SerializeObject(payload);
@@ -160,40 +158,15 @@ namespace Assets.Scripts.ServerIntegration
 
         private IEnumerator ValidateKeyAndLoadGameCoroutine(string key, Action<bool> onValidationComplete)
         {
-            UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.AllKeys).ServerUrl);
+            UniqueKeyManager.Instance.SetGameKeyFromSavedGame(key);
+            UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.ValidateKey).ServerUrl);
             yield return request.SendWebRequest();
-
-            if (request.result == UnityWebRequest.Result.Success)
+            if(request.result == UnityWebRequest.Result.Success)
             {
-                string receivedJson = request.downloadHandler.text;
-                try
-                {
-                    JObject result = JObject.Parse(receivedJson);
-                    JArray keysArray = (JArray)result["keys"];
-                    List<string> keys = keysArray.ToObject<List<string>>();
-
-                    if (keys.Contains(key))
-                    {
-                        Debug.Log($"✅ Key exists on server: {key}");
-                        onValidationComplete?.Invoke(true);
-                        yield break;
-                    }
-                    else
-                    {
-                        Debug.LogWarning($"⚠️ Key not found on server: {key}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError($"❌ Failed to parse server response: {ex.Message}");
-                }
+                onValidationComplete?.Invoke(request.responseCode == 200);
             }
-            else
-            {
-                Debug.LogError($"❌ Request failed: {request.responseCode} | {request.error}");
-            }
-
-            onValidationComplete?.Invoke(false);
+           
+                
         }
 
         internal IEnumerator GetSavedGameFromServer()

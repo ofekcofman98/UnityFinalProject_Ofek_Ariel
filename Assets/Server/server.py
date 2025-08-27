@@ -283,6 +283,7 @@ def send_gameprogress():
     try:
         blob = bucket.blob(_game_blob_name(key))
         payload = json.dumps(game) if not isinstance(game, str) else game
+        append_key_to_store(key)
         blob.upload_from_string(payload, content_type='application/json')
 
         return jsonify({'message': 'Game stored', 'key': key}), 200
@@ -304,6 +305,7 @@ def get_gameprogress():
         # If the saved payload is a JSON string, parse it; otherwise return as-is.
         try:
             obj = json.loads(content)
+            waiting_keys.append(key)
         except Exception:
             obj = content
         return jsonify(obj), 200
@@ -343,7 +345,7 @@ def get_connect():
 
 ### KEYS RELATED ENDPOINTS ###
 
-def load_existing_keys():
+def load_saved_keys():
     blob = bucket.blob(KEYS_OBJECT)
     if not blob.exists():
         return set()
@@ -358,13 +360,60 @@ def append_key_to_store(key):
     blob.upload_from_string(existing + f"{key}\n", content_type="text/plain")
 
 
+@app.route('/delete-all-keys-and-games', methods=['POST'])
+def delete_all_keys_and_games():
+    try:
+        # 1. Delete keys file
+        blob = bucket.blob(KEYS_OBJECT)
+        if blob.exists():
+            blob.delete()
+
+        # 2. Reset in-memory tracking
+        global waiting_keys
+        waiting_keys = []
+        is_mobile_ready_by_key.clear()
+
+        # 3. Delete all saved games
+        blobs = bucket.list_blobs(prefix="saved games/")
+        deleted_count = 0
+        for b in blobs:
+            b.delete()
+            deleted_count += 1
+
+        app.logger.info(f"🗑️ Deleted all keys and {deleted_count} saved games.")
+        return jsonify({
+            'message': f'All keys and saved games deleted successfully',
+            'deleted_games': deleted_count
+        }), 200
+    except Exception as e:
+        app.logger.exception("delete-all-keys-and-games failed")
+        return jsonify({'error': str(e)}), 500
+
+
+
+@app.route('/validate-key', methods=['GET'])
+def validate_key():
+    key = get_key_or_default()
+    try:
+        blob = bucket.blob(_game_blob_name(key))
+        if not blob.exists():
+            return jsonify({'error': f'No saved game for key {key}'}), 204
+        else:
+            waiting_keys.append(key)
+            is_mobile_ready_by_key[key] = False
+            return jsonify({'message': 'the key exists in the server'}), 200
+    except Exception as e:
+        app.logger.exception("send-connect failed")
+        return jsonify({'error': str(e)}), 500
+
+
 @app.route('/generate-key', methods=['GET'])
 def generate_unique_key():
-    keys = load_existing_keys()
+    keys = load_saved_keys()
     for _ in range(10000):
         k = str(random.randint(100000, 999999))
         if k not in keys:
-            append_key_to_store(k)
+            ##append_key_to_store(k)
             waiting_keys.append(k)
             is_mobile_ready_by_key[k] = False
             return jsonify({'key': k}), 200
@@ -373,7 +422,7 @@ def generate_unique_key():
 
 @app.route('/all-keys', methods=['GET'])
 def view_keys():
-    keys = sorted(load_existing_keys())
+    keys = sorted(load_saved_keys())
     return jsonify({'keys': keys, 'count': len(keys)})
 
 

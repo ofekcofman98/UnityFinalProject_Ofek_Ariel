@@ -104,5 +104,15 @@ namespace Assets.Scripts.ServerIntegration
                 Debug.LogError($"❌ Unexpected error in polling: {ex.Message}");
             }
         }
+
+        private void OnDestroy()
+        {
+            if (_cts != null && !_cts.IsCancellationRequested)
+            {
+                Debug.Log("🛑 Cancelling polling in OnDestroy.");
+                _cts.Cancel();
+            }
+        }
+
     }
 }
