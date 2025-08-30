@@ -599,6 +599,25 @@ public class QueryUIRenderer : MonoBehaviour
         }
     }
 
+    public void DisposeValueInputPopulator()
+    {
+        valueInputPopulator?.Dispose();
+        valueInputPopulator = null;
+
+        if (currentInputField)
+        {
+            Destroy(currentInputField);
+            currentInputField = null;
+        }
+
+        if (currentConfirmButton)
+        {
+            Destroy(currentConfirmButton);
+            currentConfirmButton = null;
+        }
+    }
+
+
     public void ClearClauseSections(Transform[] clauseSections)
     {
         foreach (Transform section in clauseSections)
@@ -613,20 +632,22 @@ public class QueryUIRenderer : MonoBehaviour
             }
         }
 
-        valueInputPopulator?.Dispose();
-        valueInputPopulator = null;
+        DisposeValueInputPopulator();
 
-        if (currentInputField != null)
-        {
-            Destroy(currentInputField);
-            currentInputField = null;
-        }
+        // valueInputPopulator?.Dispose();
+        // valueInputPopulator = null;
 
-        if (currentConfirmButton != null)
-        {
-            Destroy(currentConfirmButton);
-            currentConfirmButton = null;
-        }
+        // if (currentInputField != null)
+        // {
+        //     Destroy(currentInputField);
+        //     currentInputField = null;
+        // }
+
+        // if (currentConfirmButton != null)
+        // {
+        //     Destroy(currentConfirmButton);
+        //     currentConfirmButton = null;
+        // }
     }
 
 

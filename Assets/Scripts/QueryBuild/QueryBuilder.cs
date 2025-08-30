@@ -366,14 +366,27 @@ public class QueryBuilder : MonoBehaviour
             return;
         }
 
+        uiRenderer?.DisposeValueInputPopulator();
+
         List<Button> buttonsToRelease = new List<Button>();
         foreach (Transform child in selectionParent)
         {
             if (child.TryGetComponent<Button>(out var button))
             {
                 // buttonsToRelease.Add(button);
-                Destroy(button.gameObject); 
+                Destroy(button.gameObject);
             }
+            else if (child.GetComponent<TMP_InputField>() != null)
+            {
+                // ✅ Destroy any orphan TMP_InputField
+                Destroy(child.gameObject);
+            }
+            else if (child.GetComponent<Button>() == null && child.GetComponentInChildren<TextMeshProUGUI>()?.text == "Confirm")
+            {
+                // ✅ Destroy confirm button that was created manually
+                Destroy(child.gameObject);
+            }
+
         }
 
         if (uiRenderer != null)

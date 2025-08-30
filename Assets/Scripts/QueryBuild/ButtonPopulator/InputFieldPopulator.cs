@@ -92,8 +92,15 @@ public class ValueInputPopulator<T>
         TMP_InputField inputField = currentInputField.GetComponent<TMP_InputField>();
         inputField.text = "";
         inputField.placeholder.GetComponent<TextMeshProUGUI>().text = "Enter value...";
-        inputField.Select();
-        inputField.ActivateInputField();
+
+
+        if (typeof(T) == typeof(int))
+            inputField.contentType = TMP_InputField.ContentType.IntegerNumber;
+        else
+            inputField.contentType = TMP_InputField.ContentType.Standard;
+
+        // inputField.Select();
+        // inputField.ActivateInputField();
 
         currentConfirmButton = UnityEngine.Object.Instantiate(confirmButtonPrefab, selectionParent);
         currentConfirmButton.transform.localScale = Vector3.one;

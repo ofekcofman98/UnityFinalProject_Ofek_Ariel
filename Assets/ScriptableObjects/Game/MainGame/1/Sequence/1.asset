@@ -41,6 +41,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 29bae704d7cf2964a9a3683576221c70, type: 2}
   - {fileID: 11400000, guid: fe937d4be60b9fa408f16ee7c1493e61, type: 2}
   - {fileID: 11400000, guid: 765a3fc3c78fbc74683630d44a66107c, type: 2}
+  - {fileID: 11400000, guid: 82bb699408facc24db54679837b54a7b, type: 2}
   case_id: 1
   PersonDialogues:
   - {fileID: 11400000, guid: 07a379b4a68bd284e9bad0aef265d0a1, type: 2}

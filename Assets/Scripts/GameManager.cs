@@ -37,7 +37,6 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] public ResultsUI resultsUI;
 
 
-
     public Query CurrentQuery { get; set; }
     public string UniqueMobileKey { get; private set; }
     public event Action<bool> OnQueryIsCorrect;
@@ -117,11 +116,25 @@ public class GameManager : Singleton<GameManager>
     public void ForceStartGameFromPC()
     {
         SkipMobileWaiting = true;
+        UIManager.Instance.ShowSQLButton();
+        Debug.Log("UIManager.Instance.ShowSQLButton();");
     }
 
     public void TurnOffSkipOnMobile()
     {
-        SkipMobileWaiting = false;
+        // SkipMobileWaiting = false;
+        // UIManager.Instance.ShowSQLButton();
+        // if (SkipMobileWaiting)
+        // {
+        //     UIManager.Instance.ShowSQLButton(); // ✅ Player chose to play solo on PC
+        // }
+        // else
+        // {
+        //     UIManager.Instance.HideSQLButton(); // ✅ Mobile connected properly
+        // }
+
+        SkipMobileWaiting = false; // reset only *after* the decision has been acted on
+        UIManager.Instance.HideSQLButton();
     }
 
 
@@ -173,49 +186,6 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    // private IEnumerator WaitForMobileAndThen(Action onKeyAccepted)
-    // {
-    //     MenuManager.Instance.ShowMenu(eMenuType.Key);
-    //     UniqueKeyManager.Instance.GenerateGameKey();
-
-    //     yield return new WaitUntil(() => !string.IsNullOrEmpty(UniqueKeyManager.Instance.gameKey));
-    //     yield return new WaitUntil(() => SqlMode || SkipMobileWaiting); // or IsMobileConnected
-
-    //     MenuManager.Instance.HideMenu(eMenuType.Key);
-    //     onKeyAccepted?.Invoke();
-    // }
-
-
-
-    // public void SwitchMobileCanvas(bool i_sqlMode)
-    // {
-    //     if (Application.isMobilePlatform)
-    //     {
-    //         if (mobileCanvas != null)
-    //         {
-    //             mobileCanvas.SetActive(i_sqlMode);
-    //             Debug.Log($"📱 mobileCanvas set to {i_sqlMode}");
-    //         }
-
-    //         if (mobileScreensaverCanvas != null)
-    //         {
-    //             mobileScreensaverCanvas.SetActive(!i_sqlMode);
-    //             Debug.Log($"🌙 mobileScreensaverCanvas set to {!i_sqlMode}");
-    //         }
-
-    //         if (pcGameCanvas != null)
-    //         {
-    //             pcGameCanvas.SetActive(false); // PC canvas never shows on mobile
-    //         }
-
-    //         if (i_sqlMode && queryBuilder != null)
-    //         {
-    //             queryBuilder.ResetQuery();
-    //             queryBuilder.BuildQuery();
-    //         }
-    //     }
-
-    // }
     public void InitMobile()
     {
         if(Application.isMobilePlatform)
@@ -234,10 +204,16 @@ public class GameManager : Singleton<GameManager>
     {
         SqlMode = !SqlMode;
 
-        // if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
-        // if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
-        if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
-        if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
+        if (SkipMobileWaiting)
+        {
+            if (pcGameCanvas != null) pcGameCanvas.SetActive(!SqlMode);
+            if (mobileCanvas != null) mobileCanvas.SetActive(SqlMode);
+        }
+        else
+        {
+            if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
+            if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
+        }
 
         HandleMovement();
 
@@ -301,11 +277,11 @@ public class GameManager : Singleton<GameManager>
         if (querySender != null)
         {
 
-            if (QuerySender.IsQuerySent)
-            {
-                Debug.LogWarning("🚨 Query already accepted. Blocking further sends.");
-                return;
-            }
+            // if (QuerySender.IsQuerySent)
+            // {
+            //     Debug.LogWarning("🚨 Query already accepted. Blocking further sends.");
+            //     return;
+            // }
 
             Debug.Log("📤 Sending query to server: " + CurrentQuery.QueryString);
             querySender.SendQueryToServer(CurrentQuery);
@@ -316,6 +292,7 @@ public class GameManager : Singleton<GameManager>
             Debug.Log("🎧 Preparing to listen for the next query...");
             queryReceiver.StartListening();  // this triggers polling
         }
+        SetSqlMode();
     }
 
     public void ExecuteLocally(Query i_Query)

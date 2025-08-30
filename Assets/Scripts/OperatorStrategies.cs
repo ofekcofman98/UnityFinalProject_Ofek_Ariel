@@ -87,14 +87,14 @@ public class LikeOperator : IOperatorStrategy
     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value.Replace("%", "%25");
 }
 
-public class BetweenOperator : IOperatorStrategy
-{
-            public string GetOperatorId() => "between";
+// public class BetweenOperator : IOperatorStrategy
+// {
+//             public string GetOperatorId() => "between";
 
-    public string GetSQLRepresentation() => "BETWEEN";
-    public string FormatOperatorForSupaBase(Column i_Column) => "between";
-    public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
-}
+//     public string GetSQLRepresentation() => "BETWEEN";
+//     public string FormatOperatorForSupaBase(Column i_Column) => "between";
+//     public string FormatValueForSupabase(Column i_Column, string i_Value) => i_Value;
+// }
 
 public static class OperatorFactory
 {
@@ -106,8 +106,8 @@ public static class OperatorFactory
         new GreaterEqualThanOperator(),
         new LessEqualThanOperator(),
         new NotEqualOperator(),
-        new LikeOperator(),
-        new BetweenOperator()
+        new LikeOperator()//,
+        // new BetweenOperator()
     };
 
     private static readonly List<IOperatorStrategy> NumericOperators = new List<IOperatorStrategy>
@@ -117,8 +117,8 @@ public static class OperatorFactory
         new LessThanOperator(),
         new GreaterEqualThanOperator(),
         new LessEqualThanOperator(),
-        new NotEqualOperator(),
-        new BetweenOperator()
+        new NotEqualOperator()//,
+        // new BetweenOperator()
     };
 
     private static readonly List<IOperatorStrategy> StringOperators = new List<IOperatorStrategy>
@@ -156,8 +156,8 @@ public static class OperatorFactory
         { "lt", new LessThanOperator() },
         { "gte", new GreaterEqualThanOperator() },
         { "lte", new LessEqualThanOperator() },
-        { "ilike", new LikeOperator() },
-        { "between", new BetweenOperator() }
+        { "ilike", new LikeOperator() }//,
+        // { "between", new BetweenOperator() }
     };
 
     public static IOperatorStrategy GetOperatorById(string id)

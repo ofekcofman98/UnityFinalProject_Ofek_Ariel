@@ -42,10 +42,10 @@ public class ScreensaverUI : MonoBehaviour
         {
             if (success)
             {
-                keyContainer.SetActive(false);
-                connectButton.gameObject.SetActive(false);
-                loadGameInput.gameObject.SetActive(false);
-                commentText.gameObject.SetActive(false);
+                // keyContainer.SetActive(false);
+                // connectButton.gameObject.SetActive(false);
+                // loadGameInput.gameObject.SetActive(false);
+                // commentText.gameObject.SetActive(false);
 
                 commentText.color = Color.green;
                 commentText.text = "Connected!";
@@ -70,6 +70,7 @@ public class ScreensaverUI : MonoBehaviour
 
     private void OnStartSQLClicked()
     {
+        Debug.Log("SQL was clicked");
         GameManager.Instance.SetSqlMode();
     }
 

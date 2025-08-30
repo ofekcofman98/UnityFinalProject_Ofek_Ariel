@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : Singleton<UIManager>
 {
@@ -9,9 +10,13 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private TextMeshProUGUI hintText;
     [SerializeField] private TextMeshProUGUI missionText;
     [SerializeField] private TextMeshProUGUI missionDescriptionText;
+
+    [SerializeField] private Button buildSQLButton;
+
     void Start()
     {
-        HideHint();    
+        HideHint();
+        HideSQLButton();
     }
 
     public void ShowHint(string message)
@@ -32,5 +37,15 @@ public class UIManager : Singleton<UIManager>
     public void SetMissionDescription(string description)
     {
         missionDescriptionText.text = description;
+    }
+
+    public void ShowSQLButton()
+    {
+        buildSQLButton.gameObject.SetActive(true);
+    }
+
+    public void HideSQLButton()
+    {
+        buildSQLButton.gameObject.SetActive(false);
     }
 }

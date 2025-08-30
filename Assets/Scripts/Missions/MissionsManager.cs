@@ -150,10 +150,13 @@ public class MissionsManager : Singleton<MissionsManager>
 
     private IEnumerator ReturnToCurrentMissionAfterDelay()
     {
+        Debug.Log("[ReturnToCurrentMissionAfterDelay] im here ");
         yield return new WaitForSecondsRealtime(2f);
 
         GameManager.Instance.queryBuilder.ResetQuery();
         GameManager.Instance.queryBuilder.BuildQuery();
+        GameManager.Instance.QuerySender?.ResetQuerySendFlag();
+        
         GameManager.Instance.MissionUIManager.ShowUI();
         HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
     }

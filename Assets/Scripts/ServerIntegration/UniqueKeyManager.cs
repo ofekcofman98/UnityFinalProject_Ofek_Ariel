@@ -113,7 +113,7 @@ namespace Assets.Scripts.ServerIntegration
                     gameKey = key;
                     ConnectSender.Instance.SendConnectToPC(gameKey);
                     GameManager.Instance.InitMobile();
-                    GameManager.Instance.SetSqlMode();
+                    // GameManager.Instance.SetSqlMode();
 
                     onResult?.Invoke(true);   // 🔽 callback to UI
                 }

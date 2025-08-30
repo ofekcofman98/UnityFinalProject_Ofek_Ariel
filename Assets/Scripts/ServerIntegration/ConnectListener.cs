@@ -65,23 +65,23 @@ namespace Assets.Scripts.ServerIntegration
                 {
                     while (!token.IsCancellationRequested)
                     {
-                        Debug.Log("⏳ Polling server for new connect update...");
+                        // Debug.Log("⏳ Polling server for new connect update...");
 
                         using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                         {
                             await AwaitUnityWebRequest(request);
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
+                            // Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
                             if ((int)request.responseCode == 200)
                             {
-                                Debug.Log("✅ 200 OK received, about to connect...✅");
+                                // Debug.Log("✅ 200 OK received, about to connect...✅");
 
                                 GameManager.Instance.MobileConnected = true;
                                
                             }
                             else if ((int)request.responseCode == 204)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no reset.");
+                                // Debug.Log("⏳ Server responded with 204 No Content — no reset.");
                             }
                             else
                             {
@@ -97,7 +97,7 @@ namespace Assets.Scripts.ServerIntegration
             }
             catch (TaskCanceledException)
             {
-                Debug.Log("🟡 Polling was cancelled.");
+                // Debug.Log("🟡 Polling was cancelled.");
             }
             catch (Exception ex)
             {

@@ -182,7 +182,9 @@ Debug.Log("✅ OnSchemeFullyLoaded is about to fire");
 
             case "date":
             case "timestamp":
-                return eDataType.DateTime;
+                // return eDataType.DateTime;
+                return eDataType.String;
+
 
             default:
                 Debug.LogWarning($"Unmapped Supabase type: {supabaseType}");
