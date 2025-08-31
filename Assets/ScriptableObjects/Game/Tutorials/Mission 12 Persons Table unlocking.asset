@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: What is a Table?
-  missionDescription: "Let\u2019s unlock our first table: Persons.\n\n"
+  missionDescription: 'Unlock the first table: Persons.
+
+
+'
   unlocksTable: 1
   tableToUnlock: Persons
   isTutorial: 1

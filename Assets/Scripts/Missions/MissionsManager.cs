@@ -202,13 +202,18 @@ public class MissionsManager : Singleton<MissionsManager>
             Debug.Log("Incorrect object!");
         }
     }
-    
+
     public void ReportTutorialStep(string stepId)
     {
         if (CurrentMission is CustomTutorialMissionData custom && custom.requiredStepId == stepId)
         {
+            Debug.Log($"[ReportTutorialStep]: {stepId}");
             custom.MarkAsCompleted();
             ValidateMission();
+        }
+        else
+        {
+            Debug.Log($"[ReportTutorialStep]: {stepId} NOT HAPPENING");
         }
     }
 
@@ -329,6 +334,7 @@ public class MissionsManager : Singleton<MissionsManager>
         GameManager.Instance.queryBuilder.BuildQuery();
         GameManager.Instance.MissionUIManager.ShowUI();
         HighlightManager.Instance?.HighlightTutorialStep(CurrentMission);
+        StateSender.Instance.UpdatePhone();
     }
 
 

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Introduction
-  missionDescription: "A crime has been committed, \nand the database holds the clues.\nYou,
-    the detective, will unlock evidence by building smart SQL queries."
+  missionDescription: "A crime has been committed, \n\nand the database holds the
+    clues.\n\nYou, the detective, will unlock evidence by building smart SQL queries."
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1

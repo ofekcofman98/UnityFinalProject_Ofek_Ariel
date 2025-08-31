@@ -18,8 +18,10 @@ MonoBehaviour:
 
 
     Each
-    row is a record (like one person), and each column is a detail (like name or
-    age).
+    row is a record (like one person), and each column is a detail
+
+    (like name
+    or age).
 
 
 '

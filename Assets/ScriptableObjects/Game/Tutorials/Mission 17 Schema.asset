@@ -17,7 +17,7 @@ MonoBehaviour:
   missionDescription: 'Here you can explore all the table we have in the game.
 
     This
-    set of tables called Schema'
+    set of tables called Schema or Map'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1

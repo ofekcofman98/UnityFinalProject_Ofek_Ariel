@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Great
-  missionDescription: You have learnt how to interact with object
+  missionDescription: You have learnt how to interact with objects!
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1

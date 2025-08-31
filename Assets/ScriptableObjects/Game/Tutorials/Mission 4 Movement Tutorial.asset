@@ -16,12 +16,16 @@ MonoBehaviour:
   missionTitle: Movement
   missionDescription: 'Press:
 
+
     W to move forward.
+
 
     S to move backward.
 
+
     D
     to move right.
+
 
     A to move Left.'
   unlocksTable: 0

@@ -14,7 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Conditions
-  missionDescription: "Great! Now Let's add \n"
+  missionDescription: 'Great! Now Let''s add conditions to the query.
+
+'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1

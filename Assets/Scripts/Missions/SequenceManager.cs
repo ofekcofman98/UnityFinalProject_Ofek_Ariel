@@ -29,6 +29,9 @@ public class SequenceManager : Singleton<SequenceManager>
 
         GameManager.Instance.StartMissions();
         ResetSender.Instance.SendResetToPhone();
+
+        StateSender.Instance.UpdatePhone();
+
     }
 
 
@@ -48,9 +51,16 @@ public class SequenceManager : Singleton<SequenceManager>
         SuspectsManager.Instance.ResetSuspects();
         LocationManager.Instance.TeleportTo(LocationManager.Instance.OfficeSpawnPoint);
         GameManager.Instance.resultsUI.ResetResults();
-        yield return MissionsManager.Instance.ResetMissions();
-        MissionsManager.Instance.LoadMissionSequence(Current);
-        GameManager.Instance.StartMissions();
+
+yield return StartCoroutine(StartSequenceRoutine((eSequence)CurrentSequenceIndex));
+
+
+//         yield return MissionsManager.Instance.ResetMissions();
+//         MissionsManager.Instance.LoadMissionSequence(Current);
+//         GameManager.Instance.StartMissions();
+
+// //        StartSequenceRoutine(eSequence.Main);
+
     }
 
 

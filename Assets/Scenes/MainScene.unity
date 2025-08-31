@@ -12739,7 +12739,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8567825}
   m_HandleRect: {fileID: 8567824}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -14152,7 +14152,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1087351237}
   m_HandleRect: {fileID: 1087351236}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -26744,7 +26744,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1006734534}
   m_HandleRect: {fileID: 1006734533}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -38063,6 +38063,7 @@ GameObject:
   - component: {fileID: 1925164197}
   - component: {fileID: 1925164196}
   - component: {fileID: 1925164199}
+  - component: {fileID: 1925164200}
   m_Layer: 5
   m_Name: BuildQueryButton
   m_TagString: Untagged
@@ -38185,6 +38186,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickCue: {fileID: 11400000, guid: ade4fde9751eb774cae040f48298d7b0, type: 2}
+--- !u!114 &1925164200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925164194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e2f714a5b8c88b458d2b2aeb60e19b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepId: ClickSQL
 --- !u!1001 &1927321039
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -40639,7 +40653,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 659695890}
   m_HandleRect: {fileID: 659695889}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:

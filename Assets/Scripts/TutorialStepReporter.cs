@@ -11,6 +11,10 @@ public class TutorialStepReporter : MonoBehaviour
     {
         var button = GetComponent<Button>();
         if (button != null)
+        {
             button.onClick.AddListener(() => MissionsManager.Instance.ReportTutorialStep(stepId));
+            Debug.Log($"[TutorialStepReporter]: {stepId}");
+        }
     }
 }
+ 

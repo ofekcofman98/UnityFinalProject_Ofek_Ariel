@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Interaction
-  missionDescription: "See the computer over there? \nLet's interact with it!"
+  missionDescription: "See the computer over there? \n\nLet's interact with it!"
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1

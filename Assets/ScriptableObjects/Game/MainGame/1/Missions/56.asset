@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: 56
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Find suspects in their 30s
-  missionDescription: (age >= 30 and age <=40)
+  missionTitle: 
+  missionDescription: 'Find suspects in their 30s
+
+    (age >= 30 and age <=40)'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

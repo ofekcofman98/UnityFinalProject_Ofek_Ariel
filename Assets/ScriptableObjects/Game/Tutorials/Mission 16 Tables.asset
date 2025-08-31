@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Tables
-  missionDescription: 'but its just the beginning...
+  missionDescription: 'But it is just the beginning...
 
-    in the game we are gonna
-    unlock more tables leading to the criminal.
+    in the game we are going
+    to unlock more tables leading to the criminal.
 
 '
   unlocksTable: 0

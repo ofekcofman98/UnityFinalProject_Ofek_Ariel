@@ -213,6 +213,13 @@ public class GameManager : Singleton<GameManager>
         {
             if (pcGameCanvas != null && !Application.isMobilePlatform) pcGameCanvas.SetActive(!SqlMode);
             if (mobileCanvas != null && Application.isMobilePlatform) mobileCanvas.SetActive(SqlMode);
+
+
+            if (SqlMode)
+            {
+                MissionsManager.Instance.ReportTutorialStep("ClickSQL");
+            }
+
         }
 
         HandleMovement();
@@ -228,6 +235,7 @@ public class GameManager : Singleton<GameManager>
             queryBuilder.ResetQuery();
             queryBuilder.BuildQuery();
         }
+
 
     }
 

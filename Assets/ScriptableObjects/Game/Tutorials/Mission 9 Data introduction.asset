@@ -14,8 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Data is Our Weapon
-  missionDescription: "Every clue, every suspect, every piece of evidence -\nit\u2019s
-    all hidden in the database.\n\n\n"
+  missionDescription: 'Every clue, every suspect, every piece of evidence -
+
+
+    it
+    is all hidden in the database.
+
+
+
+'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1
