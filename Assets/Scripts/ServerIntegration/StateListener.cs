@@ -2,124 +2,114 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Networking;
 using UnityEngine;
-using System.Threading;
+using UnityEngine.Networking;
 
 namespace Assets.Scripts.ServerIntegration
 {
-    
     public class StateListener : Singleton<StateListener>
     {
         private ServerCommunicator m_communicator;
-        private CancellationTokenSource _cts;
+        private Coroutine _pollCoroutine;
 
         private void Awake()
         {
             m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetState);
-
-            Debug.Log($"StateListener.Awake -> ServerUrl = {m_communicator.ServerUrl} | IsMobile={m_communicator.IsMobile}");
+            Debug.Log($"StateListener.Awake → ServerUrl = {m_communicator.ServerUrl}");
         }
 
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            Debug.Log($"📱 StateListener.StartListening | platform = {Application.platform}");
             if (m_communicator.m_isRunning) return;
 
-            Debug.Log("🎧 Starting async polling for new state...");
+            Debug.Log("🎧 Starting coroutine polling for state...");
             m_communicator.m_isRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token);
+            _pollCoroutine = StartCoroutine(PollCoroutine());
         }
 
         public void StopListening()
         {
             if (!m_communicator.m_isRunning) return;
-            Debug.Log("🛑 Stopping polling...");
+            Debug.Log("🛑 StateListener.StopListening called");
             m_communicator.m_isRunning = false;
-            _cts.Cancel();
-        }
 
-        private Task AwaitUnityWebRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-            operation.completed += _ => tcs.SetResult(true);
-            return tcs.Task;
-        }
-
-        private async Task PollAsync(CancellationToken token)
-        {
-            try
+            if (_pollCoroutine != null)
             {
-                while (!token.IsCancellationRequested)
+                StopCoroutine(_pollCoroutine);
+                _pollCoroutine = null;
+                Debug.Log("🛑 State poll coroutine stopped");
+            }
+        }
+
+        private IEnumerator PollCoroutine()
+        {
+            Debug.Log("🚀 State PollCoroutine started");
+
+            while (true)
+            {
+                Debug.Log($"⏳ Polling {m_communicator.ServerUrl} for state...");
+
+                using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                 {
-                    Debug.Log($"⏳ Polling {m_communicator.ServerUrl} ...");
+                    yield return request.SendWebRequest();
 
-                    using (var request = UnityWebRequest.Get(m_communicator.ServerUrl))
+                    int code = (int)request.responseCode;
+                    Debug.Log($"📡 State response | Code={code} | Result={request.result}");
+
+                    if (request.result == UnityWebRequest.Result.Success && code == 200)
                     {
-                        await AwaitUnityWebRequest(request);
-                        var code = (int)request.responseCode;
+                        string text = request.downloadHandler.text;
+                        Debug.Log($"📥 State payload: {text}");
+                        Dictionary<string, int> result = null;
 
-                        if (code == 200)
+                        try
                         {
-                            var text = request.downloadHandler.text;
-                            Dictionary<string, int> result = null;
-
-                            try
-                            {
-                                result = JsonConvert.DeserializeObject<Dictionary<string, int>>(text);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"❌ JSON parse failed: {ex.Message} | body: {text}");
-                            }
-
-                            if (result != null)
-                            {
-                                int seqNumber = result.TryGetValue("seqNumber", out var seq) ? seq : -1;
-                                int isLevelDone = result.TryGetValue("isLevelDone", out var isDone) ? isDone : -1;
-                                int serverLevelIndex = result.TryGetValue("currentLevelIndex", out var s) ? s : -1;
-                                int mobileIndex = MissionsManager.Instance.currentMissionIndex;
-
-                                if (MissionsManager.Instance.MissionSequence == null)
-                                {
-                                    //! removed (ofek 17.8)
-                                    // Debug.Log($"Loading sequence number {seqNumber}");
-                                    // MissionsManager.Instance.LoadMissionSequence(seqNumber == 1 ? GameManager.Instance.MainGameSequence : GameManager.Instance.TutorialSequence);
-                                    //! added (ofek 17.8)
-                                    Debug.Log($"📦 Loading sequence index {seqNumber}");
-                                    SequenceManager.Instance.SetSequence(seqNumber);
-                                    MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
-                                }
-                                if (isLevelDone == 1 && mobileIndex == serverLevelIndex)
-                                {
-                                    Debug.Log("✅ indices aligned → single DelayedAdvance");
-                                    CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
-                                }
-                                else if (mobileIndex < serverLevelIndex)
-                                {
-                                    Debug.Log($"🔧 Mobile behind ({mobileIndex} -> {serverLevelIndex}) → sequential catch-up");
-                                    CoroutineRunner.Instance.StartCoroutine(AdvanceSequentially(mobileIndex, serverLevelIndex));
-                                    
-                                }
-                            }
-                        }                       
-                        else
+                            result = JsonConvert.DeserializeObject<Dictionary<string, int>>(text);
+                        }
+                        catch (Exception ex)
                         {
-                            Debug.LogError($"❌ Unexpected response: {code} | {request.error} | body: {request.downloadHandler.text}");
+                            Debug.LogError($"❌ State JSON parse failed: {ex.Message} | body={text}");
+                        }
+
+                        if (result != null)
+                        {
+                            int seqNumber = result.TryGetValue("seqNumber", out var seq) ? seq : -1;
+                            int isLevelDone = result.TryGetValue("isLevelDone", out var isDone) ? isDone : -1;
+                            int serverLevelIndex = result.TryGetValue("currentLevelIndex", out var s) ? s : -1;
+                            int mobileIndex = MissionsManager.Instance.currentMissionIndex;
+
+                            if (MissionsManager.Instance.MissionSequence == null)
+                            {
+                                Debug.Log($"📦 Loading sequence index {seqNumber}");
+                                SequenceManager.Instance.SetSequence(seqNumber);
+                                MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
+                            }
+
+                            if (isLevelDone == 1 && mobileIndex == serverLevelIndex)
+                            {
+                                Debug.Log("✅ indices aligned → single DelayedAdvance");
+                                CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
+                            }
+                            else if (mobileIndex < serverLevelIndex)
+                            {
+                                Debug.Log($"🔧 Mobile behind ({mobileIndex} -> {serverLevelIndex}) → sequential catch-up");
+                                CoroutineRunner.Instance.StartCoroutine(AdvanceSequentially(mobileIndex, serverLevelIndex));
+                            }
                         }
                     }
-
-                    await Task.Delay(m_communicator.pollRateMilliSeconds, token);
+                    else if (code == 204)
+                    {
+                        Debug.Log("⏳ State → 204 No Content, continue polling...");
+                    }
+                    else
+                    {
+                        Debug.LogError($"❌ State unexpected response: {code} | {request.error} | body={request.downloadHandler.text}");
+                    }
                 }
-            }
-            catch (TaskCanceledException) { Debug.Log("🟡 Polling cancelled"); }
-            catch (Exception ex) { Debug.LogError($"❌ Poll loop error: {ex.Message}"); }
-            finally { m_communicator.m_isRunning = false; 
+
+                Debug.Log($"🔁 State loop complete, waiting {m_communicator.pollRateMilliSeconds} ms...");
+                yield return new WaitForSecondsRealtime(m_communicator.pollRateMilliSeconds / 1000f);
             }
         }
 
@@ -130,9 +120,8 @@ namespace Assets.Scripts.ServerIntegration
                 yield return CoroutineRunner.Instance.StartCoroutine(MissionsManager.Instance.DelayedAdvance());
                 yield return null; // let UI settle
             }
-            Debug.Log("✅ Catch-up complete.");
+            Debug.Log("✅ State catch-up complete.");
             GameManager.Instance.StartMissions();
         }
     }
-
 }

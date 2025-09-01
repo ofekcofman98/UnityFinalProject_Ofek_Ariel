@@ -61,10 +61,10 @@ public class UniqueKeyMenu : MenuBase
         MenuManager.Instance.HideMenu(eMenuType.Key);
         // GameManager.Instance.TurnOffSkipOnMobile();
 
-if (GameManager.Instance.MobileConnected)
-    UIManager.Instance.HideSQLButton();
-else if (GameManager.Instance.SkipMobileWaiting)
-    UIManager.Instance.ShowSQLButton();
+        if (GameManager.Instance.MobileConnected)
+            UIManager.Instance.HideSQLButton();
+        else if (GameManager.Instance.SkipMobileWaiting)
+            UIManager.Instance.ShowSQLButton();
 
 
         m_OnKeyAccepted?.Invoke();

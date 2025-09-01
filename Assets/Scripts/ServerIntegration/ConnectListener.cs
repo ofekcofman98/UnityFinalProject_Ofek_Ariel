@@ -1,118 +1,109 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Networking;
 using UnityEngine;
-using System.Threading;
+using UnityEngine.Networking;
 
 namespace Assets.Scripts.ServerIntegration
 {
     public class ConnectListener : Singleton<ConnectListener>
     {
         private ServerCommunicator m_communicator;
-        private CancellationTokenSource _cts;
-
+        private Coroutine _pollCoroutine;
 
         private void Awake()
         {
-            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetConnect);      
+            Debug.Log("🟢 ConnectListener.Awake() called");
+            m_communicator = new ServerCommunicator(ServerCommunicator.Endpoint.GetConnect);
         }
 
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
+            Debug.Log($"📱 StartListening() | m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
 
-            if (m_communicator.m_isRunning) return;
+            if (m_communicator.m_isRunning)
+            {
+                Debug.Log("⚠️ StartListening() ignored — already running.");
+                return;
+            }
 
-
-            Debug.Log("🎧 Starting async polling for new connect updates...");
-            m_communicator.addGameKeyAsQueryParams();   
+            Debug.Log("🎧 Starting coroutine polling for new connect updates...");
+            m_communicator.addGameKeyAsQueryParams();
             m_communicator.m_isRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
 
+            _pollCoroutine = StartCoroutine(PollCoroutine());
         }
 
         public void StopListening()
         {
-            if (!m_communicator.m_isRunning) return;
-
-            Debug.Log("🛑 Stopping polling...");
-            m_communicator.m_isRunning = false;
-            _cts.Cancel();
-        }
-
-
-        private Task AwaitUnityWebRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-
-            operation.completed += _ => tcs.SetResult(true);
-
-            return tcs.Task;
-        }
-
-        private async Task PollAsync(CancellationToken token)
-        {
-            try
+            Debug.Log("🛑 StopListening() called");
+            if (!m_communicator.m_isRunning)
             {
-                if (!Application.isMobilePlatform)
+                Debug.Log("⚠️ StopListening() ignored — not running.");
+                return;
+            }
+
+            m_communicator.m_isRunning = false;
+
+            if (_pollCoroutine != null)
+            {
+                Debug.Log("🛑 Stopping poll coroutine manually");
+                StopCoroutine(_pollCoroutine);
+                _pollCoroutine = null;
+            }
+        }
+
+        private IEnumerator PollCoroutine()
+        {
+            Debug.Log("🚀 PollCoroutine() started");
+
+            while (true)
+            {
+                Debug.Log("⏳ [Loop Start] Polling server for new connect update...");
+
+                using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                 {
-                    while (!token.IsCancellationRequested)
+                    Debug.Log($"🌐 Sending request to {m_communicator.ServerUrl}");
+                    yield return request.SendWebRequest();
+
+                    Debug.Log($"📡 Response received | Result={request.result} | Code={(int)request.responseCode}");
+
+                    if (request.result == UnityWebRequest.Result.Success)
                     {
-                        // Debug.Log("⏳ Polling server for new connect update...");
-
-                        using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
+                        if ((int)request.responseCode == 200)
                         {
-                            await AwaitUnityWebRequest(request);
-
-                            // Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
-                            if ((int)request.responseCode == 200)
-                            {
-                                // Debug.Log("✅ 200 OK received, about to connect...✅");
-
-                                GameManager.Instance.MobileConnected = true;
-                               
-                            }
-                            else if ((int)request.responseCode == 204)
-                            {
-                                // Debug.Log("⏳ Server responded with 204 No Content — no reset.");
-                            }
-                            else
-                            {
-                                Debug.LogError($"❌ Unexpected server response: {request.responseCode} | {request.error}");
-                                Debug.LogError($"The url is : {m_communicator.ServerUrl}");
-                            }
+                            Debug.Log("✅ 200 OK received, connecting...");
+                            GameManager.Instance.MobileConnected = true;
                         }
-
-                        await Task.Delay(m_communicator.pollRateMilliSeconds, token); // Wait before polling again
+                        else if ((int)request.responseCode == 204)
+                        {
+                            Debug.Log("⏳ 204 No Content — keep polling");
+                        }
+                        else
+                        {
+                            Debug.LogError($"❌ Unexpected response: Code={(int)request.responseCode} | Error={request.error}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"❌ UnityWebRequest failed: {request.error}");
                     }
                 }
 
-            }
-            catch (TaskCanceledException)
-            {
-                // Debug.Log("🟡 Polling was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"❌ Unexpected error in polling: {ex.Message}");
+                Debug.Log($"🔁 Loop iteration complete, waiting {m_communicator.pollRateMilliSeconds} ms before next poll...");
+                yield return new WaitForSecondsRealtime(m_communicator.pollRateMilliSeconds / 1000f);
+                Debug.Log("🔄 Wait complete, next iteration will start now...");
             }
         }
 
         private void OnDestroy()
         {
-            if (_cts != null && !_cts.IsCancellationRequested)
+            Debug.Log("🛑 ConnectListener.OnDestroy() called");
+            if (_pollCoroutine != null)
             {
-                Debug.Log("🛑 Cancelling polling in OnDestroy.");
-                _cts.Cancel();
+                StopCoroutine(_pollCoroutine);
+                _pollCoroutine = null;
+                Debug.Log("🛑 Poll coroutine stopped in OnDestroy()");
             }
         }
-
     }
 }

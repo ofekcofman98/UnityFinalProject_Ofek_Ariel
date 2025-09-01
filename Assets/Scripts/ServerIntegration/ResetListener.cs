@@ -2,20 +2,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine.Networking;
 using UnityEngine;
-using System.Threading;
+using UnityEngine.Networking;
 
 namespace Assets.Scripts.ServerIntegration
 {
     public class ResetListener : Singleton<ResetListener>
     {
         private ServerCommunicator m_communicator;
-        private CancellationTokenSource _cts;
-
+        private Coroutine _pollCoroutine;
 
         private void Awake()
         {
@@ -24,97 +19,86 @@ namespace Assets.Scripts.ServerIntegration
 
         public void StartListening()
         {
-            Debug.Log($"📱 m_isMobile = {m_communicator.IsMobile} | platform = {Application.platform}");
-            
+            Debug.Log($"📱 ResetListener.StartListening | platform = {Application.platform}");
+
             if (m_communicator.m_isRunning) return;
 
-
-            Debug.Log("🎧 Starting async polling for new reset...");
+            Debug.Log("🎧 Starting coroutine polling for reset...");
             m_communicator.m_isRunning = true;
-            _cts = new CancellationTokenSource();
-            _ = PollAsync(_cts.Token); // Fire-and-forget
-
+            _pollCoroutine = StartCoroutine(PollCoroutine());
         }
 
         public void StopListening()
         {
             if (!m_communicator.m_isRunning) return;
 
-            Debug.Log("🛑 Stopping polling...");
+            Debug.Log("🛑 ResetListener.StopListening called");
             m_communicator.m_isRunning = false;
-            _cts.Cancel();
-        }
 
-        
-        private Task AwaitUnityWebRequest(UnityWebRequest request)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            var operation = request.SendWebRequest();
-
-            operation.completed += _ => tcs.SetResult(true);
-
-            return tcs.Task;
-        }
-
-        private async Task PollAsync(CancellationToken token)
-        {
-            try
+            if (_pollCoroutine != null)
             {
-                if (Application.isMobilePlatform)
+                StopCoroutine(_pollCoroutine);
+                _pollCoroutine = null;
+                Debug.Log("🛑 Reset poll coroutine stopped");
+            }
+        }
+
+        private IEnumerator PollCoroutine()
+        {
+            Debug.Log("🚀 Reset PollCoroutine started");
+
+            while (true)
+            {
+                Debug.Log("⏳ Polling server for reset...");
+
+                using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                 {
-                    while (!token.IsCancellationRequested)
+                    yield return request.SendWebRequest();
+
+                    Debug.Log($"📡 Reset response | Code={(int)request.responseCode} | Result={request.result}");
+
+                    if (request.result == UnityWebRequest.Result.Success)
                     {
-                        Debug.Log("⏳ Polling server for new reset update...");
-
-                        using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
+                        if ((int)request.responseCode == 200)
                         {
-                            await AwaitUnityWebRequest(request);
+                            Debug.Log("✅ Reset 200 OK received, parsing JSON...");
+                            string receivedJson = request.downloadHandler.text;
+                            Debug.Log($"📥 Reset payload: {receivedJson}");
 
-                            Debug.Log($"📡 Actual Response Code: {request.responseCode} | Result: {request.result}");
-                            if ((int)request.responseCode == 200)
+                            try
                             {
-                                Debug.Log("✅ 200 OK received, about to reset...✅");
-                                string receivedJson = request.downloadHandler.text;
-                                Debug.Log($"📥 Received JSON: {receivedJson}");
-
                                 var settings = new JsonSerializerSettings();
                                 settings.Converters.Add(new OperatorConverter());
 
-                                Dictionary<string, int> result = JsonConvert.DeserializeObject<Dictionary<string, int>>(receivedJson, settings);
-                                //! removed (ofek 17.8)
-                                // GameManager.Instance.sequenceNumber = result["seqNumber"];
-                                // CoroutineRunner.Instance.StartCoroutine(GameManager.Instance.resetAction());
-                                //! added (ofek 17.8)
+                                Dictionary<string, int> result =
+                                    JsonConvert.DeserializeObject<Dictionary<string, int>>(receivedJson, settings);
+
                                 SequenceManager.Instance.SetSequence(result["seqNumber"]);
                                 CoroutineRunner.Instance.StartCoroutine(SequenceManager.Instance.RestartSequence());
-
                             }
-                            else if ((int)request.responseCode == 204)
+                            catch (Exception ex)
                             {
-                                Debug.Log("⏳ Server responded with 204 No Content — no reset.");
-                            }
-                            else
-                            {
-                                Debug.LogError($"❌ Unexpected server response: {request.responseCode} | {request.error}");
-                                Debug.LogError($"The url is : {m_communicator.ServerUrl}");
+                                Debug.LogError($"❌ Reset JSON parse failed: {ex.Message}");
                             }
                         }
-
-                        await Task.Delay(m_communicator.pollRateMilliSeconds, token); // Wait before polling again
+                        else if ((int)request.responseCode == 204)
+                        {
+                            Debug.Log("⏳ Reset → 204 No Content, continue polling...");
+                        }
+                        else
+                        {
+                            Debug.LogError($"❌ Reset unexpected response: {(int)request.responseCode} | {request.error}");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"❌ Reset poll request failed: {request.error}");
                     }
                 }
 
-            }
-            catch (TaskCanceledException)
-            {
-                Debug.Log("🟡 Polling was cancelled.");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"❌ Unexpected error in polling: {ex.Message}");
+                Debug.Log($"🔁 Reset loop complete, waiting {m_communicator.pollRateMilliSeconds} ms...");
+                yield return new WaitForSecondsRealtime(m_communicator.pollRateMilliSeconds / 1000f);
             }
         }
-
-
     }
 }
