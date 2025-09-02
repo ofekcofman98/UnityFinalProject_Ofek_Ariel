@@ -57,11 +57,29 @@ public class MenuManager : Singleton<MenuManager>
 
     public void HideMenu(eMenuType type)
     {
-        Time.timeScale = 1f;
+        // Time.timeScale = 1f;
+        // if (menus.TryGetValue(type, out IMenu menu))
+        // {
+        //     menu.Hide();
+        // }
+
         if (menus.TryGetValue(type, out IMenu menu))
         {
             menu.Hide();
         }
+
+        bool anyMenuOpen = false;
+        foreach (var kvp in menus)
+        {
+            if (((MonoBehaviour)kvp.Value).gameObject.activeSelf)
+            {
+                anyMenuOpen = true;
+                break;
+            }
+        }
+
+        Time.timeScale = anyMenuOpen ? 0f : 1f;
+
     }
 
     public bool IsMenuOpen(eMenuType type)

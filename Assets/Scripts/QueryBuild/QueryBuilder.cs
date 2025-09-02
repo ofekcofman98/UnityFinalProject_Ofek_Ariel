@@ -217,6 +217,8 @@ public class QueryBuilder : MonoBehaviour
 
         int conditionIndex = query.whereClause.NewConditionIndex;
 
+        List<Column> visibleColumns = TableDataFilter.GetVisibleColumns(query.fromClause.table.Columns).ToList();
+
         uiRenderer.SetConditionColumnPopulator(
             onDropped: col =>
             {
@@ -233,7 +235,7 @@ public class QueryBuilder : MonoBehaviour
             conditionIndexGetter: _ => conditionIndex
         );
 
-        uiRenderer.RenderConditionColumnButtons(query.fromClause.table.Columns);
+        uiRenderer.RenderConditionColumnButtons(visibleColumns);//query.fromClause.table.Columns);
     }
 
     private void PopulateOperatorSelection()

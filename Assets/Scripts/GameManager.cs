@@ -176,14 +176,22 @@ public class GameManager : Singleton<GameManager>
             return;
         }
         UniqueKeyMenu keyMenu = FindObjectOfType<UniqueKeyMenu>(true);
+        QRMenu qrMenu = FindObjectOfType<QRMenu>(true);
+
         if (keyMenu == null)
         {
             Debug.LogError("❌ UniqueKeyMenu not found in scene.");
             return;
         }
 
-        keyMenu.Show(onKeyAccepted);
+        if (qrMenu == null)
+        {
+            Debug.LogError("❌ QRMenu not found in scene.");
+            return;
+        }
 
+        keyMenu.Show(onKeyAccepted);
+        MenuManager.Instance.ShowMenu(eMenuType.QR);
     }
 
     public void InitMobile()

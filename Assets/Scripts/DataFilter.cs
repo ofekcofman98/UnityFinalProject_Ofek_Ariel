@@ -9,6 +9,7 @@ public static class TableDataFilter
     {
         "photo_url",
         "prefab_id",
+        "witness_id"
         // "id" // Add others as needed
     };
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -17,24 +18,28 @@ public class TableBoxUI : MonoBehaviour
 
     public void Init(Table i_Table)
     {
-    foreach (Transform child in columnListParent) //TODO 
-    {//TODO
-        Destroy(child.gameObject);//TODO
-    }//TODO
-    columnLabelMap.Clear();//TODO
+        foreach (Transform child in columnListParent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        columnLabelMap.Clear();
 
         tableNameText.text = i_Table.Name;
-        foreach(Column column in i_Table.Columns)
+
+        List<Column> visibleColumns = TableDataFilter.GetVisibleColumns(i_Table.Columns).ToList();
+
+        foreach (Column column in visibleColumns)
         {
-            var columnGO = Instantiate(columnTextPrefab, columnListParent);
+            GameObject columnGO = Instantiate(columnTextPrefab, columnListParent);
             columnGO.GetComponentInChildren<TextMeshProUGUI>().text = column.Name;
 
             RectTransform rt = columnGO.GetComponentInChildren<TextMeshProUGUI>().transform.parent.GetComponent<RectTransform>();
             columnLabelMap[column.Name.ToLowerInvariant().Trim()] = rt;
         }
-        
+
         bool isUnlocked = i_Table.IsUnlocked;
-        canvasGroup.alpha = isUnlocked ? 1f : 0.4f; 
+        canvasGroup.alpha = isUnlocked ? 1f : 0.4f;
         lockOverlay.SetActive(!isUnlocked);
     }
 

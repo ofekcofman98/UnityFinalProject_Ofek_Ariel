@@ -7,5 +7,6 @@ public enum eMenuType
     Win,
     Lose,
     Key,
+    QR,
     None
 }
