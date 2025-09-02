@@ -28,13 +28,14 @@ public class ScreensaverUI : MonoBehaviour
     private void OnConnectClicked()
     {
         string inputKey = loadGameInput.text.Trim();
-        commentText.gameObject.SetActive(true);
 
 
         if (string.IsNullOrEmpty(inputKey) || !int.TryParse(inputKey, out int intkey))
         {
             commentText.color = Color.white;
             commentText.text = "Please enter a valid key.";
+            commentText.gameObject.SetActive(true);
+
             return;
         }
 
@@ -42,13 +43,17 @@ public class ScreensaverUI : MonoBehaviour
         {
             if (success)
             {
-                // keyContainer.SetActive(false);
-                // connectButton.gameObject.SetActive(false);
-                // loadGameInput.gameObject.SetActive(false);
-                // commentText.gameObject.SetActive(false);
+                // Hide UI
+                keyContainer.SetActive(false);
+                connectButton.gameObject.SetActive(false);
+                loadGameInput.DeactivateInputField();  // ?? remove focus & close keyboard
+                loadGameInput.gameObject.SetActive(false);
+                commentText.gameObject.SetActive(false);
 
                 commentText.color = Color.green;
                 commentText.text = "Connected!";
+                commentText.gameObject.SetActive(true);
+
 
                 switchUI();
             }
@@ -56,6 +61,9 @@ public class ScreensaverUI : MonoBehaviour
             {
                 commentText.color = Color.red;
                 commentText.text = "Invalid key. Try again.";
+                commentText.gameObject.SetActive(true);
+
+                loadGameInput.DeactivateInputField();
             }
         });
     }
