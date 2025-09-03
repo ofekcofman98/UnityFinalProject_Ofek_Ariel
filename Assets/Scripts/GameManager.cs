@@ -393,17 +393,11 @@ public class GameManager : Singleton<GameManager>
         if (LocationManager.Instance.OfficeSpawnPoint == null)
             Debug.Log($"LocationManager.Instance.OfficeSpawnPoint is null");  
         LocationManager.Instance.TeleportTo(LocationManager.Instance.OfficeSpawnPoint);
-        // FindObjectOfType<MouseLook>()?.ResetLook();
         SuspectsManager.Instance?.ResetSuspects();
         resultsUI.ResetResults();
-        // schemeDisplayer.ResetSchema();   // TODO
-        // TableUnlocker.Instance?.Reset();           // TODO
 
         yield return MissionsManager.Instance.ResetMissions();
 
-        //! removed (ofek 17.8)
-        // MissionsManager.Instance.LoadMissionSequence(CurrentMissionSequence);
-        //! added (ofek 17.8)
         MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
 
         queryBuilder?.ResetQuery();

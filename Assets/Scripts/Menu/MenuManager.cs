@@ -82,6 +82,18 @@ public class MenuManager : Singleton<MenuManager>
 
     }
 
+
+    public T GetMenu<T>(eMenuType type) where T : class, IMenu
+    {
+        if (menus.TryGetValue(type, out IMenu menu))
+        {
+            return menu as T;
+        }
+        Debug.LogError($"❌ Menu of type {type} not found or wrong type.");
+        return null;
+    }
+
+
     public bool IsMenuOpen(eMenuType type)
     {
         return menus.TryGetValue(type, out IMenu menu) && ((MonoBehaviour)menu).gameObject.activeSelf;

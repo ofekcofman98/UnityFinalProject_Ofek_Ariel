@@ -67,11 +67,9 @@ public class LoadMenu : MenuBase
                 loadComment.text = "Game loaded!";
 
                 MenuManager.Instance.HideMenu(eMenuType.Load);
-                MenuManager.Instance.ShowMenu(eMenuType.Key);
-                //GameManager.Instance.StartSavedGame(key);
-                // GameManager.Instance.StartSavedGame(key);
-                //GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSavedGame(key));
-                //GameManager.Instance.StartSavedGame(key);
+                // MenuManager.Instance.ShowMenu(eMenuType.Key);
+GameManager.Instance.StartGameWithKeyMenu(() => GameManager.Instance.StartSavedGame(key));
+
             }
             else
             {

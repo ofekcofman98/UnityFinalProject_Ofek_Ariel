@@ -18,8 +18,6 @@ namespace Assets.Scripts.ServerIntegration
         public GameProgressContainer m_progressContainer;
         private ServerCommunicator m_communicator;
         public event Action OnGameFetchComplete;
-        private bool m_isGameSaved = false;
-
 
         private void Awake()
         {
@@ -27,16 +25,10 @@ namespace Assets.Scripts.ServerIntegration
             OnGameFetchComplete += OnGameFetchCompleteAction;
         }
 
-   
+
 
         public IEnumerator SendGameProgressToServer(GameProgressContainer gpc)
         {
-            if (m_isGameSaved)
-            {
-                Debug.LogError($"Game/container is already sent.");
-                yield return null;
-
-            }
             m_progressContainer = gpc;
             Debug.Log($"📤 m_gameKey value after function and before payload: {UniqueKeyManager.Instance.gameKey}");
             var payload = new Dictionary<string, object>
@@ -70,8 +62,6 @@ namespace Assets.Scripts.ServerIntegration
             {
                 Debug.Log($"✅ GameProgressContainer Sent Successfully! Response: {request.downloadHandler.text}");
                 Debug.Log($"✅ GameProgressContainer contains : lives {gpc.Lives}, currentMissionIndex {gpc.currentMissionIndex}, gameCode : {UniqueKeyManager.Instance.gameKey}");
-
-                m_isGameSaved = true;
             }
             else
             {
@@ -83,7 +73,7 @@ namespace Assets.Scripts.ServerIntegration
         private void OnGameFetchCompleteAction()
         {
             if (m_progressContainer != null)
-            {               
+            {
                 SequenceManager.Instance.SetSequence(m_progressContainer.sequenceIndex);
                 MissionsManager.Instance.LoadMissionSequence(SequenceManager.Instance.Current);
 
@@ -99,7 +89,7 @@ namespace Assets.Scripts.ServerIntegration
         public IEnumerator GetSavedGameFromServer(string key)
         {
             Debug.Log($"📤 m_gameKey value before sending a getGameProgress request: {key}");
-                        var payload = new Dictionary<string, string>
+            var payload = new Dictionary<string, string>
             {
                 { "key", key }
             };
@@ -161,17 +151,21 @@ namespace Assets.Scripts.ServerIntegration
             UniqueKeyManager.Instance.SetGameKeyFromSavedGame(key);
             UnityWebRequest request = UnityWebRequest.Get(new ServerCommunicator(ServerCommunicator.Endpoint.ValidateKey).ServerUrl);
             yield return request.SendWebRequest();
-            if(request.result == UnityWebRequest.Result.Success)
+            if (request.result == UnityWebRequest.Result.Success)
             {
                 onValidationComplete?.Invoke(request.responseCode == 200);
             }
-           
-                
+
+
         }
 
-        internal IEnumerator GetSavedGameFromServer()
+        public bool IsSameAsLastSave(GameProgressContainer newContainer)
         {
-            throw new NotImplementedException();
+            return m_progressContainer != null &&
+                   m_progressContainer.sequenceIndex == newContainer.sequenceIndex &&
+                   m_progressContainer.currentMissionIndex == newContainer.currentMissionIndex &&
+                   m_progressContainer.Lives == newContainer.Lives;
         }
+
     }
 }

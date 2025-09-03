@@ -62,9 +62,15 @@ public class UniqueKeyMenu : MenuBase
         // GameManager.Instance.TurnOffSkipOnMobile();
 
         if (GameManager.Instance.MobileConnected)
+        {
             UIManager.Instance.HideSQLButton();
+            Debug.Log("GameManager.Instance.MobileConnected = true");
+        }
         else if (GameManager.Instance.SkipMobileWaiting)
+        {
             UIManager.Instance.ShowSQLButton();
+            Debug.Log("GameManager.Instance.SkipMobileWaiting = true");
+        }
 
 
         m_OnKeyAccepted?.Invoke();
@@ -84,7 +90,7 @@ public class UniqueKeyMenu : MenuBase
 
         GameManager.Instance.queryReceiver.StartListening();
         MenuManager.Instance.HideMenu(eMenuType.Key);
-        GameManager.Instance.TurnOffSkipOnMobile();
+        // GameManager.Instance.TurnOffSkipOnMobile();
         GameManager.Instance.StartSavedGame(UniqueKeyManager.Instance.gameKey);
     }
 }

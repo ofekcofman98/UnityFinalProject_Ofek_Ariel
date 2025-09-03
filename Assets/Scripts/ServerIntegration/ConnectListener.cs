@@ -58,14 +58,14 @@ namespace Assets.Scripts.ServerIntegration
 
             while (true)
             {
-                Debug.Log("⏳ [Loop Start] Polling server for new connect update...");
+                // Debug.Log("⏳ [Loop Start] Polling server for new connect update...");
 
                 using (UnityWebRequest request = UnityWebRequest.Get(m_communicator.ServerUrl))
                 {
-                    Debug.Log($"🌐 Sending request to {m_communicator.ServerUrl}");
+                    // Debug.Log($"🌐 Sending request to {m_communicator.ServerUrl}");
                     yield return request.SendWebRequest();
 
-                    Debug.Log($"📡 Response received | Result={request.result} | Code={(int)request.responseCode}");
+                    // Debug.Log($"📡 Response received | Result={request.result} | Code={(int)request.responseCode}");
 
                     if (request.result == UnityWebRequest.Result.Success)
                     {
@@ -76,7 +76,7 @@ namespace Assets.Scripts.ServerIntegration
                         }
                         else if ((int)request.responseCode == 204)
                         {
-                            Debug.Log("⏳ 204 No Content — keep polling");
+                            // Debug.Log("⏳ 204 No Content — keep polling");
                         }
                         else
                         {
@@ -89,9 +89,9 @@ namespace Assets.Scripts.ServerIntegration
                     }
                 }
 
-                Debug.Log($"🔁 Loop iteration complete, waiting {m_communicator.pollRateMilliSeconds} ms before next poll...");
+                // Debug.Log($"🔁 Loop iteration complete, waiting {m_communicator.pollRateMilliSeconds} ms before next poll...");
                 yield return new WaitForSecondsRealtime(m_communicator.pollRateMilliSeconds / 1000f);
-                Debug.Log("🔄 Wait complete, next iteration will start now...");
+                // Debug.Log("🔄 Wait complete, next iteration will start now...");
             }
         }
 

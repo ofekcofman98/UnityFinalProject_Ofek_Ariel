@@ -49,8 +49,11 @@ public class PersonDataManager : Singleton<PersonDataManager>
             // Load prefab and portrait
             person.characterPrefab = Resources.Load<GameObject>($"Characters/{person.first_name}");
             if (!string.IsNullOrEmpty(person.photo_url))
-                StartCoroutine(LoadImageCoroutine(person.photo_url, tex => person.portrait = tex)); // ✅ coroutine
-
+            {
+                if (this != null && gameObject != null)
+                    StartCoroutine(LoadImageCoroutine(person.photo_url, tex => person.portrait = tex));
+            }
+            
             AllCharacters.Add(person);
         }
     }

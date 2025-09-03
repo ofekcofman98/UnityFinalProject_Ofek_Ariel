@@ -28,7 +28,8 @@ public class PauseMenu : MenuBase
 
     private void OnSaveClicked()
     {
-        SaveGame();
+        MenuManager.Instance.HideMenu(eMenuType.Pause);
+        MenuManager.Instance.ShowMenu(eMenuType.SavedGame);
     }
 
     private void OnSyncClicked()
@@ -40,16 +41,6 @@ public class PauseMenu : MenuBase
     {
         MenuManager.Instance.HideMenu(eMenuType.Pause);
         MenuManager.Instance.QuitToMainMenu();
-    }
-
-    public void SaveGame()
-    {
-        int lastValidMissionIndex = MissionsManager.Instance.GetLastValidMissionIndex();
-        int sequenceIndex = SequenceManager.Instance.CurrentSequenceIndex;
-        int lives = LivesManager.Instance.Lives;
-        
-        GameProgressContainer gpc = new GameProgressContainer(sequenceIndex, lastValidMissionIndex, lives);
-        StartCoroutine(GameProgressSender.Instance.SendGameProgressToServer(gpc));        
     }
 
     public override void Show()

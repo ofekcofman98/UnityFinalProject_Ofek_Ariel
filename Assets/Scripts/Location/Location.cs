@@ -7,6 +7,6 @@ public class Location
 {
     public string LocationName;
     public Transform SpawnPoint;
-    public Texture PreviewTexture; // TODO
+    public Texture PreviewTexture;
 
 }
