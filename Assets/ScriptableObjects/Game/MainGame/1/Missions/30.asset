@@ -17,4 +17,8 @@ MonoBehaviour:
   missionDescription: Go to the computer at your office!
   unlocksTable: 1
   tableToUnlock: Witnesses
+  isTutorial: 1
   requiredObjectId: computer01
+  dialogueTriggers: []
+  additionalHighlightObjectIds:
+  - DoorCrimeEvidence

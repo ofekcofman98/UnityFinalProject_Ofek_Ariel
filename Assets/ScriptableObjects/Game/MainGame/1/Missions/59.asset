@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: 
-  missionDescription: Now let's find the witness.
+  missionDescription: 'Now let''s find the witness.
+
+
+    First, we need his ID.'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

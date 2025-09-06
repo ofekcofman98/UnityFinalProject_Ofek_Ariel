@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: 20
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Introduction to SQL
-  missionDescription: select victim_id from CrimeEvidence table
+  missionTitle: 'Take your phone and drag the following buttons:'
+  missionDescription: 'FROM -> CrimeEvidence
+
+    SELECT -> victim_id'
   unlocksTable: 0
   tableToUnlock: Witnesses
   isTutorial: 0

@@ -17,6 +17,8 @@ public class ResultsUI : MonoBehaviour
             return;
         }
 
+        Close();
+
         List<JObject> rowObjects = rows.Select(token => (JObject)token).ToList();
         List<string> columnNames;
         List<float> columnWidths;

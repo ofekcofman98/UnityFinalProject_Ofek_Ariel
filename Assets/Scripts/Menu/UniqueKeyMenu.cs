@@ -12,6 +12,10 @@ public class UniqueKeyMenu : MenuBase
     [SerializeField] private TextMeshProUGUI keyLabel;
     [SerializeField] private GameObject waitingLabel;
     [SerializeField] private Button continueOnPcButton;
+
+    private bool confirmNoMobileClicked = false;
+    [SerializeField] private TextMeshProUGUI continueOnPcButtonText;
+
     private Action m_OnKeyAccepted;
     public bool registerExistingKey = false;
 
@@ -20,7 +24,15 @@ public class UniqueKeyMenu : MenuBase
     {
         continueOnPcButton.onClick.AddListener(() =>
         {
-            Debug.Log("🧍‍♂️ Player chose to continue on PC (skip mobile)");
+            if (!confirmNoMobileClicked)
+            {
+                confirmNoMobileClicked = true;
+                continueOnPcButtonText.text = "⚠️ Continue without mobile";
+                Debug.Log("🟡 Confirm 'no mobile' clicked once — awaiting second click");
+                return;
+            }
+
+            Debug.Log("🧍‍♂️ Player confirmed 'continue on PC'");
             GameManager.Instance.ForceStartGameFromPC();
         });
     }
@@ -30,11 +42,13 @@ public class UniqueKeyMenu : MenuBase
         waitingLabel.SetActive(true);
         keyLabel.text = "";
 
-        if(registerExistingKey)
+        if (registerExistingKey)
             StartCoroutine(WaitForKeyRegistration());
         else
             StartCoroutine(WaitForKeyGeneration());
-
+            
+        confirmNoMobileClicked = false;
+        continueOnPcButtonText.text = "I don't have mobile";
     }
 
     public void Show(Action onKeyAccepted)
@@ -64,12 +78,12 @@ public class UniqueKeyMenu : MenuBase
         if (GameManager.Instance.MobileConnected)
         {
             UIManager.Instance.HideSQLButton();
-            Debug.Log("GameManager.Instance.MobileConnected = true");
+            // Debug.Log("GameManager.Instance.MobileConnected = true");
         }
         else if (GameManager.Instance.SkipMobileWaiting)
         {
             UIManager.Instance.ShowSQLButton();
-            Debug.Log("GameManager.Instance.SkipMobileWaiting = true");
+            // Debug.Log("GameManager.Instance.SkipMobileWaiting = true");
         }
 
 

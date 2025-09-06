@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: SQL
-  missionDescription: Find the criminal from the dialogue
+  missionDescription: Find those who have black shirts!
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

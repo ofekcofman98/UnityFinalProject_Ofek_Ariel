@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: 65
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Find the first and last name of the witness
-  missionDescription: use the ID number.
+  missionTitle: SQL
+  missionDescription: 'Find the first and last name of the witness.
+
+    Use his
+    "person_id" you just found.'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

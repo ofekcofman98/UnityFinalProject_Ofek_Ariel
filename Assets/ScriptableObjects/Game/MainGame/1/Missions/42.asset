@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 42
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: 
-  missionDescription: We have witnesses' id, but who are they?
+  missionTitle: Witnesses
+  missionDescription: We have the witness' id, but who are they?
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

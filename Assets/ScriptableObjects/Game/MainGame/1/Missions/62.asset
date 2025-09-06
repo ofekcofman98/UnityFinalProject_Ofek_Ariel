@@ -9,18 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b33db8c2c1b440a4b9c25ec47970414f, type: 3}
-  m_Name: 40
+  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
+  m_Name: 62
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Witnesses
-  missionDescription: Select "testimony" from "Witnesses" table.
+  missionTitle: 
+  missionDescription: Now, after we have his ID, we need his name.
   unlocksTable: 0
-  tableToUnlock: Persons
+  tableToUnlock: 
   isTutorial: 0
-  requiredTable: Witnesses
-  requiredColumns:
-  - testimony
-  requiredCondition: 
-  expectedPrimaryKeyField: 
-  expectedRowIdValue: 
+  popupText: 
+  popupImage: {fileID: 0}

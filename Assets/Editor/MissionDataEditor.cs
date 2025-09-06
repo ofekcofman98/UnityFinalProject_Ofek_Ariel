@@ -20,8 +20,8 @@ public class MissionDataEditor : Editor
     private List<Dictionary<string, string>> fetchedRows = new List<Dictionary<string, string>>();
     private string[] rowLabels;
     private int selectedRowIndex = 0;
-
-
+    private bool showExtraHighlights = true;
+ 
     private void OnEnable()
     {
         // Load all table structure assets
@@ -115,7 +115,41 @@ public class MissionDataEditor : Editor
 
     private void DrawInteractableSection(InteractableMissionData mission)
     {
+        // mission.requiredObjectId = EditorGUILayout.TextField("Required Interactable ID", mission.requiredObjectId);
         mission.requiredObjectId = EditorGUILayout.TextField("Required Interactable ID", mission.requiredObjectId);
+
+        EditorGUILayout.Space(8);
+        showExtraHighlights = EditorGUILayout.Foldout(showExtraHighlights, "Additional Highlighted Objects");
+        if (showExtraHighlights)
+        {
+            if (mission.additionalHighlightObjectIds == null)
+                mission.additionalHighlightObjectIds = new List<string>();
+
+            // List all existing additional IDs
+            for (int i = 0; i < mission.additionalHighlightObjectIds.Count; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                mission.additionalHighlightObjectIds[i] = EditorGUILayout.TextField($"Object {i + 1}", mission.additionalHighlightObjectIds[i]);
+
+                if (GUILayout.Button("❌", GUILayout.Width(30)))
+                {
+                    mission.additionalHighlightObjectIds.RemoveAt(i);
+                    i--; // Shift index to prevent skip
+                    continue;
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.Space(4);
+
+            if (GUILayout.Button("➕ Add Highlight Object"))
+            {
+                mission.additionalHighlightObjectIds.Add(string.Empty);
+            }
+        }
+
     }
 
     private string DrawTableUnlockDropdown(string currentTable)

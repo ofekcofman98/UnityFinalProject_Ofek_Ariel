@@ -23,6 +23,7 @@ public class ScreensaverUI : MonoBehaviour
 
         keyContainer.SetActive(true);
         buildSQLButton.gameObject.SetActive(false);
+        // buildSQLButton.gameObject;
     }
 
     private void OnConnectClicked()

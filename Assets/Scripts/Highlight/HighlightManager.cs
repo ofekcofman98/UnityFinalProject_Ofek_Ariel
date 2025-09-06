@@ -13,17 +13,40 @@ public class HighlightManager : Singleton<HighlightManager>
 
         if (!mission.isTutorial) { return; }
 
+        // if (mission is InteractableMissionData im)
+        // {
+        //     InteractableObject interactableObject = FindObjectsOfType<InteractableObject>()
+        //         .FirstOrDefault(o => o.InteractableId == im.requiredObjectId);
+
+        //     IHighlightable highlightable = interactableObject?.GetComponent<IHighlightable>();
+        //     RegisterHighlight(highlightable);
+
+        //     if (highlightable is Highlightable concrete)
+        //     {
+        //         concrete.SetMarkerLabel(interactableObject.name);
+        //     }
+        // }
         if (mission is InteractableMissionData im)
         {
-            InteractableObject interactableObject = FindObjectsOfType<InteractableObject>()
-                .FirstOrDefault(o => o.InteractableId == im.requiredObjectId);
+            List<string> idsToHighlight = new() { im.requiredObjectId };
 
-            IHighlightable highlightable = interactableObject?.GetComponent<IHighlightable>();
-            RegisterHighlight(highlightable);
-
-            if (highlightable is Highlightable concrete)
+            if (im.additionalHighlightObjectIds != null)
             {
-                concrete.SetMarkerLabel(interactableObject.name);
+                idsToHighlight.AddRange(im.additionalHighlightObjectIds);
+            }
+
+            foreach (string id in idsToHighlight)
+            {
+                InteractableObject interactableObject = FindObjectsOfType<InteractableObject>()
+                    .FirstOrDefault(o => o.InteractableId == id);
+
+                IHighlightable highlightable = interactableObject?.GetComponent<IHighlightable>();
+                RegisterHighlight(highlightable);
+
+                if (highlightable is Highlightable concrete)
+                {
+                    concrete.SetMarkerLabel(interactableObject.name);
+                }
             }
         }
         else if (mission is CustomTutorialMissionData custom)

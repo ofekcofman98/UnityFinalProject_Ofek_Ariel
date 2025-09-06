@@ -17,4 +17,8 @@ MonoBehaviour:
   missionDescription: Go to the police station
   unlocksTable: 1
   tableToUnlock: Persons
+  isTutorial: 1
   requiredObjectId: Officer01
+  dialogueTriggers: []
+  additionalHighlightObjectIds:
+  - DoorOffice

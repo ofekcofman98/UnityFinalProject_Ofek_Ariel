@@ -17,4 +17,8 @@ MonoBehaviour:
   missionDescription: Go to the crime Scene
   unlocksTable: 1
   tableToUnlock: CrimeEvidence
+  isTutorial: 1
   requiredObjectId: CrimeScene01
+  dialogueTriggers: []
+  additionalHighlightObjectIds:
+  - DoorOffice

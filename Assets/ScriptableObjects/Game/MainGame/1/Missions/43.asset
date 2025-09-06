@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: 43
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: 
-  missionDescription: Maybe the police can help
+  missionTitle: Witnesses
+  missionDescription: Maybe the police can help and give us more details
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

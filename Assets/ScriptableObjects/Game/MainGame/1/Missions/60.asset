@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: 60
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: Witnesses
-  missionDescription: Find the ID of the witness (person_id)
+  missionTitle: SQL
+  missionDescription: 'Find the ID of the witness ("person_id")
+
+    From "Witnesses"
+    table'
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0

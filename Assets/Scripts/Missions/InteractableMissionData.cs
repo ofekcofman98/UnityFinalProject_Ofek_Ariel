@@ -9,6 +9,7 @@ public class InteractableMissionData : MissionData
     public string requiredObjectId;
     private string _lastTriggeredId;
     public List<PersonDialogueTrigger> dialogueTriggers;
+    public List<string> additionalHighlightObjectIds; 
 
 
     public void SetTriggeredObject(string id)

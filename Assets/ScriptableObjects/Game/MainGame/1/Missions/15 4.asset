@@ -9,18 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23cf98f2500b3fb4688f74f5ee1b17fa, type: 3}
-  m_Name: 80
+  m_Script: {fileID: 11500000, guid: dbf14e25a7fb3fb4e949c01a05279ad8, type: 3}
+  m_Name: 15 4
   m_EditorClassIdentifier: 
   missionNumber: 0
-  missionTitle: 
-  missionDescription: 'Go to the witness'' house,
-
-    Use his name you just found.'
+  missionTitle: Crime Evidence
+  missionDescription: Let's find out who is the first witness
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 1
-  requiredObjectId: 003
-  dialogueTriggers: []
-  additionalHighlightObjectIds:
-  - DoorPoliceStation
+  popupText: 
+  popupImage: {fileID: 0}
