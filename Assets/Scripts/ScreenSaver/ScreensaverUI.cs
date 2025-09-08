@@ -37,11 +37,18 @@ public class ScreensaverUI : MonoBehaviour
             commentText.text = "Please enter a valid key.";
             commentText.gameObject.SetActive(true);
 
+            loadGameInput.DeactivateInputField();
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            WebGLKeyboardUtility.CloseMobileKeyboard();
             return;
         }
 
         UniqueKeyManager.Instance.CompareKeys(inputKey, success =>
         {
+            loadGameInput.DeactivateInputField();
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            WebGLKeyboardUtility.CloseMobileKeyboard();
+
             if (success)
             {
                 // Hide UI

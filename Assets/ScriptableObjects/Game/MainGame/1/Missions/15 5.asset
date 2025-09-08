@@ -17,7 +17,7 @@ MonoBehaviour:
   missionDescription: 'We want to build the following SQL query:
 
 
-    "SELECT witness_id
+    "SELECT victim_id
 
     From
     CrimeEvidence"'

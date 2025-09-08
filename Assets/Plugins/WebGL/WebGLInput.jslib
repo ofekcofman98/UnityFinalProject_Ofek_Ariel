@@ -217,4 +217,17 @@ var WebGLInput = {
 }
 
 autoAddDeps(WebGLInput, '$instances');
+mergeInto(LibraryManager.library, {
+  CloseKeyboard: function () {
+    console.log("🟢 CloseKeyboard() called, clearing all inputs");
+
+    var inputs = document.querySelectorAll("input, textarea");
+    inputs.forEach(i => {
+      i.blur();
+      i.style.display = "none"; // hide them to stop re-focusing
+    });
+
+    window.focus();
+  }
+});
 mergeInto(LibraryManager.library, WebGLInput);

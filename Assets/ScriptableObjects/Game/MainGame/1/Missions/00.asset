@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   missionNumber: 0
   missionTitle: Introduction
-  missionDescription: "Hello Detective, \nA crime was happening.\nWe need to find
-    the criminal."
+  missionDescription: "Hello Detective, \nA crime has been committed !\nWe need to
+    find the criminal."
   unlocksTable: 0
   tableToUnlock: 
   isTutorial: 0
