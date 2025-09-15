@@ -7,33 +7,33 @@ The project was developed as our final Computer Science project by Ofek Cofman
 
 🎮 Game Overview
 
-The PC is the main investigation hub.
+* The PC is the main investigation hub.
 
-The mobile becomes the controller, connected via a unique key system.
+* The mobile becomes the controller, connected via a unique key system.
 
-Players progress by solving cases with SQL queries that unlock new tables, witnesses, and evidence.
+* Players progress by solving cases with SQL queries that unlock new tables, witnesses, and evidence.
 
 🔍 Game Highlights
 
-Visual SQL Query Builder on mobile (drag & drop SELECT, FROM, WHERE, JOIN, and more)
+* Visual SQL Query Builder on mobile (drag & drop SELECT, FROM, WHERE, JOIN, and more)
 
-Rich 3D world to explore and investigate
+* Rich 3D world to explore and investigate
 
-Supabase cloud database with dynamic missions and data
+* Supabase cloud database with dynamic missions and data
 
-Cross-device sync (PC ↔ Mobile) in real time
+* Cross-device sync (PC ↔ Mobile) in real time
 
-Story-driven gameplay: uncover the criminal step by step
+* Story-driven gameplay: uncover the criminal step by step
 
 🛠️ Tech Stack
 
-Unity (C#) – cross-platform gameplay & UI
+* Unity (C#) – cross-platform gameplay & UI
 
-Supabase (PostgreSQL) – cloud database and APIs
+* Supabase (PostgreSQL) – cloud database and APIs
 
-Python (Flask + Google Cloud Run) – PC ↔ Mobile server communication
+* Python (Flask + Google Cloud Run) – PC ↔ Mobile server communication
 
-🚀 Play the Game
+🚀 Play the Game:
 
 🔗 Play on Itch.io: https://sql-detective.itch.io/sql-detective
  (PC required; mobile works only when paired with PC)
